@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpldpo1dwjwj5"
-path="res://.godot/imported/Tiles - Copy.png-bdd89de23aaf066171609bf27156c5c5.ctex"
+uid="uid://cgyyfd85xayf4"
+path="res://.godot/imported/RetroDiner_Tiles_Classic_128x128.png-29ede026e26805183441156e9ffd6211.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Tiles - Copy.png"
-dest_files=["res://.godot/imported/Tiles - Copy.png-bdd89de23aaf066171609bf27156c5c5.ctex"]
+source_file="res://Tiles/RetroDiner_Tiles_128x128/RetroDiner_Tiles_Classic_128x128.png"
+dest_files=["res://.godot/imported/RetroDiner_Tiles_Classic_128x128.png-29ede026e26805183441156e9ffd6211.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xrfj5pdvy1sx"
-path="res://.godot/imported/DudeNew.png-b9351f0a6d015bb48104323a2139cedf.ctex"
+uid="uid://c25lglon7mbbc"
+path="res://.godot/imported/RetroDiner_Walls_OceanBreeze_128x128.png-da0fcd008afc80a8c23e5d8546f2d10d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://DudeNew.png"
-dest_files=["res://.godot/imported/DudeNew.png-b9351f0a6d015bb48104323a2139cedf.ctex"]
+source_file="res://Tiles/RetroDiner_Walls_128x128/RetroDiner_Walls_OceanBreeze_128x128.png"
+dest_files=["res://.godot/imported/RetroDiner_Walls_OceanBreeze_128x128.png-da0fcd008afc80a8c23e5d8546f2d10d.ctex"]
 
 [params]
 
