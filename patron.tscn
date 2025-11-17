@@ -1,0 +1,106 @@
+[gd_scene load_steps=13 format=3 uid="uid://dl1xrqeja4ygd"]
+
+[ext_resource type="Script" uid="uid://c0vuu8ohj6d0h" path="res://Patron.cs" id="1_44a8u"]
+[ext_resource type="Texture2D" uid="uid://xrfj5pdvy1sx" path="res://Patron.png" id="2_pulac"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lgr22"]
+atlas = ExtResource("2_pulac")
+region = Rect2(216, 126, 18, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_trn2v"]
+atlas = ExtResource("2_pulac")
+region = Rect2(0, 0, 18, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_03owx"]
+atlas = ExtResource("2_pulac")
+region = Rect2(0, 18, 18, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wkp8b"]
+atlas = ExtResource("2_pulac")
+region = Rect2(0, 36, 18, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_20pc6"]
+atlas = ExtResource("2_pulac")
+region = Rect2(0, 54, 18, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5vvyt"]
+atlas = ExtResource("2_pulac")
+region = Rect2(0, 72, 18, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c6i3y"]
+atlas = ExtResource("2_pulac")
+region = Rect2(0, 90, 18, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c2ibq"]
+atlas = ExtResource("2_pulac")
+region = Rect2(0, 108, 18, 18)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_j4qnp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lgr22")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_trn2v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_03owx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wkp8b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_20pc6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5vvyt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c6i3y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c2ibq")
+}],
+"loop": true,
+"name": &"Spin",
+"speed": 10.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c6i3y"]
+radius = 1.6666718
+
+[node name="Patron" type="CharacterBody2D" node_paths=PackedStringArray("NavAgent")]
+y_sort_enabled = true
+scale = Vector2(3, 3)
+script = ExtResource("1_44a8u")
+MovementSpeed = 3000.0
+NavAgent = NodePath("NavigationAgent2D")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 1
+texture_filter = 1
+position = Vector2(0, -9)
+sprite_frames = SubResource("SpriteFrames_j4qnp")
+animation = &"Spin"
+autoplay = "Spin"
+frame_progress = 0.639467
+metadata/_edit_lock_ = true
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_max_distance = 200.0
+path_postprocessing = 1
+simplify_path = true
+simplify_epsilon = 2.0
+avoidance_enabled = true
+radius = 25.0
+debug_enabled = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_c6i3y")
+
+[connection signal="timeout" from="Timer" to="." method="OnTimerTimeout"]
