@@ -196,3 +196,7 @@ func get_norm_coordinate() -> Vector2:
 
 func invert_vector(vec: Vector2) -> Vector2:
 	return Vector2(-vec.x, -vec.y)
+
+
+func OnSpawnTimerTimeout() -> void:
+	pass # Replace with function body.
