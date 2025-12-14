@@ -1,15 +1,14 @@
 [gd_scene load_steps=3 format=3 uid="uid://ohglcmejviuu"]
 
-[ext_resource type="Script" uid="uid://c6tviwmgfadrg" path="res://Spawner.cs" id="1_ttk4a"]
+[ext_resource type="Script" uid="uid://dr48nhbt2nsf2" path="res://spawner.gd" id="1_yp5lu"]
 [ext_resource type="PackedScene" uid="uid://dl1xrqeja4ygd" path="res://patron.tscn" id="2_mcln3"]
 
-[node name="Spawner" type="Marker2D" node_paths=PackedStringArray("SpawnTimer")]
-script = ExtResource("1_ttk4a")
+[node name="Spawner" type="Marker2D"]
+script = ExtResource("1_yp5lu")
 PatronScene = ExtResource("2_mcln3")
-SpawnTimer = NodePath("Timer")
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 3.0
 autostart = true
 
-[connection signal="timeout" from="Timer" to="." method="OnSpawnTimerTimeout"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
