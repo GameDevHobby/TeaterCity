@@ -11,7 +11,7 @@
 	"Godot Debug Patron": {
 	  "commandName": "Executable",
 	  "executablePath": "C:/Users/chris/OneDrive/Documents/Godot_v4.5.1-NET/Godot_v4.5.1-stable_mono_win64.exe",
-	  "commandLineArgs": "--upwards ./patron.tscn --verbose",
+	  "commandLineArgs": "--upwards ./Patron/patron.tscn --verbose",
 	  "workingDirectory": ".",
 	  "nativeDebugging": true
 	}

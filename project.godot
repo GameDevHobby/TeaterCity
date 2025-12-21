@@ -16,6 +16,10 @@ run/main_scene="uid://b5gx7yrfplj7k"
 config/features=PackedStringArray("4.5", "C#", "Mobile")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Targets="*res://targets.gd"
+
 [display]
 
 window/size/resizable=false
