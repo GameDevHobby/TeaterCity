@@ -1,9 +1,9 @@
 class_name WallOperation
 extends RefCounted
 
-# Tileset source and atlas coordinates for WallTileLayer
-const WALL_SOURCE_ID := 1  # "Classic Walls" source in TileSet_3dxm6
-const WALL_ATLAS_COORDS := Vector2i(0, 0)  # Basic wall tile
+# Terrain configuration for auto-tiling
+const TERRAIN_SET := 0  # Terrain set index in wall-tileset.tres
+const TERRAIN_INDEX := 0  # Terrain index (wall type) within the set
 
 # UI coordinate system constants (must match RoomBuildUI)
 const HALF_WIDTH := 32.0
@@ -45,6 +45,9 @@ func _ui_to_tilemap_coords(ui_tile: Vector2i, tilemap_layer: TileMapLayer) -> Ve
 	return tilemap_layer.local_to_map(local_pos)
 
 func create_wall_visuals(room: RoomInstance, tilemap_layer: TileMapLayer) -> void:
+	# Collect all wall positions (excluding doors) for terrain placement
+	var wall_tilemap_positions: Array[Vector2i] = []
+
 	for wall_pos in room.walls:
 		var has_door = false
 		for door in room.doors:
@@ -53,6 +56,9 @@ func create_wall_visuals(room: RoomInstance, tilemap_layer: TileMapLayer) -> voi
 				break
 
 		if not has_door:
-			# Convert UI tile coords to tilemap tile coords
 			var tilemap_pos = _ui_to_tilemap_coords(wall_pos, tilemap_layer)
-			tilemap_layer.set_cell(tilemap_pos, WALL_SOURCE_ID, WALL_ATLAS_COORDS)
+			wall_tilemap_positions.append(tilemap_pos)
+
+	# Place all walls using terrain auto-tiling
+	if wall_tilemap_positions.size() > 0:
+		tilemap_layer.set_cells_terrain_connect(wall_tilemap_positions, TERRAIN_SET, TERRAIN_INDEX)
