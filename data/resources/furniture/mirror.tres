@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://bo6s7srf4y6vn"]
+
+[ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://Scripts/data/FurnitureResource.gd" id="1_3dsb0"]
+
+[resource]
+script = ExtResource("1_3dsb0")
+id = "mirror"
+name = "Mirror"
+cost = 20
+monthly_upkeep = 1
+description = "Mirror"
+metadata/_custom_type_script = "uid://bd7777akkjjay"

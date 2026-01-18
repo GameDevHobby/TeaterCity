@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RoomTypeRegistry" load_steps=7 format=3 uid="uid://kny1yytaukco"]
+
+[ext_resource type="Resource" uid="uid://ccrdjn7q4e2xb" path="res://data/resources/room_types/theater_auditorium.tres" id="1_8qtb3"]
+[ext_resource type="Script" uid="uid://bkenh1g2eu2rd" path="res://Scripts/data/RoomTypeRegistry.gd" id="1_tku23"]
+[ext_resource type="Resource" uid="uid://c2yxd6f38pgxk" path="res://data/resources/room_types/bathroom.tres" id="2_8slj4"]
+[ext_resource type="Resource" uid="uid://dhqjshpdtv57d" path="res://data/resources/room_types/snack_bar.tres" id="3_adtmi"]
+[ext_resource type="Resource" uid="uid://6cq81euprhc" path="res://data/resources/room_types/ticket_counter.tres" id="4_ifvew"]
+[ext_resource type="Resource" uid="uid://bhm2df7lu1gj1" path="res://data/resources/room_types/lobby.tres" id="5_5ln4g"]
+
+[resource]
+script = ExtResource("1_tku23")
+room_types = {
+"bathroom": ExtResource("2_8slj4"),
+"lobby": ExtResource("5_5ln4g"),
+"snack_bar": ExtResource("3_adtmi"),
+"theater_auditorium": ExtResource("1_8qtb3"),
+"ticket_counter": ExtResource("4_ifvew")
+}
+metadata/_custom_type_script = "uid://bkenh1g2eu2rd"

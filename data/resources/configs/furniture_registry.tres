@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="FurnitureRegistry" load_steps=15 format=3 uid="uid://ds28gmdgdrxen"]
+
+[ext_resource type="Resource" uid="uid://ckxyupkkjmytt" path="res://data/resources/furniture/seat.tres" id="1_h4x8l"]
+[ext_resource type="Script" uid="uid://3h0k4psn81ug" path="res://Scripts/data/FurnitureRegistry.gd" id="1_kjwno"]
+[ext_resource type="Resource" uid="uid://cl16pjl28vnej" path="res://data/resources/furniture/screen.tres" id="2_p7q17"]
+[ext_resource type="Resource" uid="uid://pdu5xkeix5q1" path="res://data/resources/furniture/speaker.tres" id="3_x8orw"]
+[ext_resource type="Resource" uid="uid://tqretlphsglr" path="res://data/resources/furniture/toilet.tres" id="4_w8b88"]
+[ext_resource type="Resource" uid="uid://dr5xunaevdi44" path="res://data/resources/furniture/sink.tres" id="5_lsf70"]
+[ext_resource type="Resource" uid="uid://8x8pjs1v1yu4" path="res://data/resources/furniture/stall.tres" id="6_tn8fe"]
+[ext_resource type="Resource" uid="uid://cab1utpqnoch" path="res://data/resources/furniture/counter.tres" id="7_0xcwx"]
+[ext_resource type="Resource" uid="uid://del4iirroi4xt" path="res://data/resources/furniture/display_case.tres" id="8_4157j"]
+[ext_resource type="Resource" uid="uid://djp6alha6mo3a" path="res://data/resources/furniture/register.tres" id="9_ekoam"]
+[ext_resource type="Resource" uid="uid://diqo1l4y8ovpi" path="res://data/resources/furniture/seating_bench.tres" id="10_e8isd"]
+[ext_resource type="Resource" uid="uid://by0s5efp1whu4" path="res://data/resources/furniture/ticket_window.tres" id="11_qjh4l"]
+[ext_resource type="Resource" uid="uid://bo6s7srf4y6vn" path="res://data/resources/furniture/mirror.tres" id="12_vbfwr"]
+[ext_resource type="Resource" uid="uid://c1eumeunwl3my" path="res://data/resources/furniture/dispenser.tres" id="13_7j2eb"]
+
+[resource]
+script = ExtResource("1_kjwno")
+furniture_items = {
+"counter": ExtResource("7_0xcwx"),
+"dispenser": ExtResource("13_7j2eb"),
+"display_case": ExtResource("8_4157j"),
+"mirror": ExtResource("12_vbfwr"),
+"register": ExtResource("9_ekoam"),
+"screen": ExtResource("2_p7q17"),
+"seat": ExtResource("1_h4x8l"),
+"seating_bench": ExtResource("10_e8isd"),
+"sink": ExtResource("5_lsf70"),
+"speaker": ExtResource("3_x8orw"),
+"stall": ExtResource("6_tn8fe"),
+"ticket_window": ExtResource("11_qjh4l"),
+"toilet": ExtResource("4_w8b88")
+}
+metadata/_custom_type_script = "uid://3h0k4psn81ug"

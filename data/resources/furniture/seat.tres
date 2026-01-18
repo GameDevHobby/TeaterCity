@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://ckxyupkkjmytt"]
+
+[ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://Scripts/data/FurnitureResource.gd" id="1_m4afd"]
+
+[resource]
+script = ExtResource("1_m4afd")
+id = "seat"
+name = "Seat"
+cost = 15
+monthly_upkeep = 1
+description = "Individual theater seat"
+metadata/_custom_type_script = "uid://bd7777akkjjay"

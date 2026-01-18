@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RoomTypeResource" load_steps=2 format=3 uid="uid://ccrdjn7q4e2xb"]
+
+[ext_resource type="Script" uid="uid://cr7lym51nwuu5" path="res://Scripts/data/RoomTypeResource.gd" id="1_glwu7"]
+
+[resource]
+script = ExtResource("1_glwu7")
+id = "theater_auditorium"
+display_name = "Theater Auditorium"
+description = "Main screening room for movies"
+min_size = Vector2i(8, 6)
+max_size = Vector2i(20, 16)
+has_seating = true
+base_cost = 500
+allowed_furniture = Array[String](["seat", "screen"])
+required_furniture = Array[String](["seat:20", "screen:1"])
+metadata/_custom_type_script = "uid://cr7lym51nwuu5"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RoomTypeResource" load_steps=2 format=3 uid="uid://6cq81euprhc"]
+
+[ext_resource type="Script" uid="uid://cr7lym51nwuu5" path="res://Scripts/data/RoomTypeResource.gd" id="1_j2klg"]
+
+[resource]
+script = ExtResource("1_j2klg")
+id = "ticket_counter"
+display_name = "Ticket Counter"
+description = "Box office for ticket sales"
+min_size = Vector2i(3, 3)
+max_size = Vector2i(6, 6)
+base_cost = 250
+required_furniture = Array[String](["ticket_window:1"])
+metadata/_custom_type_script = "uid://cr7lym51nwuu5"

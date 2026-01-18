@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://djp6alha6mo3a"]
+
+[ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://Scripts/data/FurnitureResource.gd" id="1_4kg87"]
+
+[resource]
+script = ExtResource("1_4kg87")
+id = "register"
+name = "Cash Register"
+cost = 50
+monthly_upkeep = 2
+description = "Point of sale register"
+metadata/_custom_type_script = "uid://bd7777akkjjay"

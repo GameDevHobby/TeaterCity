@@ -89,7 +89,7 @@ func _on_timer_timeout() -> void:
 func _navigation_finished() -> void:
 	navCount += 1
 	
-	if navCount < 3:
+	if navCount < 10:
 		choose_random_target()
 
 	else: 

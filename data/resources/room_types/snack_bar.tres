@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RoomTypeResource" load_steps=2 format=3 uid="uid://dhqjshpdtv57d"]
+
+[ext_resource type="Script" uid="uid://cr7lym51nwuu5" path="res://Scripts/data/RoomTypeResource.gd" id="1_4b2eq"]
+
+[resource]
+script = ExtResource("1_4b2eq")
+id = "snack_bar"
+display_name = "Snack Bar"
+description = "Concession stand for food and drinks"
+min_size = Vector2i(4, 4)
+max_size = Vector2i(12, 10)
+base_cost = 300
+allowed_furniture = Array[String](["counter"])
+required_furniture = Array[String](["counter:1"])
+metadata/_custom_type_script = "uid://cr7lym51nwuu5"

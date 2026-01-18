@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RoomTypeResource" load_steps=2 format=3 uid="uid://bhm2df7lu1gj1"]
+
+[ext_resource type="Script" uid="uid://cr7lym51nwuu5" path="res://Scripts/data/RoomTypeResource.gd" id="1_3wmdy"]
+
+[resource]
+script = ExtResource("1_3wmdy")
+id = "lobby"
+display_name = "Lobby"
+description = "Waiting area"
+min_size = Vector2i(4, 4)
+max_size = Vector2i(12, 12)
+base_cost = 250
+required_furniture = Array[String](["bench:1"])
+metadata/_custom_type_script = "uid://cr7lym51nwuu5"

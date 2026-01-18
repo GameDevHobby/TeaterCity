@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "mcp__godot__get_project_info",
+      "mcp__gdai-mcp__get_scene_tree",
+      "mcp__gdai-mcp__get_project_info",
+      "mcp__gdai-mcp__get_filesystem_tree",
+      "mcp__gdai-mcp__view_script",
+      "mcp__gdai-mcp__get_editor_screenshot",
+      "mcp__gdai-mcp__get_scene_file_content",
+      "mcp__gdai-mcp__edit_file",
+      "mcp__gdai-mcp__delete_node",
+      "mcp__gdai-mcp__get_godot_errors",
+      "mcp__gdai-mcp__clear_output_logs",
+      "mcp__gdai-mcp__play_scene",
+      "mcp__gdai-mcp__get_running_scene_screenshot",
+      "mcp__gdai-mcp__stop_running_scene",
+      "mcp__gdai-mcp__update_property",
+      "mcp__gdai-mcp__add_node",
+      "mcp__gdai-mcp__move_node",
+      "mcp__gdai-mcp__open_scene",
+      "mcp__gdai-mcp__set_anchor_preset",
+      "mcp__gdai-mcp__add_resource"
+    ]
+  }
+}

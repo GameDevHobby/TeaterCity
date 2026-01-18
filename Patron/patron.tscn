@@ -1,4 +1,4 @@
-[gd_scene load_steps=113 format=3 uid="uid://dl1xrqeja4ygd"]
+[gd_scene load_steps=110 format=3 uid="uid://dl1xrqeja4ygd"]
 
 [ext_resource type="Script" uid="uid://blatvcylu7k0n" path="res://Patron/patron.gd" id="1_44a8u"]
 [ext_resource type="Texture2D" uid="uid://xrfj5pdvy1sx" path="res://Patron/Patron.png" id="2_pulac"]
@@ -945,13 +945,6 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_c6i3y"]
 radius = 1.6666718
 
-[sub_resource type="BlackboardPlan" id="BlackboardPlan_44a8u"]
-
-[sub_resource type="BehaviorTree" id="BehaviorTree_pulac"]
-blackboard_plan = SubResource("BlackboardPlan_44a8u")
-
-[sub_resource type="BlackboardPlan" id="BlackboardPlan_q3y7j"]
-
 [node name="Patron" type="CharacterBody2D" node_paths=PackedStringArray("NavAgent", "AnimatedSprite")]
 y_sort_enabled = true
 scale = Vector2(3, 3)
@@ -981,7 +974,6 @@ metadata/_edit_lock_ = true
 path_desired_distance = 15.0
 target_desired_distance = 15.0
 path_max_distance = 25.0
-path_postprocessing = 1
 simplify_path = true
 simplify_epsilon = 0.2
 avoidance_enabled = true
@@ -990,13 +982,8 @@ neighbor_distance = 24.0
 max_neighbors = 12
 time_horizon_obstacles = 1.0
 max_speed = 50.0
-debug_enabled = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_c6i3y")
-
-[node name="BTPlayer" type="BTPlayer" parent="."]
-behavior_tree = SubResource("BehaviorTree_pulac")
-blackboard_plan = SubResource("BlackboardPlan_q3y7j")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

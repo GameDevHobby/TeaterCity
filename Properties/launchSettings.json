@@ -3,15 +3,15 @@
   "profiles": {
 	"Godot Debug": {
 	  "commandName": "Executable",
-	  "executablePath": "C:/Users/chris/OneDrive/Documents/Godot_v4.5.1-NET/Godot_v4.5.1-stable_mono_win64.exe",
+	  "executablePath": "C:/Users/chris/OneDrive/Documents/Godot_v4.5.1/Godot_v4.5.1-stable_win64.exe",
 	  "commandLineArgs": "--path . --verbose",
 	  "workingDirectory": ".",
 	  "nativeDebugging": true
 	},
-	"Godot Debug Patron": {
+	"Godot Debug Main": {
 	  "commandName": "Executable",
-	  "executablePath": "C:/Users/chris/OneDrive/Documents/Godot_v4.5.1-NET/Godot_v4.5.1-stable_mono_win64.exe",
-	  "commandLineArgs": "--upwards ./Patron/patron.tscn --verbose",
+	  "executablePath": "C:/Users/chris/OneDrive/Documents/Godot_v4.5.1/Godot_v4.5.1-stable_win64.exe",
+	  "commandLineArgs": "--upwards ./Main.tscn --verbose",
 	  "workingDirectory": ".",
 	  "nativeDebugging": true
 	}

@@ -13,12 +13,13 @@ config_version=5
 config/name="TheaterCity"
 config/version="0.0.1"
 run/main_scene="uid://b5gx7yrfplj7k"
-config/features=PackedStringArray("4.5", "C#", "Mobile")
+config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Targets="*res://targets.gd"
+GDAIMCPRuntime="*res://addons/gdai-mcp-plugin-godot/gdai_mcp_runtime.gd"
 
 [display]
 
@@ -31,7 +32,7 @@ project/assembly_name="TheaterCity"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_visualstudio_debugger/plugin.cfg", "res://addons/ppc/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdai-mcp-plugin-godot/plugin.cfg", "res://addons/godot_visualstudio_debugger/plugin.cfg", "res://addons/ppc/plugin.cfg")
 
 [input]
 

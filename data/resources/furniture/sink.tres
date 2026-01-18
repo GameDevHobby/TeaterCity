@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://dr5xunaevdi44"]
+
+[ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://Scripts/data/FurnitureResource.gd" id="1_gknn3"]
+
+[resource]
+script = ExtResource("1_gknn3")
+id = "sink"
+name = "Sink"
+cost = 25
+monthly_upkeep = 2
+description = "Hand washing sink"
+metadata/_custom_type_script = "uid://bd7777akkjjay"
