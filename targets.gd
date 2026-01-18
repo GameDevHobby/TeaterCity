@@ -1,7 +1,8 @@
 extends Node
 
 signal entity_added(entity: Node2D)
- 
+signal navigation_changed
+
 var _entitiy_instances: Array[Node2D] = []
  
 func add_entity(entity_instance: Node2D) -> void:
@@ -17,3 +18,7 @@ func get_random_entity() -> Node2D:
 
 	var index := randi_range(0, _entitiy_instances.size() - 1)
 	return _entitiy_instances[index]
+
+
+func notify_navigation_changed() -> void:
+	navigation_changed.emit()

@@ -160,6 +160,9 @@ func _on_complete_pressed() -> void:
 	# Update navigation
 	navigation_op.update_room_navigation(current_room, tilemap_layer)
 
+	# Notify patrons to recalculate their paths
+	Targets.notify_navigation_changed()
+
 	# Clean up UI
 	if ui:
 		ui.hide_furniture_panel()

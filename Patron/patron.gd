@@ -10,6 +10,7 @@ var navCount := 0
 func _ready() -> void:
 	NavAgent.velocity_computed.connect(_on_velocity_computed)
 	NavAgent.navigation_finished.connect(_navigation_finished)
+	Targets.navigation_changed.connect(_on_navigation_changed)
 	choose_random_target()
 	
 func choose_random_target() -> void: 	
@@ -88,12 +89,18 @@ func _on_timer_timeout() -> void:
 
 func _navigation_finished() -> void:
 	navCount += 1
-	
+
 	if navCount < 10:
 		choose_random_target()
 
-	else: 
+	else:
 		queue_free()
+
+
+func _on_navigation_changed() -> void:
+	# Recalculate path to current target when navigation map changes
+	var current_target = NavAgent.target_position
+	NavAgent.target_position = current_target
 
 # Signal handler - THIS MAKES AVOIDANCE WORK
 func _on_velocity_computed(safe_velocity: Vector2):
