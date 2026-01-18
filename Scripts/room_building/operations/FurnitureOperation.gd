@@ -7,12 +7,12 @@ const HALF_WIDTH := TILE_WIDTH / 2.0
 const HALF_HEIGHT := TILE_HEIGHT / 2.0
 
 func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_node: Node2D) -> Node2D:
-	var furniture_registry = FurnitureRegistry.get_instance()
-	var furn = furniture_registry.get_furniture(placement.furniture_id)
+	var furn = placement.furniture
+	var furniture_id = furn.id if furn else "unknown"
 
 	# Create sprite for the furniture
 	var sprite = Sprite2D.new()
-	sprite.name = "Furniture_%s_%d_%d" % [placement.furniture_id, placement.position.x, placement.position.y]
+	sprite.name = "Furniture_%s_%d_%d" % [furniture_id, placement.position.x, placement.position.y]
 
 	# Try to load sprite from resource
 	if furn and furn.sprite_path != "":
@@ -20,12 +20,21 @@ func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_
 		if texture:
 			sprite.texture = texture
 		else:
-			_create_placeholder_texture(sprite, placement.furniture_id, furn)
+			_create_placeholder_texture(sprite, furn)
 	else:
-		_create_placeholder_texture(sprite, placement.furniture_id, furn)
+		_create_placeholder_texture(sprite, furn)
 
-	# Position using isometric conversion
-	sprite.position = _tile_to_world(placement.position)
+	# Position using isometric conversion - center multi-tile furniture
+	var center_offset = Vector2i.ZERO
+	if furn:
+		var size = furn.size
+		# Handle rotation - swap dimensions for 90/270 degree rotations
+		if placement.rotation == 1 or placement.rotation == 3:
+			size = Vector2i(size.y, size.x)
+		# Calculate center of footprint
+		center_offset = Vector2i(size.x / 2, size.y / 2)
+
+	sprite.position = _tile_to_world(placement.position + center_offset)
 
 	# Apply rotation
 	sprite.rotation_degrees = placement.rotation * 90.0
@@ -33,7 +42,7 @@ func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_
 	parent_node.add_child(sprite)
 	return sprite
 
-func _create_placeholder_texture(sprite: Sprite2D, furniture_id: String, furn: FurnitureResource) -> void:
+func _create_placeholder_texture(sprite: Sprite2D, furn: FurnitureResource) -> void:
 	# Create a placeholder colored rectangle
 	var size = Vector2i(1, 1)
 	if furn:
@@ -44,6 +53,7 @@ func _create_placeholder_texture(sprite: Sprite2D, furniture_id: String, furn: F
 	var img = Image.create(img_size.x, img_size.y, false, Image.FORMAT_RGBA8)
 
 	# Choose color based on furniture type
+	var furniture_id = furn.id if furn else "unknown"
 	var color = _get_furniture_color(furniture_id)
 	img.fill(color)
 
@@ -62,7 +72,7 @@ func _create_placeholder_texture(sprite: Sprite2D, furniture_id: String, furn: F
 func _get_furniture_color(furniture_id: String) -> Color:
 	# Return different colors for different furniture types
 	match furniture_id:
-		"seat", "chair":
+		"seat", "chair", "seating_bench":
 			return Color(0.6, 0.4, 0.2, 0.8)  # Brown
 		"screen":
 			return Color(0.2, 0.2, 0.3, 0.8)  # Dark gray

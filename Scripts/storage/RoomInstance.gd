@@ -13,20 +13,36 @@ var furniture: Array[FurniturePlacement] = []
 class DoorPlacement:
 	var position: Vector2i
 	var direction: int
-	
+
 	func _init(pos: Vector2i, dir: int):
 		position = pos
 		direction = dir
 
 class FurniturePlacement:
-	var furniture_id: String
+	var furniture: FurnitureResource
 	var position: Vector2i
 	var rotation: int
-	
-	func _init(id: String, pos: Vector2i, rot: int = 0):
-		furniture_id = id
+
+	func _init(furn: FurnitureResource, pos: Vector2i, rot: int = 0):
+		furniture = furn
 		position = pos
 		rotation = rot
+
+	func get_occupied_tiles() -> Array[Vector2i]:
+		var tiles: Array[Vector2i] = []
+		if not furniture:
+			tiles.append(position)
+			return tiles
+
+		var size = furniture.size
+		# Handle rotation - swap dimensions for 90/270 degree rotations
+		if rotation == 1 or rotation == 3:
+			size = Vector2i(size.y, size.x)
+
+		for x in range(size.x):
+			for y in range(size.y):
+				tiles.append(position + Vector2i(x, y))
+		return tiles
 
 func _init(new_id: String, new_type_id: String):
 	id = new_id
@@ -36,39 +52,58 @@ func add_door(position: Vector2i, direction: int) -> void:
 	doors.append(DoorPlacement.new(position, direction))
 	placement_changed.emit()
 
-func add_furniture(furniture_id: String, position: Vector2i, rotation: int = 0) -> void:
-	furniture.append(FurniturePlacement.new(furniture_id, position, rotation))
+func add_furniture(furn: FurnitureResource, position: Vector2i, rotation: int = 0) -> void:
+	furniture.append(FurniturePlacement.new(furn, position, rotation))
 	placement_changed.emit()
+
+func get_furniture_count_by_resource(furn: FurnitureResource) -> int:
+	var count = 0
+	for f in furniture:
+		if f.furniture and f.furniture == furn:
+			count += 1
+	return count
 
 func get_furniture_count(furniture_id: String) -> int:
 	var count = 0
 	for furn in furniture:
-		if furn.furniture_id == furniture_id:
+		if furn.furniture and furn.furniture.id == furniture_id:
 			count += 1
 	return count
+
+func is_tile_occupied(pos: Vector2i) -> bool:
+	for furn in furniture:
+		if pos in furn.get_occupied_tiles():
+			return true
+	return false
+
+func get_all_occupied_tiles() -> Array[Vector2i]:
+	var tiles: Array[Vector2i] = []
+	for furn in furniture:
+		for tile in furn.get_occupied_tiles():
+			if tile not in tiles:
+				tiles.append(tile)
+	return tiles
 
 func get_total_cost() -> int:
 	var cost = 0
 	var room_type = RoomTypeRegistry.get_instance().get_room_type(room_type_id)
 	if room_type:
 		cost += room_type.base_cost
-	
+
 	cost += walls.size() * 10
 	cost += doors.size() * 50
-	
-	var furniture_registry = FurnitureRegistry.get_instance()
+
 	for furn in furniture:
-		cost += furniture_registry.get_furniture_cost(furn.furniture_id)
-	
+		if furn.furniture:
+			cost += furn.furniture.cost
+
 	return cost
 
 func get_monthly_upkeep() -> int:
 	var upkeep = 0
-	var furniture_registry = FurnitureRegistry.get_instance()
-	
+
 	for furn in furniture:
-		var item = furniture_registry.get_furniture(furn.furniture_id)
-		if item:
-			upkeep += item.monthly_upkeep
-	
+		if furn.furniture:
+			upkeep += furn.furniture.monthly_upkeep
+
 	return upkeep

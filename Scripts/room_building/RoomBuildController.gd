@@ -15,6 +15,7 @@ var state_name: String = "idle"
 var wall_op = WallOperation.new()
 var door_op = DoorOperation.new()
 var validation_op = ValidationOperation.new()
+var collision_op = CollisionOperation.new()
 var furniture_op: FurnitureOperation
 var navigation_op = NavigationOperation.new()
 
@@ -122,20 +123,17 @@ func _transition_to_furniture_placement() -> void:
 		ui.show_furniture_panel(current_room, current_room_type)
 	state_changed.emit("place_furniture")
 
-func _on_furniture_placed(furniture_id: String, position: Vector2i, rotation: int) -> void:
-	# Validate position is inside room and not on walls
-	var bbox = current_room.bounding_box
-	var in_bounds = position.x >= bbox.position.x and position.x < bbox.position.x + bbox.size.x
-	in_bounds = in_bounds and position.y >= bbox.position.y and position.y < bbox.position.y + bbox.size.y
-
-	if not in_bounds:
+func _on_furniture_placed(furniture: FurnitureResource, position: Vector2i, rotation: int) -> void:
+	if not furniture:
 		return
 
-	if position in current_room.walls:
+	# Use collision operation to validate placement
+	var result = collision_op.can_place_furniture(furniture, position, rotation, current_room)
+	if not result.can_place:
 		return
 
 	# Add furniture to room
-	current_room.add_furniture(furniture_id, position, rotation)
+	current_room.add_furniture(furniture, position, rotation)
 
 	# Update UI counts
 	if ui:

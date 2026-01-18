@@ -29,7 +29,9 @@
       "mcp__gdai-mcp__get_input_map",
       "mcp__gdai-mcp__simulate_input",
       "Skill(gdscript-toolkit:gdscript-validate)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(findstr:*)",
+      "Bash(find:*)"
     ]
   }
 }

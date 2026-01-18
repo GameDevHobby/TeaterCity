@@ -17,19 +17,5 @@
 
 [resource]
 script = ExtResource("1_kjwno")
-furniture_items = {
-"counter": ExtResource("7_0xcwx"),
-"dispenser": ExtResource("13_7j2eb"),
-"display_case": ExtResource("8_4157j"),
-"mirror": ExtResource("12_vbfwr"),
-"register": ExtResource("9_ekoam"),
-"screen": ExtResource("2_p7q17"),
-"seat": ExtResource("1_h4x8l"),
-"seating_bench": ExtResource("10_e8isd"),
-"sink": ExtResource("5_lsf70"),
-"speaker": ExtResource("3_x8orw"),
-"stall": ExtResource("6_tn8fe"),
-"ticket_window": ExtResource("11_qjh4l"),
-"toilet": ExtResource("4_w8b88")
-}
+furniture_items = Array[FurnitureResource]([ExtResource("1_h4x8l"), ExtResource("2_p7q17"), ExtResource("3_x8orw"), ExtResource("4_w8b88"), ExtResource("5_lsf70"), ExtResource("6_tn8fe"), ExtResource("7_0xcwx"), ExtResource("8_4157j"), ExtResource("9_ekoam"), ExtResource("10_e8isd"), ExtResource("11_qjh4l"), ExtResource("12_vbfwr"), ExtResource("13_7j2eb")])
 metadata/_custom_type_script = "uid://3h0k4psn81ug"

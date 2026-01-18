@@ -1,9 +1,22 @@
-[gd_resource type="Resource" script_class="RoomTypeResource" load_steps=2 format=3 uid="uid://c2yxd6f38pgxk"]
+[gd_resource type="Resource" script_class="RoomTypeResource" load_steps=7 format=3 uid="uid://c2yxd6f38pgxk"]
 
-[ext_resource type="Script" uid="uid://cr7lym51nwuu5" path="res://Scripts/data/RoomTypeResource.gd" id="1_5hcuf"]
+[ext_resource type="Script" uid="uid://cr7lym51nwuu5" path="res://Scripts/data/RoomTypeResource.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://tqretlphsglr" path="res://data/resources/furniture/toilet.tres" id="2_toilet"]
+[ext_resource type="Resource" uid="uid://dr5xunaevdi44" path="res://data/resources/furniture/sink.tres" id="3_sink"]
+[ext_resource type="Script" path="res://Scripts/data/FurnitureRequirement.gd" id="4_furn_req"]
+
+[sub_resource type="Resource" id="req_toilet"]
+script = ExtResource("4_furn_req")
+furniture = ExtResource("2_toilet")
+count = 1
+
+[sub_resource type="Resource" id="req_sink"]
+script = ExtResource("4_furn_req")
+furniture = ExtResource("3_sink")
+count = 1
 
 [resource]
-script = ExtResource("1_5hcuf")
+script = ExtResource("1_script")
 id = "bathroom"
 display_name = "Bathroom"
 description = "Restroom facilities"
@@ -11,6 +24,6 @@ min_size = Vector2i(3, 3)
 max_size = Vector2i(8, 8)
 door_count_max = 1
 base_cost = 200
-allowed_furniture = Array[String](["toilet", "sink"])
-required_furniture = Array[String](["toilet:1", "sink:1"])
+allowed_furniture = Array[FurnitureResource]([ExtResource("2_toilet"), ExtResource("3_sink")])
+required_furniture = Array[FurnitureRequirement]([SubResource("req_toilet"), SubResource("req_sink")])
 metadata/_custom_type_script = "uid://cr7lym51nwuu5"

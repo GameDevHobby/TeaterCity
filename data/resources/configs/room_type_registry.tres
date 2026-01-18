@@ -9,11 +9,5 @@
 
 [resource]
 script = ExtResource("1_tku23")
-room_types = {
-"bathroom": ExtResource("2_8slj4"),
-"lobby": ExtResource("5_5ln4g"),
-"snack_bar": ExtResource("3_adtmi"),
-"theater_auditorium": ExtResource("1_8qtb3"),
-"ticket_counter": ExtResource("4_ifvew")
-}
+room_types = Array[RoomTypeResource]([ExtResource("1_8qtb3"), ExtResource("2_8slj4"), ExtResource("3_adtmi"), ExtResource("4_ifvew"), ExtResource("5_5ln4g")])
 metadata/_custom_type_script = "uid://bkenh1g2eu2rd"

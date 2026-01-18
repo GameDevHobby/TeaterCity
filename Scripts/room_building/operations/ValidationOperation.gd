@@ -7,15 +7,15 @@ class ValidationResult:
 
 func validate_complete(room: RoomInstance) -> ValidationResult:
 	var result = ValidationResult.new()
-	
+
 	var room_type_registry = RoomTypeRegistry.get_instance()
 	var room_type = room_type_registry.get_room_type(room.room_type_id)
-	
+
 	if not room_type:
 		result.is_valid = false
 		result.errors.append("Invalid room type")
 		return result
-	
+
 	# Size check
 	if room.bounding_box.size.x < room_type.min_size.x or room.bounding_box.size.y < room_type.min_size.y:
 		result.is_valid = false
@@ -27,14 +27,15 @@ func validate_complete(room: RoomInstance) -> ValidationResult:
 		if door_count < room_type.door_count_min:
 			result.is_valid = false
 			result.errors.append("Need %d more door(s)" % (room_type.door_count_min - door_count))
-	
-	# Furniture check
-	var required = room_type.get_required_furniture_dict()
-	for furniture_id in required.keys():
-		var required_count = required[furniture_id]
-		var actual_count = room.get_furniture_count(furniture_id)
-		if actual_count < required_count:
+
+	# Furniture check using typed FurnitureRequirement
+	for req in room_type.get_required_furniture():
+		if not req.furniture:
+			continue
+		var actual_count = room.get_furniture_count_by_resource(req.furniture)
+		if actual_count < req.count:
+			var display_name = req.furniture.name if req.furniture.name else req.furniture.id
 			result.is_valid = false
-			result.errors.append("Need %d more %s(s)" % [required_count - actual_count, furniture_id])
-	
+			result.errors.append("Need %d more %s(s)" % [req.count - actual_count, display_name])
+
 	return result

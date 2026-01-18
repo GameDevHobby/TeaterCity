@@ -11,13 +11,8 @@ extends Resource
 @export var door_count_min: int = 1
 @export var door_count_max: int = 2
 @export var base_cost: int = 0
-@export var allowed_furniture: Array[String] = []
-@export var required_furniture: Array[String] = []
+@export var allowed_furniture: Array[FurnitureResource] = []
+@export var required_furniture: Array[FurnitureRequirement] = []
 
-func get_required_furniture_dict() -> Dictionary[String, int]:
-	var result: Dictionary[String, int] = {}
-	for item in required_furniture:
-		var parts = item.split(":")
-		if parts.size() == 2:
-			result[parts[0]] = parts[1].to_int()
-	return result
+func get_required_furniture() -> Array[FurnitureRequirement]:
+	return required_furniture

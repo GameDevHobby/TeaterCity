@@ -5,8 +5,8 @@ signal room_type_selected(room_type_id: String)
 signal box_draw_completed(start: Vector2i, end: Vector2i)
 signal door_placed(position: Vector2i)
 signal doors_done
-signal furniture_selected(furniture_id: String)
-signal furniture_placed(furniture_id: String, position: Vector2i, rotation: int)
+signal furniture_selected(furniture: FurnitureResource)
+signal furniture_placed(furniture: FurnitureResource, position: Vector2i, rotation: int)
 signal complete_pressed
 
 @export var room_type_container: Container
@@ -42,7 +42,7 @@ var _current_room: RoomInstance
 var _current_room_type: RoomTypeResource
 
 # Furniture placement
-var selected_furniture_id: String = ""
+var _selected_furniture: FurnitureResource
 var current_rotation: int = 0
 
 # UI elements for door/furniture placement
@@ -168,10 +168,10 @@ func _input(event: InputEvent) -> void:
 		return
 
 	# Handle furniture placement
-	if _furniture_placement_active and selected_furniture_id != "":
+	if _furniture_placement_active and _selected_furniture:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			var tile_pos = _screen_to_tile(event.global_position)
-			furniture_placed.emit(selected_furniture_id, tile_pos, current_rotation)
+			furniture_placed.emit(_selected_furniture, tile_pos, current_rotation)
 			queue_redraw()
 		elif event is InputEventMouseMotion:
 			_current_mouse_pos = _screen_to_tile(event.global_position)
@@ -300,19 +300,57 @@ func _draw_furniture_placement_hints() -> void:
 			if pos not in _current_room.walls:
 				_draw_tile_highlight(pos, furniture_valid_area_color)
 
-	# Draw placed furniture
+	# Draw placed furniture (showing all occupied tiles)
 	for furn in _current_room.furniture:
-		_draw_tile_highlight(furn.position, furniture_placed_color)
+		for tile in furn.get_occupied_tiles():
+			_draw_tile_highlight(tile, furniture_placed_color)
 
-	# Draw ghost at cursor if furniture selected
-	if selected_furniture_id != "":
+	# Draw ghost at cursor if furniture selected (showing full footprint)
+	if _selected_furniture:
 		var hover_pos = _current_mouse_pos
-		var bbox_rect = _current_room.bounding_box
-		var in_room = hover_pos.x >= bbox_rect.position.x and hover_pos.x < bbox_rect.position.x + bbox_rect.size.x
-		in_room = in_room and hover_pos.y >= bbox_rect.position.y and hover_pos.y < bbox_rect.position.y + bbox_rect.size.y
-		in_room = in_room and hover_pos not in _current_room.walls
-		if in_room:
-			_draw_tile_highlight(hover_pos, furniture_ghost_color)
+		var ghost_tiles = _get_furniture_footprint(hover_pos, _selected_furniture, current_rotation)
+
+		# Draw ghost tiles
+		for tile in ghost_tiles:
+			if _is_tile_valid_for_furniture(tile):
+				_draw_tile_highlight(tile, furniture_ghost_color)
+			else:
+				_draw_tile_highlight(tile, Color(1.0, 0.2, 0.2, 0.5))  # Red for blocked
+
+func _get_furniture_footprint(pos: Vector2i, furniture: FurnitureResource, rot: int) -> Array[Vector2i]:
+	var tiles: Array[Vector2i] = []
+	if not furniture:
+		tiles.append(pos)
+		return tiles
+
+	var furn_size = furniture.size
+	# Handle rotation - swap dimensions for 90/270 degree rotations
+	if rot == 1 or rot == 3:
+		furn_size = Vector2i(furn_size.y, furn_size.x)
+
+	for x in range(furn_size.x):
+		for y in range(furn_size.y):
+			tiles.append(pos + Vector2i(x, y))
+	return tiles
+
+func _is_tile_valid_for_furniture(pos: Vector2i) -> bool:
+	if not _current_room:
+		return false
+
+	var bbox = _current_room.bounding_box
+	var in_bounds = pos.x >= bbox.position.x and pos.x < bbox.position.x + bbox.size.x
+	in_bounds = in_bounds and pos.y >= bbox.position.y and pos.y < bbox.position.y + bbox.size.y
+
+	if not in_bounds:
+		return false
+
+	if pos in _current_room.walls:
+		return false
+
+	if _current_room.is_tile_occupied(pos):
+		return false
+
+	return true
 
 func _draw_tile_highlight(tile_pos: Vector2i, color: Color) -> void:
 	var top = _tile_to_screen(tile_pos)
@@ -441,7 +479,7 @@ func show_furniture_panel(room: RoomInstance, room_type: RoomTypeResource) -> vo
 	_furniture_placement_active = true
 	_current_room = room
 	_current_room_type = room_type
-	selected_furniture_id = ""
+	_selected_furniture = null
 	current_rotation = 0
 	_rotate_button.text = "Rotate (0°)"
 
@@ -469,58 +507,55 @@ func show_furniture_panel(room: RoomInstance, room_type: RoomTypeResource) -> vo
 	queue_redraw()
 
 func _populate_furniture_buttons(room_type: RoomTypeResource) -> void:
-	var required = room_type.get_required_furniture_dict()
-	var furniture_registry = FurnitureRegistry.get_instance()
+	var required_furniture_set: Array[FurnitureResource] = []
 
 	# Create buttons for required furniture first
-	for furniture_id in required.keys():
-		var required_count = required[furniture_id]
-		var actual_count = _current_room.get_furniture_count(furniture_id) if _current_room else 0
-		var furn = furniture_registry.get_furniture(furniture_id)
-		var display_name = furn.name if furn else furniture_id
+	for req in room_type.get_required_furniture():
+		if not req.furniture:
+			continue
+		required_furniture_set.append(req.furniture)
+		var actual_count = _current_room.get_furniture_count_by_resource(req.furniture) if _current_room else 0
+		var display_name = req.furniture.name if req.furniture.name else req.furniture.id
 
 		var btn = Button.new()
-		btn.text = "%s (%d/%d)" % [display_name, actual_count, required_count]
+		btn.text = "%s (%d/%d)" % [display_name, actual_count, req.count]
 		btn.custom_minimum_size = Vector2(160, 32)
-		btn.set_meta("furniture_id", furniture_id)
-		btn.set_meta("required_count", required_count)
+		btn.set_meta("furniture", req.furniture)
+		btn.set_meta("required_count", req.count)
 		_apply_button_style(btn, Color(0.4, 0.25, 0.2))  # Reddish for required
-		btn.pressed.connect(_on_furniture_button_pressed.bind(furniture_id))
+		btn.pressed.connect(_on_furniture_button_pressed.bind(req.furniture))
 		_furniture_container.add_child(btn)
 
 	# Create buttons for optional allowed furniture
-	for furniture_id in room_type.allowed_furniture:
-		if furniture_id in required.keys():
+	for furn in room_type.allowed_furniture:
+		if furn in required_furniture_set:
 			continue  # Skip if already in required
-		var furn = furniture_registry.get_furniture(furniture_id)
-		var display_name = furn.name if furn else furniture_id
+		var display_name = furn.name if furn.name else furn.id
 
 		var btn = Button.new()
 		btn.text = display_name
 		btn.custom_minimum_size = Vector2(160, 32)
-		btn.set_meta("furniture_id", furniture_id)
+		btn.set_meta("furniture", furn)
 		_apply_button_style(btn)
-		btn.pressed.connect(_on_furniture_button_pressed.bind(furniture_id))
+		btn.pressed.connect(_on_furniture_button_pressed.bind(furn))
 		_furniture_container.add_child(btn)
 
-func _on_furniture_button_pressed(furniture_id: String) -> void:
-	selected_furniture_id = furniture_id
-	furniture_selected.emit(furniture_id)
-	info_label.text = "Click to place: " + furniture_id
+func _on_furniture_button_pressed(furniture: FurnitureResource) -> void:
+	_selected_furniture = furniture
+	furniture_selected.emit(furniture)
+	var display_name = furniture.name if furniture.name else furniture.id
+	info_label.text = "Click to place: " + display_name
 	queue_redraw()
 
 func update_furniture_counts() -> void:
 	if not _current_room or not _current_room_type:
 		return
 
-	var furniture_registry = FurnitureRegistry.get_instance()
-
 	for child in _furniture_container.get_children():
-		if child is Button and child.has_meta("furniture_id"):
-			var furniture_id = child.get_meta("furniture_id")
-			var actual_count = _current_room.get_furniture_count(furniture_id)
-			var furn = furniture_registry.get_furniture(furniture_id)
-			var display_name = furn.name if furn else furniture_id
+		if child is Button and child.has_meta("furniture"):
+			var furn: FurnitureResource = child.get_meta("furniture")
+			var actual_count = _current_room.get_furniture_count_by_resource(furn)
+			var display_name = furn.name if furn.name else furn.id
 
 			if child.has_meta("required_count"):
 				var required_count = child.get_meta("required_count")
@@ -532,7 +567,7 @@ func update_furniture_counts() -> void:
 
 func hide_furniture_panel() -> void:
 	_furniture_placement_active = false
-	selected_furniture_id = ""
+	_selected_furniture = null
 	if _furniture_panel:
 		_furniture_panel.hide()
 	queue_redraw()
@@ -544,7 +579,7 @@ func end_all_modes() -> void:
 	_furniture_placement_active = false
 	_current_room = null
 	_current_room_type = null
-	selected_furniture_id = ""
+	_selected_furniture = null
 	if _done_doors_button:
 		_done_doors_button.hide()
 	if _furniture_panel:

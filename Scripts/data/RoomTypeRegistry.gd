@@ -1,7 +1,7 @@
 class_name RoomTypeRegistry
 extends Resource
 
-@export var room_types: Dictionary = {}
+@export var room_types: Array[RoomTypeResource] = []
 
 static var _instance: RoomTypeRegistry
 static var _path = "res://data/resources/configs/room_type_registry.tres"
@@ -12,10 +12,13 @@ static func get_instance() -> RoomTypeRegistry:
 	return _instance
 
 func get_room_type(id: String) -> RoomTypeResource:
-	return room_types.get(id, null)
+	for rt in room_types:
+		if rt.id == id:
+			return rt
+	return null
 
-func get_all_room_types() -> Array:
-	return room_types.values()
+func get_all_room_types() -> Array[RoomTypeResource]:
+	return room_types
 
 func has_room_type(id: String) -> bool:
-	return room_types.has(id)
+	return get_room_type(id) != null
