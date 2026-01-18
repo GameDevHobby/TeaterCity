@@ -14,6 +14,23 @@ signal complete_pressed
 @export var room_type_panel: PanelContainer
 @export var tilemap_layer: TileMapLayer  # For proper isometric coordinate conversion
 
+@export_group("Selection Box Colors")
+@export var selection_valid_fill: Color = Color(0.2, 0.6, 1.0, 0.3)
+@export var selection_valid_border: Color = Color(0.2, 0.6, 1.0, 1.0)
+@export var selection_invalid_fill: Color = Color(1.0, 0.2, 0.2, 0.3)
+@export var selection_invalid_border: Color = Color(1.0, 0.2, 0.2, 1.0)
+
+@export_group("Door Placement Colors")
+@export var door_placed_color: Color = Color(0.2, 0.8, 0.2, 0.5)
+@export var door_valid_color: Color = Color(0.8, 0.8, 0.2, 0.3)
+@export var door_wall_color: Color = Color(0.5, 0.5, 0.5, 0.2)
+@export var door_hover_color: Color = Color(0.2, 1.0, 0.2, 0.7)
+
+@export_group("Furniture Placement Colors")
+@export var furniture_valid_area_color: Color = Color(0.2, 0.6, 1.0, 0.15)
+@export var furniture_placed_color: Color = Color(0.6, 0.4, 0.2, 0.6)
+@export var furniture_ghost_color: Color = Color(0.6, 0.4, 0.2, 0.4)
+
 var _box_start: Vector2i
 var _box_end: Vector2i
 var _current_mouse_pos: Vector2i
@@ -94,10 +111,11 @@ func show_room_type_selection() -> void:
 	if room_type_panel:
 		room_type_panel.show()
 
-func show_drawing_instructions() -> void:
+func show_drawing_instructions(room_type: RoomTypeResource = null) -> void:
 	info_label.text = "Click and drag to draw room boundary"
 	_drawing = true
 	_is_dragging = false
+	_current_room_type = room_type
 	if room_type_panel:
 		room_type_panel.hide()
 
@@ -214,6 +232,19 @@ func _draw_box_selection() -> void:
 		maxi(_box_start.y, _current_mouse_pos.y)
 	)
 
+	# Calculate current selection size
+	var selection_size = max_tile - min_tile + Vector2i.ONE
+
+	# Check if size is valid for the room type (allow swapped width/height)
+	var is_valid_size = true
+	if _current_room_type:
+		var min_s = _current_room_type.min_size
+		var max_s = _current_room_type.max_size
+		# Check both orientations
+		var normal_valid = selection_size.x >= min_s.x and selection_size.y >= min_s.y and selection_size.x <= max_s.x and selection_size.y <= max_s.y
+		var swapped_valid = selection_size.x >= min_s.y and selection_size.y >= min_s.x and selection_size.x <= max_s.y and selection_size.y <= max_s.x
+		is_valid_size = normal_valid or swapped_valid
+
 	# Draw isometric diamond shape for the selection
 	var top = _tile_to_screen(min_tile)
 	var right = _tile_to_screen(Vector2i(max_tile.x + 1, min_tile.y))
@@ -221,8 +252,19 @@ func _draw_box_selection() -> void:
 	var left = _tile_to_screen(Vector2i(min_tile.x, max_tile.y + 1))
 
 	var points = PackedVector2Array([top, right, bottom, left])
-	draw_colored_polygon(points, Color(0.2, 0.6, 1.0, 0.3))  # Fill
-	draw_polyline(PackedVector2Array([top, right, bottom, left, top]), Color(0.2, 0.6, 1.0, 1.0), 2.0)  # Border
+
+	# Use red for invalid size, blue for valid
+	var fill_color: Color
+	var border_color: Color
+	if is_valid_size:
+		fill_color = selection_valid_fill
+		border_color = selection_valid_border
+	else:
+		fill_color = selection_invalid_fill
+		border_color = selection_invalid_border
+
+	draw_colored_polygon(points, fill_color)
+	draw_polyline(PackedVector2Array([top, right, bottom, left, top]), border_color, 2.0)
 
 func _draw_door_placement_hints() -> void:
 	var door_op = DoorOperation.new()
@@ -235,16 +277,16 @@ func _draw_door_placement_hints() -> void:
 				break
 
 		if is_door:
-			_draw_tile_highlight(wall_pos, Color(0.2, 0.8, 0.2, 0.5))  # Green for placed doors
+			_draw_tile_highlight(wall_pos, door_placed_color)
 		elif door_op.is_valid_door_position(wall_pos, _current_room):
-			_draw_tile_highlight(wall_pos, Color(0.8, 0.8, 0.2, 0.3))  # Yellow for valid positions
+			_draw_tile_highlight(wall_pos, door_valid_color)
 		else:
-			_draw_tile_highlight(wall_pos, Color(0.5, 0.5, 0.5, 0.2))  # Gray for walls
+			_draw_tile_highlight(wall_pos, door_wall_color)
 
 	# Highlight current hover position
 	if _current_mouse_pos in _current_room.walls:
 		if door_op.is_valid_door_position(_current_mouse_pos, _current_room):
-			_draw_tile_highlight(_current_mouse_pos, Color(0.2, 1.0, 0.2, 0.7))  # Bright green hover
+			_draw_tile_highlight(_current_mouse_pos, door_hover_color)
 
 func _draw_furniture_placement_hints() -> void:
 	if not _current_room:
@@ -256,11 +298,11 @@ func _draw_furniture_placement_hints() -> void:
 		for y in range(bbox.position.y, bbox.position.y + bbox.size.y):
 			var pos = Vector2i(x, y)
 			if pos not in _current_room.walls:
-				_draw_tile_highlight(pos, Color(0.2, 0.6, 1.0, 0.15))  # Light blue for valid area
+				_draw_tile_highlight(pos, furniture_valid_area_color)
 
 	# Draw placed furniture
 	for furn in _current_room.furniture:
-		_draw_tile_highlight(furn.position, Color(0.6, 0.4, 0.2, 0.6))  # Brown for furniture
+		_draw_tile_highlight(furn.position, furniture_placed_color)
 
 	# Draw ghost at cursor if furniture selected
 	if selected_furniture_id != "":
@@ -270,7 +312,7 @@ func _draw_furniture_placement_hints() -> void:
 		in_room = in_room and hover_pos.y >= bbox_rect.position.y and hover_pos.y < bbox_rect.position.y + bbox_rect.size.y
 		in_room = in_room and hover_pos not in _current_room.walls
 		if in_room:
-			_draw_tile_highlight(hover_pos, Color(0.6, 0.4, 0.2, 0.4))  # Ghost furniture
+			_draw_tile_highlight(hover_pos, furniture_ghost_color)
 
 func _draw_tile_highlight(tile_pos: Vector2i, color: Color) -> void:
 	var top = _tile_to_screen(tile_pos)
@@ -471,7 +513,6 @@ func update_furniture_counts() -> void:
 	if not _current_room or not _current_room_type:
 		return
 
-	var required = _current_room_type.get_required_furniture_dict()
 	var furniture_registry = FurnitureRegistry.get_instance()
 
 	for child in _furniture_container.get_children():

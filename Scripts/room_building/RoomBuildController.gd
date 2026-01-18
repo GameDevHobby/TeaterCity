@@ -70,7 +70,7 @@ func _on_room_type_selected(room_type_id: String) -> void:
 	current_room_type = RoomTypeRegistry.get_instance().get_room_type(room_type_id)
 	state_name = "draw_box"
 	if ui:
-		ui.show_drawing_instructions()
+		ui.show_drawing_instructions(current_room_type)
 	state_changed.emit("draw_box")
 
 func finish_box_draw(start: Vector2i, end: Vector2i) -> void:
@@ -79,18 +79,19 @@ func finish_box_draw(start: Vector2i, end: Vector2i) -> void:
 	var max_pos = Vector2i(maxi(start.x, end.x), maxi(start.y, end.y))
 	var box = Rect2i(min_pos, max_pos - min_pos + Vector2i.ONE)
 
-	# Validate size before proceeding
+	# Validate size before proceeding (allow swapped width/height)
 	if current_room_type:
-		var too_small = box.size.x < current_room_type.min_size.x or box.size.y < current_room_type.min_size.y
-		var too_large = box.size.x > current_room_type.max_size.x or box.size.y > current_room_type.max_size.y
-		if too_small or too_large:
-			var error_msg = ""
-			if too_small:
-				error_msg = "Room too small! Minimum size: %dx%d" % [current_room_type.min_size.x, current_room_type.min_size.y]
-			else:
-				error_msg = "Room too large! Maximum size: %dx%d" % [current_room_type.max_size.x, current_room_type.max_size.y]
+		var min_s = current_room_type.min_size
+		var max_s = current_room_type.max_size
+		# Check both orientations
+		var normal_valid = box.size.x >= min_s.x and box.size.y >= min_s.y and box.size.x <= max_s.x and box.size.y <= max_s.y
+		var swapped_valid = box.size.x >= min_s.y and box.size.y >= min_s.x and box.size.x <= max_s.y and box.size.y <= max_s.x
+		if not normal_valid and not swapped_valid:
+			var error_msg = "Invalid size! Required: %dx%d to %dx%d (either orientation)" % [min_s.x, min_s.y, max_s.x, max_s.y]
 			if ui:
 				ui.show_validation_errors([error_msg])
+				# Reset to drawing mode so user can try again
+				ui.show_drawing_instructions(current_room_type)
 			return  # Don't proceed with invalid size
 
 	current_room.bounding_box = box
