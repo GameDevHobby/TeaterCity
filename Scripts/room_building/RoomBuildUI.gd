@@ -14,6 +14,16 @@ signal complete_pressed
 @export var room_type_panel: PanelContainer
 @export var tilemap_layer: TileMapLayer  # For proper isometric coordinate conversion
 
+@export_group("Furniture Panel")
+@export var furniture_panel: PanelContainer
+@export var furniture_container: VBoxContainer
+@export var rotate_button: Button
+@export var complete_room_button: Button
+
+@export_group("Door Placement")
+@export var door_button_container: CenterContainer
+@export var done_doors_button: Button
+
 @export_group("Selection Box Colors")
 @export var selection_valid_fill: Color = Color(0.2, 0.6, 1.0, 0.3)
 @export var selection_valid_border: Color = Color(0.2, 0.6, 1.0, 1.0)
@@ -45,18 +55,13 @@ var _current_room_type: RoomTypeResource
 var _selected_furniture: FurnitureResource
 var current_rotation: int = 0
 
-# UI elements for door/furniture placement
-var _done_doors_button: Button
-var _furniture_panel: PanelContainer
-var _furniture_container: VBoxContainer
-var _rotate_button: Button
-var _complete_room_button: Button
+# UI references (assigned via @export from scene)
 
 func _ready() -> void:
 	hide()  # Start hidden until build mode is activated
 	_create_room_type_buttons()
-	_create_door_done_button()
-	_create_furniture_panel()
+	_setup_ui_styles()
+	_connect_ui_signals()
 
 func show_all() -> void:
 	show()
@@ -126,8 +131,8 @@ func show_door_instructions(room: RoomInstance, room_type: RoomTypeResource) -> 
 	_current_room = room
 	_current_room_type = room_type
 	info_label.text = "Click on walls to place doors"
-	if _done_doors_button:
-		_done_doors_button.show()
+	if door_button_container:
+		door_button_container.show()
 	queue_redraw()
 
 func show_validation_errors(errors: Array[String]) -> void:
@@ -378,75 +383,35 @@ func _draw_tile_highlight(tile_pos: Vector2i, color: Color) -> void:
 	var points = PackedVector2Array([top, right, bottom, left])
 	draw_colored_polygon(points, color)
 
-func _create_door_done_button() -> void:
-	_done_doors_button = Button.new()
-	_done_doors_button.text = "Done Placing Doors"
-	_done_doors_button.custom_minimum_size = Vector2(180, 40)
-	_apply_button_style(_done_doors_button)
-	_done_doors_button.pressed.connect(_on_done_doors_pressed)
-	_done_doors_button.hide()
+func _setup_ui_styles() -> void:
+	# Apply styles to scene nodes
+	if done_doors_button:
+		_apply_button_style(done_doors_button)
 
-	# Position at bottom center
-	var center_container = CenterContainer.new()
-	center_container.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-	center_container.offset_top = -60
-	center_container.offset_bottom = -10
-	center_container.add_child(_done_doors_button)
-	add_child(center_container)
+	if furniture_panel:
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0.15, 0.12, 0.18, 0.95)
+		style.border_color = Color(0.4, 0.35, 0.3, 1.0)
+		style.set_border_width_all(2)
+		style.set_corner_radius_all(4)
+		style.set_content_margin_all(10)
+		furniture_panel.add_theme_stylebox_override("panel", style)
 
-func _create_furniture_panel() -> void:
-	# Create panel container for furniture selection
-	_furniture_panel = PanelContainer.new()
-	_furniture_panel.custom_minimum_size = Vector2(200, 0)
+	if rotate_button:
+		_apply_button_style(rotate_button)
 
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.15, 0.12, 0.18, 0.95)
-	style.border_color = Color(0.4, 0.35, 0.3, 1.0)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(4)
-	style.set_content_margin_all(10)
-	_furniture_panel.add_theme_stylebox_override("panel", style)
+	if complete_room_button:
+		_apply_button_style(complete_room_button, Color(0.2, 0.5, 0.3))
 
-	var margin = MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 8)
-	margin.add_theme_constant_override("margin_right", 8)
-	margin.add_theme_constant_override("margin_top", 8)
-	margin.add_theme_constant_override("margin_bottom", 8)
+func _connect_ui_signals() -> void:
+	if done_doors_button:
+		done_doors_button.pressed.connect(_on_done_doors_pressed)
 
-	_furniture_container = VBoxContainer.new()
-	_furniture_container.add_theme_constant_override("separation", 6)
+	if rotate_button:
+		rotate_button.pressed.connect(_on_rotate_pressed)
 
-	var title_label = Label.new()
-	title_label.text = "Furniture"
-	title_label.add_theme_color_override("font_color", Color(0.9, 0.85, 0.8))
-	_furniture_container.add_child(title_label)
-
-	# Rotate button
-	_rotate_button = Button.new()
-	_rotate_button.text = "Rotate (0°)"
-	_rotate_button.custom_minimum_size = Vector2(160, 32)
-	_apply_button_style(_rotate_button)
-	_rotate_button.pressed.connect(_on_rotate_pressed)
-	_furniture_container.add_child(_rotate_button)
-
-	# Complete room button
-	_complete_room_button = Button.new()
-	_complete_room_button.text = "Complete Room"
-	_complete_room_button.custom_minimum_size = Vector2(160, 36)
-	_apply_button_style(_complete_room_button, Color(0.2, 0.5, 0.3))
-	_complete_room_button.pressed.connect(_on_complete_room_pressed)
-	_furniture_container.add_child(_complete_room_button)
-
-	margin.add_child(_furniture_container)
-	_furniture_panel.add_child(margin)
-
-	# Position on right side
-	_furniture_panel.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
-	_furniture_panel.offset_left = -220
-	_furniture_panel.offset_right = -10
-
-	add_child(_furniture_panel)
-	_furniture_panel.hide()
+	if complete_room_button:
+		complete_room_button.pressed.connect(_on_complete_room_pressed)
 
 func _apply_button_style(button: Button, base_color: Color = Color(0.25, 0.22, 0.3)) -> void:
 	var style_normal = StyleBoxFlat.new()
@@ -478,15 +443,15 @@ func _apply_button_style(button: Button, base_color: Color = Color(0.25, 0.22, 0
 
 func _on_done_doors_pressed() -> void:
 	_door_placement_active = false
-	if _done_doors_button:
-		_done_doors_button.hide()
+	if door_button_container:
+		door_button_container.hide()
 	queue_redraw()
 	doors_done.emit()
 
 func _on_rotate_pressed() -> void:
 	current_rotation = (current_rotation + 1) % 4
 	var degrees = current_rotation * 90
-	_rotate_button.text = "Rotate (%d°)" % degrees
+	rotate_button.text = "Rotate (%d°)" % degrees
 	queue_redraw()
 
 func _on_complete_room_pressed() -> void:
@@ -498,29 +463,29 @@ func show_furniture_panel(room: RoomInstance, room_type: RoomTypeResource) -> vo
 	_current_room_type = room_type
 	_selected_furniture = null
 	current_rotation = 0
-	_rotate_button.text = "Rotate (0°)"
+	rotate_button.text = "Rotate (0°)"
 
 	info_label.text = "Select and place furniture"
 
 	# Clear existing furniture buttons (keep title at 0, rotate at 1, complete at end)
-	var children = _furniture_container.get_children()
+	var children = furniture_container.get_children()
 	for i in range(children.size() - 1, 1, -1):  # Process from end down to index 2
 		var child = children[i]
-		if child != _rotate_button and child != _complete_room_button:
-			_furniture_container.remove_child(child)
+		if child != rotate_button and child != complete_room_button:
+			furniture_container.remove_child(child)
 			child.queue_free()
 
 	# Move complete button to end by removing and re-adding
-	if _complete_room_button.get_parent() == _furniture_container:
-		_furniture_container.remove_child(_complete_room_button)
+	if complete_room_button.get_parent() == furniture_container:
+		furniture_container.remove_child(complete_room_button)
 
 	# Add furniture buttons
 	_populate_furniture_buttons(room_type)
 
 	# Re-add complete button at end
-	_furniture_container.add_child(_complete_room_button)
+	furniture_container.add_child(complete_room_button)
 
-	_furniture_panel.show()
+	furniture_panel.show()
 	queue_redraw()
 
 func _populate_furniture_buttons(room_type: RoomTypeResource) -> void:
@@ -541,7 +506,7 @@ func _populate_furniture_buttons(room_type: RoomTypeResource) -> void:
 		btn.set_meta("required_count", req.count)
 		_apply_button_style(btn, Color(0.4, 0.25, 0.2))  # Reddish for required
 		btn.pressed.connect(_on_furniture_button_pressed.bind(req.furniture))
-		_furniture_container.add_child(btn)
+		furniture_container.add_child(btn)
 
 	# Create buttons for optional allowed furniture
 	for furn in room_type.allowed_furniture:
@@ -555,7 +520,7 @@ func _populate_furniture_buttons(room_type: RoomTypeResource) -> void:
 		btn.set_meta("furniture", furn)
 		_apply_button_style(btn)
 		btn.pressed.connect(_on_furniture_button_pressed.bind(furn))
-		_furniture_container.add_child(btn)
+		furniture_container.add_child(btn)
 
 func _on_furniture_button_pressed(furniture: FurnitureResource) -> void:
 	_selected_furniture = furniture
@@ -568,7 +533,7 @@ func update_furniture_counts() -> void:
 	if not _current_room or not _current_room_type:
 		return
 
-	for child in _furniture_container.get_children():
+	for child in furniture_container.get_children():
 		if child is Button and child.has_meta("furniture"):
 			var furn: FurnitureResource = child.get_meta("furniture")
 			var actual_count = _current_room.get_furniture_count_by_resource(furn)
@@ -585,8 +550,8 @@ func update_furniture_counts() -> void:
 func hide_furniture_panel() -> void:
 	_furniture_placement_active = false
 	_selected_furniture = null
-	if _furniture_panel:
-		_furniture_panel.hide()
+	if furniture_panel:
+		furniture_panel.hide()
 	queue_redraw()
 
 func end_all_modes() -> void:
@@ -597,8 +562,8 @@ func end_all_modes() -> void:
 	_current_room = null
 	_current_room_type = null
 	_selected_furniture = null
-	if _done_doors_button:
-		_done_doors_button.hide()
-	if _furniture_panel:
-		_furniture_panel.hide()
+	if door_button_container:
+		door_button_container.hide()
+	if furniture_panel:
+		furniture_panel.hide()
 	queue_redraw()
