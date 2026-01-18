@@ -32,12 +32,11 @@ func determine_door_direction(position: Vector2i, room: RoomInstance) -> int:
 	else:
 		return 3
 
-# Convert UI tile coordinates to world position
-# Note: No HALF_HEIGHT offset - the tilemap's local_to_map handles this
+# Convert UI tile coordinates to world position (must match RoomBuildUI._tile_to_world)
 func _ui_tile_to_world(tile_pos: Vector2i) -> Vector2:
 	return Vector2(
 		(tile_pos.x - tile_pos.y) * HALF_WIDTH,
-		(tile_pos.x + tile_pos.y) * HALF_HEIGHT
+		(tile_pos.x + tile_pos.y) * HALF_HEIGHT + HALF_HEIGHT
 	)
 
 # Convert UI tile coordinates to tilemap tile coordinates

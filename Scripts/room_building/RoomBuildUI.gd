@@ -245,25 +245,42 @@ func _draw_box_selection() -> void:
 		var swapped_valid = selection_size.x >= min_s.y and selection_size.y >= min_s.x and selection_size.x <= max_s.y and selection_size.y <= max_s.x
 		is_valid_size = normal_valid or swapped_valid
 
-	# Draw isometric diamond shape for the selection
+	# Choose colors based on validity
+	var wall_color: Color
+	var interior_color: Color
+	if is_valid_size:
+		wall_color = selection_valid_border.lerp(Color.WHITE, 0.2)
+		wall_color.a = 0.6
+		interior_color = selection_valid_fill
+	else:
+		wall_color = selection_invalid_border.lerp(Color.WHITE, 0.2)
+		wall_color.a = 0.6
+		interior_color = selection_invalid_fill
+
+	# Generate wall positions (same logic as WallOperation.generate_walls)
+	var wall_positions: Array[Vector2i] = []
+	for x in range(min_tile.x, max_tile.x + 1):
+		wall_positions.append(Vector2i(x, min_tile.y))
+		wall_positions.append(Vector2i(x, max_tile.y))
+	for y in range(min_tile.y + 1, max_tile.y):
+		wall_positions.append(Vector2i(min_tile.x, y))
+		wall_positions.append(Vector2i(max_tile.x, y))
+
+	# Draw interior tiles first (lighter color)
+	for x in range(min_tile.x + 1, max_tile.x):
+		for y in range(min_tile.y + 1, max_tile.y):
+			_draw_tile_highlight(Vector2i(x, y), interior_color)
+
+	# Draw wall tiles on top
+	for wall_pos in wall_positions:
+		_draw_tile_highlight(wall_pos, wall_color)
+
+	# Draw outer border
 	var top = _tile_to_screen(min_tile)
 	var right = _tile_to_screen(Vector2i(max_tile.x + 1, min_tile.y))
 	var bottom = _tile_to_screen(Vector2i(max_tile.x + 1, max_tile.y + 1))
 	var left = _tile_to_screen(Vector2i(min_tile.x, max_tile.y + 1))
-
-	var points = PackedVector2Array([top, right, bottom, left])
-
-	# Use red for invalid size, blue for valid
-	var fill_color: Color
-	var border_color: Color
-	if is_valid_size:
-		fill_color = selection_valid_fill
-		border_color = selection_valid_border
-	else:
-		fill_color = selection_invalid_fill
-		border_color = selection_invalid_border
-
-	draw_colored_polygon(points, fill_color)
+	var border_color = selection_valid_border if is_valid_size else selection_invalid_border
 	draw_polyline(PackedVector2Array([top, right, bottom, left, top]), border_color, 2.0)
 
 func _draw_door_placement_hints() -> void:

@@ -10,12 +10,11 @@ const WALL_TILE := Vector2i(0, 0)       # Wall tile with NavigationPolygon_03owx
 const HALF_WIDTH := 32.0
 const HALF_HEIGHT := 16.0
 
-# Convert UI tile coordinates to world position
-# Note: No HALF_HEIGHT offset - the tilemap's local_to_map handles this
+# Convert UI tile coordinates to world position (must match RoomBuildUI._tile_to_world)
 func _ui_tile_to_world(tile_pos: Vector2i) -> Vector2:
 	return Vector2(
 		(tile_pos.x - tile_pos.y) * HALF_WIDTH,
-		(tile_pos.x + tile_pos.y) * HALF_HEIGHT
+		(tile_pos.x + tile_pos.y) * HALF_HEIGHT + HALF_HEIGHT
 	)
 
 # Convert UI tile coordinates to tilemap tile coordinates
