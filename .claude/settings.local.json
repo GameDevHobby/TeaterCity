@@ -22,7 +22,14 @@
       "mcp__gdai-mcp__move_node",
       "mcp__gdai-mcp__open_scene",
       "mcp__gdai-mcp__set_anchor_preset",
-      "mcp__gdai-mcp__add_resource"
+      "mcp__gdai-mcp__add_resource",
+      "Bash(dir /s /b \"C:\\\\Users\\\\chris\\\\AppData\\\\Local\\\\Atlassian\\\\SourceTree\\\\*bash.exe\")",
+      "Bash(where:*)",
+      "Bash(bash:*)",
+      "mcp__gdai-mcp__get_input_map",
+      "mcp__gdai-mcp__simulate_input",
+      "Skill(gdscript-toolkit:gdscript-validate)",
+      "Bash(grep:*)"
     ]
   }
 }

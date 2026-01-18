@@ -2788,12 +2788,12 @@ metadata/_custom_type_script = "uid://x2p4qlvmvt8j"
 
 [node name="RoomBuildController" type="Node" parent="RoomBuildSystem" node_paths=PackedStringArray("tilemap_layer")]
 script = ExtResource("3_trn2v")
-tilemap_layer = NodePath("../../TileMapLayer")
+tilemap_layer = NodePath("../../WallTileLayer")
 ui_path = NodePath("../UILayer/RoomBuildUI")
 
 [node name="UILayer" type="CanvasLayer" parent="RoomBuildSystem"]
 
-[node name="RoomBuildUI" type="Control" parent="RoomBuildSystem/UILayer" node_paths=PackedStringArray("room_type_container", "info_label", "room_type_panel")]
+[node name="RoomBuildUI" type="Control" parent="RoomBuildSystem/UILayer" node_paths=PackedStringArray("room_type_container", "info_label", "room_type_panel", "tilemap_layer")]
 z_index = 10
 layout_mode = 3
 anchors_preset = 15
@@ -2807,6 +2807,7 @@ script = ExtResource("4_03owx")
 room_type_container = NodePath("CenterContainer/RoomTypePanel/MarginContainer/RoomTypeContainer")
 info_label = NodePath("PlacementInfoLabel")
 room_type_panel = NodePath("CenterContainer/RoomTypePanel")
+tilemap_layer = NodePath("../../../WallTileLayer")
 
 [node name="PlacementInfoLabel" type="Label" parent="RoomBuildSystem/UILayer/RoomBuildUI"]
 layout_mode = 0
