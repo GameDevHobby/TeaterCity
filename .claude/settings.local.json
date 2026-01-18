@@ -31,7 +31,8 @@
       "Skill(gdscript-toolkit:gdscript-validate)",
       "Bash(grep:*)",
       "Bash(findstr:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "mcp__gdai-mcp__search_files"
     ]
   }
 }
