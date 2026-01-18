@@ -2793,7 +2793,7 @@ ui_path = NodePath("../UILayer/RoomBuildUI")
 
 [node name="UILayer" type="CanvasLayer" parent="RoomBuildSystem"]
 
-[node name="RoomBuildUI" type="Control" parent="RoomBuildSystem/UILayer" node_paths=PackedStringArray("room_type_container", "info_label", "room_type_panel", "tilemap_layer", "furniture_panel", "furniture_container", "rotate_button", "complete_room_button", "door_button_container", "done_doors_button")]
+[node name="RoomBuildUI" type="Control" parent="RoomBuildSystem/UILayer" node_paths=PackedStringArray("room_type_container", "info_label", "room_type_panel", "tilemap_layer", "furniture_panel", "furniture_container", "rotate_button", "complete_room_button", "door_panel", "done_doors_button")]
 z_index = 10
 layout_mode = 3
 anchors_preset = 15
@@ -2812,8 +2812,8 @@ furniture_panel = NodePath("MenuContainer/FurniturePanel")
 furniture_container = NodePath("MenuContainer/FurniturePanel/MarginContainer/FurnitureContainer")
 rotate_button = NodePath("MenuContainer/FurniturePanel/MarginContainer/FurnitureContainer/RotateButton")
 complete_room_button = NodePath("MenuContainer/FurniturePanel/MarginContainer/FurnitureContainer/CompleteRoomButton")
-door_button_container = NodePath("DoorButtonContainer")
-done_doors_button = NodePath("DoorButtonContainer/DonePlacingDoorsButton")
+door_panel = NodePath("MenuContainer/DoorPanel")
+done_doors_button = NodePath("MenuContainer/DoorPanel/MarginContainer/DoorContainer/DonePlacingDoorsButton")
 
 [node name="PlacementInfoLabel" type="Label" parent="RoomBuildSystem/UILayer/RoomBuildUI"]
 layout_mode = 1
@@ -2839,7 +2839,10 @@ anchor_bottom = 1.0
 offset_left = -220.0
 offset_top = -350.0
 offset_right = -10.0
-offset_bottom = -100.0
+offset_bottom = -80.0
+grow_vertical = 0
+theme_override_constants/separation = 8
+alignment = 2
 
 [node name="FurniturePanel" type="PanelContainer" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer"]
 visible = false
@@ -2881,19 +2884,18 @@ theme_override_constants/margin_bottom = 20
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="DoorButtonContainer" type="CenterContainer" parent="RoomBuildSystem/UILayer/RoomBuildUI"]
+[node name="DoorPanel" type="PanelContainer" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer"]
 visible = false
-layout_mode = 0
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -220.0
-offset_top = -150.0
-offset_right = -10.0
-offset_bottom = -100.0
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
 
-[node name="DonePlacingDoorsButton" type="Button" parent="RoomBuildSystem/UILayer/RoomBuildUI/DoorButtonContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer/DoorPanel"]
+layout_mode = 2
+
+[node name="DoorContainer" type="VBoxContainer" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer/DoorPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="DonePlacingDoorsButton" type="Button" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer/DoorPanel/MarginContainer/DoorContainer"]
 custom_minimum_size = Vector2(180, 40)
 layout_mode = 2
 text = "Done Placing Doors"

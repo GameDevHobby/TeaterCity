@@ -21,7 +21,7 @@ signal complete_pressed
 @export var complete_room_button: Button
 
 @export_group("Door Placement")
-@export var door_button_container: CenterContainer
+@export var door_panel: PanelContainer
 @export var done_doors_button: Button
 
 @export_group("Selection Box Colors")
@@ -131,8 +131,8 @@ func show_door_instructions(room: RoomInstance, room_type: RoomTypeResource) -> 
 	_current_room = room
 	_current_room_type = room_type
 	info_label.text = "Click on walls to place doors"
-	if door_button_container:
-		door_button_container.show()
+	if door_panel:
+		door_panel.show()
 	queue_redraw()
 
 func show_validation_errors(errors: Array[String]) -> void:
@@ -388,6 +388,15 @@ func _setup_ui_styles() -> void:
 	if done_doors_button:
 		_apply_button_style(done_doors_button)
 
+	if door_panel:
+		var door_style = StyleBoxFlat.new()
+		door_style.bg_color = Color(0.15, 0.12, 0.18, 0.95)
+		door_style.border_color = Color(0.4, 0.35, 0.3, 1.0)
+		door_style.set_border_width_all(2)
+		door_style.set_corner_radius_all(4)
+		door_style.set_content_margin_all(10)
+		door_panel.add_theme_stylebox_override("panel", door_style)
+
 	if furniture_panel:
 		var style = StyleBoxFlat.new()
 		style.bg_color = Color(0.15, 0.12, 0.18, 0.95)
@@ -443,8 +452,8 @@ func _apply_button_style(button: Button, base_color: Color = Color(0.25, 0.22, 0
 
 func _on_done_doors_pressed() -> void:
 	_door_placement_active = false
-	if door_button_container:
-		door_button_container.hide()
+	if door_panel:
+		door_panel.hide()
 	queue_redraw()
 	doors_done.emit()
 
@@ -562,8 +571,8 @@ func end_all_modes() -> void:
 	_current_room = null
 	_current_room_type = null
 	_selected_furniture = null
-	if door_button_container:
-		door_button_container.hide()
+	if door_panel:
+		door_panel.hide()
 	if furniture_panel:
 		furniture_panel.hide()
 	queue_redraw()
