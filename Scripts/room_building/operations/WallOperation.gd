@@ -4,6 +4,7 @@ extends RefCounted
 # Terrain configuration for auto-tiling
 const TERRAIN_SET := 0  # Terrain set index in wall-tileset.tres
 const TERRAIN_INDEX := 0  # Terrain index (wall type) within the set
+const WALL_SOURCE_ID := 1  # "Classic Walls" source - only update tiles from this source
 
 # UI coordinate system constants (must match RoomBuildUI)
 const HALF_WIDTH := 32.0
@@ -59,6 +60,33 @@ func create_wall_visuals(room: RoomInstance, tilemap_layer: TileMapLayer) -> voi
 			var tilemap_pos = _ui_to_tilemap_coords(wall_pos, tilemap_layer)
 			wall_tilemap_positions.append(tilemap_pos)
 
-	# Place all walls using terrain auto-tiling
-	if wall_tilemap_positions.size() > 0:
-		tilemap_layer.set_cells_terrain_connect(wall_tilemap_positions, TERRAIN_SET, TERRAIN_INDEX)
+	# Also include existing neighboring wall tiles so they update their connections
+	var all_positions_to_update = wall_tilemap_positions.duplicate()
+	_add_existing_wall_neighbors(wall_tilemap_positions, tilemap_layer, all_positions_to_update)
+
+	# Erase existing tiles first, then place with terrain auto-tiling
+	if all_positions_to_update.size() > 0:
+		# Erase all affected tiles first to force terrain re-evaluation
+		for pos in all_positions_to_update:
+			tilemap_layer.erase_cell(pos)
+		# Then place with terrain connect
+		tilemap_layer.set_cells_terrain_connect(all_positions_to_update, TERRAIN_SET, TERRAIN_INDEX)
+
+
+func _add_existing_wall_neighbors(positions: Array[Vector2i], tilemap_layer: TileMapLayer, result: Array[Vector2i]) -> void:
+	# Use simple orthogonal offsets for tilemap coordinates (all 8 directions)
+	var neighbor_offsets = [
+		Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1),
+		Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(1, 1)
+	]
+
+	for pos in positions:
+		for offset in neighbor_offsets:
+			var neighbor_pos = pos + offset
+			# Skip if already in our list
+			if neighbor_pos in result:
+				continue
+			# Check if this neighbor has an existing terrain tile (wall from another room)
+			var tile_data = tilemap_layer.get_cell_tile_data(neighbor_pos)
+			if tile_data and tile_data.get_terrain_set() == TERRAIN_SET:
+				result.append(neighbor_pos)
