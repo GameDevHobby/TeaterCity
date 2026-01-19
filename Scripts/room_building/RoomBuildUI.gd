@@ -369,14 +369,20 @@ func _draw_furniture_placement_hints() -> void:
 			if current_rotation == 1 or current_rotation == 3:
 				furn_size = Vector2i(furn_size.y, furn_size.x)
 
+			# Get camera zoom scale from canvas transform
+			var canvas_transform = get_viewport().get_canvas_transform()
+			var zoom_scale = canvas_transform.get_scale()
+
 			# In the placeholder texture, tile (0,0)'s top point is at x = furn_size.y * HALF_WIDTH, y = 0
 			# With centered=false, sprite position is top-left corner
 			# We want tile (0,0)'s top to align with the screen position of hover_pos
 			var tile_00_x = furn_size.y * HALF_WIDTH
 
 			# Position sprite's top-left so tile (0,0) top aligns with hover_pos
+			# Account for zoom: offset must be scaled
 			var base_pos = _tile_to_screen(hover_pos)
-			_preview_sprite.position = base_pos - Vector2(tile_00_x, 0)
+			_preview_sprite.position = base_pos - Vector2(tile_00_x * zoom_scale.x, 0)
+			_preview_sprite.scale = zoom_scale
 			_preview_sprite.modulate = Color(1, 1, 1, 0.7)
 			_preview_sprite.show()
 	else:

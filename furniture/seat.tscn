@@ -1,12 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://c7p4fnk2mbxu2"]
 
-[ext_resource type="Script" path="res://furniture/furniture_base.gd" id="1_base"]
+[ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://furniture/furniture_base.gd" id="1_base"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_seat"]
 size = Vector2(32, 16)
 
 [node name="Seat" type="StaticBody2D"]
-collision_layer = 1
 collision_mask = 0
 script = ExtResource("1_base")
 
@@ -14,3 +13,6 @@ script = ExtResource("1_base")
 shape = SubResource("RectangleShape2D_seat")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 1
+
+[node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]

@@ -31,16 +31,16 @@ func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_
 		_create_placeholder_texture(sprite, furn, placement.rotation)
 
 	# Position using isometric conversion - center multi-tile furniture
-	var center_offset = Vector2i.ZERO
+	var center_offset = Vector2.ZERO
 	if furn:
 		var size = furn.size
 		# Handle rotation - swap dimensions for 90/270 degree rotations
 		if placement.rotation == 1 or placement.rotation == 3:
 			size = Vector2i(size.y, size.x)
-		# Calculate center of footprint
-		center_offset = Vector2i(size.x / 2, size.y / 2)
+		# Calculate center of footprint (use float for proper centering)
+		center_offset = Vector2(float(size.x) / 2.0, float(size.y) / 2.0)
 
-	sprite.position = _tile_to_world(placement.position + center_offset)
+	sprite.position = _tile_to_world_float(Vector2(placement.position) + center_offset)
 
 	parent_node.add_child(sprite)
 	return sprite
@@ -59,8 +59,8 @@ func _setup_furniture_instance(instance: Node, placement: RoomInstance.Furniture
 		var size = furn.size if furn else Vector2i(1, 1)
 		if placement.rotation == 1 or placement.rotation == 3:
 			size = Vector2i(size.y, size.x)
-		var center_offset = Vector2i(size.x / 2, size.y / 2)
-		instance.position = _tile_to_world(placement.position + center_offset)
+		var center_offset = Vector2(float(size.x) / 2.0, float(size.y) / 2.0)
+		instance.position = _tile_to_world_float(Vector2(placement.position) + center_offset)
 
 	parent_node.add_child(instance)
 	return instance
@@ -144,6 +144,12 @@ func _get_furniture_color(furniture_id: String) -> Color:
 			return Color(0.5, 0.5, 0.5, 0.8)  # Default gray
 
 func _tile_to_world(tile_pos: Vector2i) -> Vector2:
+	return Vector2(
+		(tile_pos.x - tile_pos.y) * HALF_WIDTH,
+		(tile_pos.x + tile_pos.y) * HALF_HEIGHT + HALF_HEIGHT
+	)
+
+func _tile_to_world_float(tile_pos: Vector2) -> Vector2:
 	return Vector2(
 		(tile_pos.x - tile_pos.y) * HALF_WIDTH,
 		(tile_pos.x + tile_pos.y) * HALF_HEIGHT + HALF_HEIGHT

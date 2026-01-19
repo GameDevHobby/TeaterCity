@@ -25,7 +25,6 @@ func get_grid_footprint() -> Array[Vector2i]:
 ## Rotation: 0=north, 1=east, 2=south, 3=west
 func get_rotated_access_tiles(rotation: int) -> Array[Vector2i]:
 	var tiles: Array[Vector2i] = []
-	var footprint = get_grid_footprint()
 
 	# Handle rotation - swap dimensions for 90/270 degree rotations
 	var rotated_size = size
