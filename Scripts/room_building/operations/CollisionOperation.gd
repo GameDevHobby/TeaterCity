@@ -4,11 +4,16 @@ extends RefCounted
 class CollisionResult:
 	var can_place: bool = true
 	var blocked_tiles: Array[Vector2i] = []
+	var blocked_access_tiles: Array[Vector2i] = []
 
 class PreviewResult:
 	var tiles: Array[Vector2i] = []
 	var valid_tiles: Array[Vector2i] = []
 	var blocked_tiles: Array[Vector2i] = []
+	# Access tile information
+	var access_tiles: Array[Vector2i] = []
+	var valid_access_tiles: Array[Vector2i] = []
+	var blocked_access_tiles: Array[Vector2i] = []
 
 func can_place_furniture(furniture: FurnitureResource, position: Vector2i,
 						rotation: int, room: RoomInstance) -> CollisionResult:
@@ -19,6 +24,13 @@ func can_place_furniture(furniture: FurnitureResource, position: Vector2i,
 		if not _is_tile_valid(tile, room):
 			result.can_place = false
 			result.blocked_tiles.append(tile)
+
+	# Check access tiles
+	var access_tiles = _get_access_tiles(furniture, position, rotation)
+	for tile in access_tiles:
+		if not _is_access_tile_valid(tile, room, tiles):
+			result.can_place = false
+			result.blocked_access_tiles.append(tile)
 
 	return result
 
@@ -32,6 +44,14 @@ func get_placement_preview(furniture: FurnitureResource, position: Vector2i,
 			result.valid_tiles.append(tile)
 		else:
 			result.blocked_tiles.append(tile)
+
+	# Get access tiles
+	result.access_tiles = _get_access_tiles(furniture, position, rotation)
+	for tile in result.access_tiles:
+		if _is_access_tile_valid(tile, room, result.tiles):
+			result.valid_access_tiles.append(tile)
+		else:
+			result.blocked_access_tiles.append(tile)
 
 	return result
 
@@ -67,6 +87,43 @@ func _is_tile_valid(pos: Vector2i, room: RoomInstance) -> bool:
 		return false
 
 	if room.is_tile_occupied(pos):
+		return false
+
+	return true
+
+func _get_access_tiles(furniture: FurnitureResource, position: Vector2i, rotation: int) -> Array[Vector2i]:
+	var tiles: Array[Vector2i] = []
+	if not furniture:
+		return tiles
+
+	# Get rotated access tiles from the furniture resource and apply position offset
+	var rotated_offsets = furniture.get_rotated_access_tiles(rotation)
+	for offset in rotated_offsets:
+		tiles.append(position + offset)
+
+	return tiles
+
+## Check if an access tile position is valid
+## Access tiles must be: in bounds, not a wall, not occupied by other furniture
+## (but can overlap with the furniture's own footprint)
+func _is_access_tile_valid(pos: Vector2i, room: RoomInstance, footprint_tiles: Array[Vector2i]) -> bool:
+	if not room:
+		return false
+
+	# Must be within room bounds
+	var bbox = room.bounding_box
+	var in_bounds = pos.x >= bbox.position.x and pos.x < bbox.position.x + bbox.size.x
+	in_bounds = in_bounds and pos.y >= bbox.position.y and pos.y < bbox.position.y + bbox.size.y
+
+	if not in_bounds:
+		return false
+
+	# Must not be on a wall
+	if pos in room.walls:
+		return false
+
+	# Must not be occupied by OTHER furniture (not counting this furniture's footprint)
+	if pos not in footprint_tiles and room.is_tile_occupied(pos):
 		return false
 
 	return true

@@ -44,6 +44,17 @@ class FurniturePlacement:
 				tiles.append(position + Vector2i(x, y))
 		return tiles
 
+	func get_access_tiles() -> Array[Vector2i]:
+		var tiles: Array[Vector2i] = []
+		if not furniture:
+			return tiles
+
+		# Get rotated access tiles and apply position offset
+		var rotated_offsets = furniture.get_rotated_access_tiles(rotation)
+		for offset in rotated_offsets:
+			tiles.append(position + offset)
+		return tiles
+
 func _init(new_id: String, new_type_id: String):
 	id = new_id
 	room_type_id = new_type_id
@@ -74,12 +85,18 @@ func is_tile_occupied(pos: Vector2i) -> bool:
 	for furn in furniture:
 		if pos in furn.get_occupied_tiles():
 			return true
+		# Also check access tiles - they need to stay clear
+		if pos in furn.get_access_tiles():
+			return true
 	return false
 
 func get_all_occupied_tiles() -> Array[Vector2i]:
 	var tiles: Array[Vector2i] = []
 	for furn in furniture:
 		for tile in furn.get_occupied_tiles():
+			if tile not in tiles:
+				tiles.append(tile)
+		for tile in furn.get_access_tiles():
 			if tile not in tiles:
 				tiles.append(tile)
 	return tiles

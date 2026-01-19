@@ -9,4 +9,6 @@ name = "Speaker"
 cost = 25
 monthly_upkeep = 1
 description = "Audio speaker"
+scene_path = "res://furniture/speaker.tscn"
+access_offsets = Array[Vector2i]([])
 metadata/_custom_type_script = "uid://bd7777akkjjay"

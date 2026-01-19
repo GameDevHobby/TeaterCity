@@ -4,3 +4,5 @@
 .vs/
 *.tmp
 nul
+*.apk
+TheaterCity.apk.idsig

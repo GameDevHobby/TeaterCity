@@ -40,6 +40,8 @@ signal complete_pressed
 @export var furniture_valid_area_color: Color = Color(0.2, 0.6, 1.0, 0.15)
 @export var furniture_placed_color: Color = Color(0.6, 0.4, 0.2, 0.6)
 @export var furniture_ghost_color: Color = Color(0.6, 0.4, 0.2, 0.4)
+@export var access_tile_color: Color = Color(0.2, 0.8, 0.2, 0.3)
+@export var blocked_access_color: Color = Color(0.8, 0.2, 0.2, 0.3)
 
 var _box_start: Vector2i
 var _box_end: Vector2i
@@ -54,6 +56,10 @@ var _current_room_type: RoomTypeResource
 # Furniture placement
 var _selected_furniture: FurnitureResource
 var current_rotation: int = 0
+var _preview_sprite: Sprite2D
+var _furniture_operation: FurnitureOperation
+var _collision_operation: CollisionOperation
+var _preview_textures: Dictionary = {}  # Cache for generated preview textures
 
 # UI references (assigned via @export from scene)
 
@@ -62,6 +68,9 @@ func _ready() -> void:
 	_create_room_type_buttons()
 	_setup_ui_styles()
 	_connect_ui_signals()
+	_furniture_operation = FurnitureOperation.new()
+	_collision_operation = CollisionOperation.new()
+	_setup_preview_sprite()
 
 func show_all() -> void:
 	show()
@@ -322,22 +331,57 @@ func _draw_furniture_placement_hints() -> void:
 			if pos not in _current_room.walls:
 				_draw_tile_highlight(pos, furniture_valid_area_color)
 
-	# Draw placed furniture (showing all occupied tiles)
+	# Draw placed furniture (showing footprint and access tiles)
 	for furn in _current_room.furniture:
+		# Draw access tiles first (lighter color)
+		for tile in furn.get_access_tiles():
+			_draw_tile_highlight(tile, access_tile_color)
+		# Draw footprint tiles on top
 		for tile in furn.get_occupied_tiles():
 			_draw_tile_highlight(tile, furniture_placed_color)
 
-	# Draw ghost at cursor if furniture selected (showing full footprint)
+	# Draw ghost at cursor if furniture selected (showing full footprint and access tiles)
 	if _selected_furniture:
 		var hover_pos = _current_mouse_pos
-		var ghost_tiles = _get_furniture_footprint(hover_pos, _selected_furniture, current_rotation)
 
-		# Draw ghost tiles
-		for tile in ghost_tiles:
-			if _is_tile_valid_for_furniture(tile):
-				_draw_tile_highlight(tile, furniture_ghost_color)
-			else:
-				_draw_tile_highlight(tile, Color(1.0, 0.2, 0.2, 0.5))  # Red for blocked
+		# Use CollisionOperation to get preview including access tiles
+		var preview = _collision_operation.get_placement_preview(
+			_selected_furniture, hover_pos, current_rotation, _current_room
+		)
+
+		# Draw access tiles first (so furniture tiles draw on top)
+		for tile in preview.valid_access_tiles:
+			_draw_tile_highlight(tile, access_tile_color)
+		for tile in preview.blocked_access_tiles:
+			_draw_tile_highlight(tile, blocked_access_color)
+
+		# Draw footprint ghost tiles
+		for tile in preview.valid_tiles:
+			_draw_tile_highlight(tile, furniture_ghost_color)
+		for tile in preview.blocked_tiles:
+			_draw_tile_highlight(tile, Color(1.0, 0.2, 0.2, 0.5))  # Red for blocked
+
+		# Position and show preview sprite at cursor
+		# The generated placeholder texture has tile (0,0) at a specific position in the image
+		# We need to offset the sprite so tile (0,0) aligns with hover_pos
+		if _preview_sprite and _preview_sprite.texture:
+			var furn_size = _selected_furniture.size
+			if current_rotation == 1 or current_rotation == 3:
+				furn_size = Vector2i(furn_size.y, furn_size.x)
+
+			# In the placeholder texture, tile (0,0)'s top point is at x = furn_size.y * HALF_WIDTH, y = 0
+			# With centered=false, sprite position is top-left corner
+			# We want tile (0,0)'s top to align with the screen position of hover_pos
+			var tile_00_x = furn_size.y * HALF_WIDTH
+
+			# Position sprite's top-left so tile (0,0) top aligns with hover_pos
+			var base_pos = _tile_to_screen(hover_pos)
+			_preview_sprite.position = base_pos - Vector2(tile_00_x, 0)
+			_preview_sprite.modulate = Color(1, 1, 1, 0.7)
+			_preview_sprite.show()
+	else:
+		if _preview_sprite:
+			_preview_sprite.hide()
 
 func _get_furniture_footprint(pos: Vector2i, furniture: FurnitureResource, rot: int) -> Array[Vector2i]:
 	var tiles: Array[Vector2i] = []
@@ -422,6 +466,41 @@ func _connect_ui_signals() -> void:
 	if complete_room_button:
 		complete_room_button.pressed.connect(_on_complete_room_pressed)
 
+func _setup_preview_sprite() -> void:
+	# Create a preview sprite that will be reparented to world when needed
+	_preview_sprite = Sprite2D.new()
+	_preview_sprite.name = "FurniturePreviewSprite"
+	_preview_sprite.centered = false  # Position from top-left for easier alignment
+	_preview_sprite.hide()
+	add_child(_preview_sprite)
+
+func _update_preview_sprite() -> void:
+	if not _selected_furniture or not _preview_sprite:
+		if _preview_sprite:
+			_preview_sprite.hide()
+		return
+
+	# Try to get preview sprite from resource's preview_sprites
+	var sprite_path = _selected_furniture.get_preview_sprite_for_rotation(current_rotation)
+	if sprite_path != "" and ResourceLoader.exists(sprite_path):
+		var texture = load(sprite_path)
+		if texture:
+			_preview_sprite.texture = texture
+			_preview_sprite.show()
+			return
+
+	# Fallback: generate placeholder or use cached
+	var cache_key = _selected_furniture.id + "_" + str(current_rotation)
+	if not _preview_textures.has(cache_key):
+		var all_textures = _furniture_operation.generate_placeholder_sprites(_selected_furniture)
+		var direction_names = ["north", "east", "south", "west"]
+		for rot in range(4):
+			var key = _selected_furniture.id + "_" + str(rot)
+			_preview_textures[key] = all_textures[direction_names[rot]]
+
+	_preview_sprite.texture = _preview_textures[cache_key]
+	_preview_sprite.show()
+
 func _apply_button_style(button: Button, base_color: Color = Color(0.25, 0.22, 0.3)) -> void:
 	var style_normal = StyleBoxFlat.new()
 	style_normal.bg_color = base_color
@@ -461,6 +540,7 @@ func _on_rotate_pressed() -> void:
 	current_rotation = (current_rotation + 1) % 4
 	var degrees = current_rotation * 90
 	rotate_button.text = "Rotate (%d°)" % degrees
+	_update_preview_sprite()
 	queue_redraw()
 
 func _on_complete_room_pressed() -> void:
@@ -536,6 +616,7 @@ func _on_furniture_button_pressed(furniture: FurnitureResource) -> void:
 	furniture_selected.emit(furniture)
 	var display_name = furniture.name if furniture.name else furniture.id
 	info_label.text = "Click to place: " + display_name
+	_update_preview_sprite()
 	queue_redraw()
 
 func update_furniture_counts() -> void:
@@ -561,6 +642,8 @@ func hide_furniture_panel() -> void:
 	_selected_furniture = null
 	if furniture_panel:
 		furniture_panel.hide()
+	if _preview_sprite:
+		_preview_sprite.hide()
 	queue_redraw()
 
 func end_all_modes() -> void:
@@ -575,4 +658,6 @@ func end_all_modes() -> void:
 		door_panel.hide()
 	if furniture_panel:
 		furniture_panel.hide()
+	if _preview_sprite:
+		_preview_sprite.hide()
 	queue_redraw()

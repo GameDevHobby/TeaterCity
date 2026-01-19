@@ -9,4 +9,6 @@ name = "Mirror"
 cost = 20
 monthly_upkeep = 1
 description = "Mirror"
+scene_path = "res://furniture/mirror.tscn"
+access_offsets = Array[Vector2i]([])
 metadata/_custom_type_script = "uid://bd7777akkjjay"

@@ -9,4 +9,6 @@ name = "Sink"
 cost = 25
 monthly_upkeep = 2
 description = "Hand washing sink"
+scene_path = "res://furniture/sink.tscn"
+access_offsets = Array[Vector2i]([Vector2i(0, 1)])
 metadata/_custom_type_script = "uid://bd7777akkjjay"
