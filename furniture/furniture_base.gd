@@ -38,12 +38,46 @@ func setup_from_resource(resource: FurnitureResource, pos: Vector2i, rot: int) -
 	# Configure navigation obstacle
 	_setup_navigation_obstacle(size)
 
+func _compute_isometric_hull(size: Vector2i) -> PackedVector2Array:
+	var all_vertices: PackedVector2Array = []
+	var center_offset = Vector2(float(size.x) / 2.0, float(size.y) / 2.0)
+
+	# The sprite has an offset to align visually. We need to match that offset.
+	# The hull calculation doesn't include the +HALF_HEIGHT from _tile_to_world,
+	# but the furniture position does. This creates a HALF_HEIGHT offset.
+	var y_offset = HALF_HEIGHT
+
+	for tx in range(size.x):
+		for ty in range(size.y):
+			# Tile center relative to furniture center (in world coords)
+			var tile_x = (tx - ty) * HALF_WIDTH
+			var tile_y = (tx + ty) * HALF_HEIGHT
+			var furn_x = (center_offset.x - center_offset.y) * HALF_WIDTH
+			var furn_y = (center_offset.x + center_offset.y) * HALF_HEIGHT
+			var rel_x = tile_x - furn_x
+			var rel_y = tile_y - furn_y + y_offset
+
+			# 4 diamond vertices for this tile
+			all_vertices.append(Vector2(rel_x, rel_y - HALF_HEIGHT))  # Top
+			all_vertices.append(Vector2(rel_x + HALF_WIDTH, rel_y))   # Right
+			all_vertices.append(Vector2(rel_x, rel_y + HALF_HEIGHT))  # Bottom
+			all_vertices.append(Vector2(rel_x - HALF_WIDTH, rel_y))   # Left
+
+	var hull = Geometry2D.convex_hull(all_vertices)
+	# Remove duplicate closing vertex if present
+	if hull.size() > 1 and hull[0] == hull[hull.size() - 1]:
+		hull.remove_at(hull.size() - 1)
+	return hull
+
+
 func _setup_collision_shape(size: Vector2i) -> void:
 	var collision_shape = get_node_or_null("CollisionShape2D")
-	if collision_shape and collision_shape.shape is RectangleShape2D:
-		var rect_shape = collision_shape.shape as RectangleShape2D
-		# Size based on isometric tile footprint
-		rect_shape.size = Vector2(size.x * HALF_WIDTH, size.y * HALF_HEIGHT)
+	if not collision_shape:
+		return
+	var hull_vertices = _compute_isometric_hull(size)
+	var polygon_shape = ConvexPolygonShape2D.new()
+	polygon_shape.points = hull_vertices
+	collision_shape.shape = polygon_shape
 
 func _setup_sprite(resource: FurnitureResource, size: Vector2i) -> void:
 	var sprite = get_node_or_null("Sprite2D") as Sprite2D
@@ -87,21 +121,18 @@ func _setup_navigation_obstacle(size: Vector2i) -> void:
 	obstacle.avoidance_enabled = true
 	obstacle.affect_navigation_mesh = true
 
-	# Set radius based on furniture size (approximate circle covering the footprint)
-	# Use the larger dimension to ensure full coverage
-	var max_dim = max(size.x, size.y)
-	obstacle.radius = max_dim * HALF_WIDTH * 0.6  # Slightly smaller than full tile
+	# Use the same hull vertices as collision shape (for nav mesh baking)
+	var hull_vertices = _compute_isometric_hull(size)
+	obstacle.vertices = hull_vertices
 
-	# Set vertices for polygon-based obstacle (isometric diamond shape)
-	var vertices: PackedVector2Array = []
-	# Create diamond shape covering the footprint
-	var half_w = size.x * HALF_WIDTH * 0.5
-	var half_h = size.y * HALF_HEIGHT * 0.5
-	vertices.append(Vector2(0, -half_h - HALF_HEIGHT * 0.5))  # Top
-	vertices.append(Vector2(half_w + HALF_WIDTH * 0.5, 0))    # Right
-	vertices.append(Vector2(0, half_h + HALF_HEIGHT * 0.5))   # Bottom
-	vertices.append(Vector2(-half_w - HALF_WIDTH * 0.5, 0))   # Left
-	obstacle.vertices = vertices
+	# Compute radius as distance to furthest hull vertex (for RVO avoidance)
+	# The radius determines the circular avoidance area agents use
+	var max_radius := 0.0
+	for vertex in hull_vertices:
+		var dist = vertex.length()
+		if dist > max_radius:
+			max_radius = dist
+	obstacle.radius = max_radius
 
 func _create_isometric_placeholder(furniture_id: String, size: Vector2i) -> ImageTexture:
 	# Calculate image size to fit isometric tiles
