@@ -77,8 +77,8 @@ func zoom_this(val: float) -> void:
 		var temp_zoom: float = current_dist * zoom_rate * inverter
 		# FIXME: get rid of magic numbers,
 		# magic can be great, but only if someone can understand it ✨
-		zoom.x = clamp(zoom.x + temp_zoom * .025, 0.4, 2)
-		zoom.y = clamp(zoom.y + temp_zoom * .025, 0.4, 2)
+		zoom.x = clamp(zoom.x + temp_zoom * .025, 0.4, 4)
+		zoom.y = clamp(zoom.y + temp_zoom * .025, 0.4, 4)
 	
 func get_camera_center() -> Vector2:
 	var vtrans: Transform2D = get_canvas_transform()

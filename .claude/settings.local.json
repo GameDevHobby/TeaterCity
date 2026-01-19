@@ -32,7 +32,10 @@
       "Bash(grep:*)",
       "Bash(findstr:*)",
       "Bash(find:*)",
-      "mcp__gdai-mcp__search_files"
+      "mcp__gdai-mcp__search_files",
+      "Skill(gdscript-toolkit:godot-doc-search)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs"
     ]
   }
 }

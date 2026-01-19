@@ -87,7 +87,7 @@ func _create_room_type_buttons() -> void:
 		var button = Button.new()
 		button.text = room_type.display_name
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.custom_minimum_size = Vector2(160, 32)
+		button.custom_minimum_size = Vector2(200, 48)
 
 		# Style the button for pixel art look
 		var style_normal = StyleBoxFlat.new()
@@ -536,6 +536,13 @@ func _apply_button_style(button: Button, base_color: Color = Color(0.25, 0.22, 0
 	button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.9, 1.0))
 
 func _on_done_doors_pressed() -> void:
+	# Validate minimum door count
+	if _current_room and _current_room_type:
+		var min_doors = _current_room_type.door_count_min
+		if _current_room.doors.size() < min_doors:
+			info_label.text = "Need at least %d door(s). Currently: %d" % [min_doors, _current_room.doors.size()]
+			return
+
 	_door_placement_active = false
 	if door_panel:
 		door_panel.hide()
@@ -596,7 +603,7 @@ func _populate_furniture_buttons(room_type: RoomTypeResource) -> void:
 
 		var btn = Button.new()
 		btn.text = "%s (%d/%d)" % [display_name, actual_count, req.count]
-		btn.custom_minimum_size = Vector2(160, 32)
+		btn.custom_minimum_size = Vector2(200, 48)
 		btn.set_meta("furniture", req.furniture)
 		btn.set_meta("required_count", req.count)
 		_apply_button_style(btn, Color(0.4, 0.25, 0.2))  # Reddish for required
@@ -611,7 +618,7 @@ func _populate_furniture_buttons(room_type: RoomTypeResource) -> void:
 
 		var btn = Button.new()
 		btn.text = display_name
-		btn.custom_minimum_size = Vector2(160, 32)
+		btn.custom_minimum_size = Vector2(200, 48)
 		btn.set_meta("furniture", furn)
 		_apply_button_style(btn)
 		btn.pressed.connect(_on_furniture_button_pressed.bind(furn))

@@ -1249,6 +1249,8 @@ script = ExtResource("1_trn2v")
 position = Vector2(554, 347)
 script = ExtResource("4_cm0pq")
 invert_touch_zoom = true
+min_zoom_factor = 1.5
+max_zoom_factor = 4.0
 metadata/_custom_type_script = "uid://x2p4qlvmvt8j"
 
 [node name="RoomBuildSystem" type="Node2D" parent="."]
@@ -1303,17 +1305,17 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -220.0
-offset_top = -350.0
+offset_left = -280.0
+offset_top = -410.0
 offset_right = -10.0
-offset_bottom = -80.0
+offset_bottom = -140.0
 grow_vertical = 0
 theme_override_constants/separation = 8
 alignment = 2
 
 [node name="FurniturePanel" type="PanelContainer" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer"]
 visible = false
-custom_minimum_size = Vector2(200, 0)
+custom_minimum_size = Vector2(260, 0)
 layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer/FurniturePanel"]
@@ -1327,12 +1329,12 @@ layout_mode = 2
 text = "Furniture"
 
 [node name="RotateButton" type="Button" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer/FurniturePanel/MarginContainer/FurnitureContainer"]
-custom_minimum_size = Vector2(160, 32)
+custom_minimum_size = Vector2(200, 48)
 layout_mode = 2
 text = "Rotate (0°)"
 
 [node name="CompleteRoomButton" type="Button" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer/FurniturePanel/MarginContainer/FurnitureContainer"]
-custom_minimum_size = Vector2(160, 36)
+custom_minimum_size = Vector2(200, 48)
 layout_mode = 2
 text = "Complete Room"
 
@@ -1353,7 +1355,7 @@ theme_override_constants/separation = 8
 
 [node name="DoorPanel" type="PanelContainer" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer"]
 visible = false
-custom_minimum_size = Vector2(200, 0)
+custom_minimum_size = Vector2(260, 0)
 layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer/DoorPanel"]
@@ -1363,7 +1365,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="DonePlacingDoorsButton" type="Button" parent="RoomBuildSystem/UILayer/RoomBuildUI/MenuContainer/DoorPanel/MarginContainer/DoorContainer"]
-custom_minimum_size = Vector2(180, 40)
+custom_minimum_size = Vector2(220, 52)
 layout_mode = 2
 text = "Done Placing Doors"
 
@@ -1414,16 +1416,16 @@ position = Vector2(327, 527)
 
 [node name="BuildButton" type="Button" parent="MainUILayer"]
 z_index = 10
-custom_minimum_size = Vector2(50, 50)
+custom_minimum_size = Vector2(80, 80)
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -70.0
-offset_top = -70.0
-offset_right = -20.0
-offset_bottom = -20.0
+offset_left = -128.0
+offset_top = -128.0
+offset_right = -48.0
+offset_bottom = -48.0
 grow_horizontal = 0
 grow_vertical = 0
 size_flags_horizontal = 8
