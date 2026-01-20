@@ -1,14 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1t5oak3m7pqr"]
+[gd_scene load_steps=4 format=3 uid="uid://d1t5oak3m7pqr"]
 
 [ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
+[ext_resource type="Resource" uid="uid://tqretlphsglr" path="res://data/furniture/toilet.tres" id="2_rutx3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_toilet"]
 size = Vector2(32, 16)
 
 [node name="Toilet" type="StaticBody2D"]
-collision_layer = 1
 collision_mask = 0
 script = ExtResource("1_base")
+furniture_resource = ExtResource("2_rutx3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_toilet")
@@ -16,4 +17,3 @@ shape = SubResource("RectangleShape2D_toilet")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]
-avoidance_enabled = true

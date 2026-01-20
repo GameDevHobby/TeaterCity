@@ -947,8 +947,7 @@ radius = 1.6666718
 [node name="Patron" type="CharacterBody2D" node_paths=PackedStringArray("nav_agent", "animated_sprite")]
 y_sort_enabled = true
 scale = Vector2(3, 3)
-collision_layer = 3
-collision_mask = 3
+collision_layer = 2
 safe_margin = 2.0
 script = ExtResource("1_44a8u")
 nav_agent = NodePath("NavigationAgent2D")

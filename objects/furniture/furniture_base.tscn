@@ -16,3 +16,5 @@ shape = SubResource("RectangleShape2D_base")
 z_index = 1
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]
+affect_navigation_mesh = true
+carve_navigation_mesh = true

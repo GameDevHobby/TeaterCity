@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7p4fnk2mbxu2"]
+[gd_scene load_steps=4 format=3 uid="uid://c7p4fnk2mbxu2"]
 
 [ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
+[ext_resource type="Resource" uid="uid://ckxyupkkjmytt" path="res://data/furniture/seat.tres" id="2_u2hlp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_seat"]
 size = Vector2(32, 16)
@@ -8,6 +9,7 @@ size = Vector2(32, 16)
 [node name="Seat" type="StaticBody2D"]
 collision_mask = 0
 script = ExtResource("1_base")
+furniture_resource = ExtResource("2_u2hlp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_seat")

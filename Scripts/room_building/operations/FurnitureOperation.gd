@@ -5,6 +5,10 @@ func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_
 	var furn = placement.furniture
 	var furniture_id = furn.id if furn else "unknown"
 
+	# Clear tiles from tilemap where furniture is placed (removes navigation mesh)
+	if tilemap_layer:
+		_clear_furniture_tiles(placement, tilemap_layer)
+
 	# Try to use scene-based furniture if scene is assigned
 	if furn and furn.scene:
 		return _setup_furniture_instance(furn.scene.instantiate(), placement, parent_node, tilemap_layer)
@@ -119,3 +123,9 @@ func _get_furniture_color(furniture_id: String) -> Color:
 			return Color(0.7, 0.7, 0.8, 0.8)  # Light gray
 		_:
 			return Color(0.5, 0.5, 0.5, 0.8)  # Default gray
+
+## Clear tiles from tilemap where furniture occupies (removes navigation mesh from those tiles)
+func _clear_furniture_tiles(placement: RoomInstance.FurniturePlacement, tilemap_layer: TileMapLayer) -> void:
+	var occupied_tiles = placement.get_occupied_tiles()
+	for tile in occupied_tiles:
+		tilemap_layer.erase_cell(tile)
