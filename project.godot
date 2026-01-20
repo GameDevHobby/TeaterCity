@@ -18,7 +18,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Targets="*res://targets.gd"
+Targets="*res://scripts/Targets.gd"
 GDAIMCPRuntime="*res://addons/gdai-mcp-plugin-godot/gdai_mcp_runtime.gd"
 
 [display]

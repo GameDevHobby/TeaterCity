@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="RoomTypeResource" load_steps=5 format=3 uid="uid://bhm2df7lu1gj1"]
+
+[ext_resource type="Script" uid="uid://cr7lym51nwuu5" path="res://scripts/data/RoomTypeResource.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://diqo1l4y8ovpi" path="res://data/furniture/seating_bench.tres" id="2_bench"]
+[ext_resource type="Script" uid="uid://ceg8hjdbx4y02" path="res://scripts/data/FurnitureRequirement.gd" id="3_furn_req"]
+
+[sub_resource type="Resource" id="req_bench"]
+script = ExtResource("3_furn_req")
+furniture = ExtResource("2_bench")
+count = 1
+
+[resource]
+script = ExtResource("1_script")
+id = "lobby"
+display_name = "Lobby"
+description = "Waiting area"
+min_size = Vector2i(4, 4)
+max_size = Vector2i(12, 12)
+base_cost = 250
+allowed_furniture = Array[FurnitureResource]([ExtResource("2_bench")])
+required_furniture = Array[FurnitureRequirement]([SubResource("req_bench")])
+metadata/_custom_type_script = "uid://cr7lym51nwuu5"

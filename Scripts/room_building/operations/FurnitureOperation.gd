@@ -1,11 +1,6 @@
 class_name FurnitureOperation
 extends RefCounted
 
-const TILE_WIDTH := 64.0
-const TILE_HEIGHT := 32.0
-const HALF_WIDTH := TILE_WIDTH / 2.0
-const HALF_HEIGHT := TILE_HEIGHT / 2.0
-
 func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_node: Node2D) -> Node2D:
 	var furn = placement.furniture
 	var furniture_id = furn.id if furn else "unknown"
@@ -33,14 +28,9 @@ func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_
 	# Position using isometric conversion - center multi-tile furniture
 	var center_offset = Vector2.ZERO
 	if furn:
-		var size = furn.size
-		# Handle rotation - swap dimensions for 90/270 degree rotations
-		if placement.rotation == 1 or placement.rotation == 3:
-			size = Vector2i(size.y, size.x)
-		# Calculate center of footprint (use float for proper centering)
-		center_offset = Vector2(float(size.x) / 2.0, float(size.y) / 2.0)
+		center_offset = RotationHelper.get_center_offset(furn.size, placement.rotation)
 
-	sprite.position = _tile_to_world_float(Vector2(placement.position) + center_offset)
+	sprite.position = IsometricMath.tile_to_world_float(Vector2(placement.position) + center_offset)
 
 	parent_node.add_child(sprite)
 	return sprite
@@ -57,10 +47,8 @@ func _setup_furniture_instance(instance: Node, placement: RoomInstance.Furniture
 	else:
 		# Fallback positioning for non-FurnitureBase scenes
 		var size = furn.size if furn else Vector2i(1, 1)
-		if placement.rotation == 1 or placement.rotation == 3:
-			size = Vector2i(size.y, size.x)
-		var center_offset = Vector2(float(size.x) / 2.0, float(size.y) / 2.0)
-		instance.position = _tile_to_world_float(Vector2(placement.position) + center_offset)
+		var center_offset = RotationHelper.get_center_offset(size, placement.rotation)
+		instance.position = IsometricMath.tile_to_world_float(Vector2(placement.position) + center_offset)
 
 	parent_node.add_child(instance)
 	return instance
@@ -69,10 +57,7 @@ func _create_placeholder_texture(sprite: Sprite2D, furn: FurnitureResource, rota
 	# Create isometric placeholder with diamond-shaped tiles
 	var size = Vector2i(1, 1)
 	if furn:
-		size = furn.size
-		# Handle rotation - swap dimensions for 90/270 degree rotations
-		if rotation == 1 or rotation == 3:
-			size = Vector2i(size.y, size.x)
+		size = RotationHelper.get_rotated_size(furn.size, rotation)
 
 	var texture = _create_isometric_placeholder(furn, size)
 	sprite.texture = texture
@@ -83,9 +68,7 @@ func generate_placeholder_sprites(furniture: FurnitureResource) -> Dictionary:
 	var direction_names = ["north", "east", "south", "west"]
 
 	for rot in range(4):
-		var size = furniture.size
-		if rot == 1 or rot == 3:
-			size = Vector2i(size.y, size.x)
+		var size = RotationHelper.get_rotated_size(furniture.size, rot)
 		var texture = _create_isometric_placeholder(furniture, size)
 		sprites[direction_names[rot]] = texture
 
@@ -93,10 +76,8 @@ func generate_placeholder_sprites(furniture: FurnitureResource) -> Dictionary:
 
 func _create_isometric_placeholder(furn: FurnitureResource, size: Vector2i) -> ImageTexture:
 	# Calculate image size to fit isometric tiles
-	# Each tile is 64x32, but they overlap in isometric layout
-	var img_width = int((size.x + size.y) * HALF_WIDTH)
-	var img_height = int((size.x + size.y) * HALF_HEIGHT) + int(HALF_HEIGHT)
-	var img = Image.create(img_width, img_height, false, Image.FORMAT_RGBA8)
+	var img_size = IsometricMath.get_isometric_image_size(size)
+	var img = Image.create(img_size.x, img_size.y, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))  # Transparent background
 
 	var furniture_id = furn.id if furn else "unknown"
@@ -112,19 +93,19 @@ func _create_isometric_placeholder(furn: FurnitureResource, size: Vector2i) -> I
 
 func _draw_isometric_tile(img: Image, tx: int, ty: int, total_size: Vector2i, fill_color: Color, border_color: Color) -> void:
 	# Calculate center of this tile in image space
-	# Origin is at top-left of image, tiles are drawn relative to top corner
-	var center_x = (tx - ty) * HALF_WIDTH + (total_size.y) * HALF_WIDTH
-	var center_y = (tx + ty) * HALF_HEIGHT + HALF_HEIGHT
+	var center = IsometricMath.get_tile_center_in_image(tx, ty, total_size)
+	var half_h = int(IsometricMath.HALF_HEIGHT)
+	var half_w = int(IsometricMath.HALF_WIDTH)
 
 	# Draw filled diamond
-	for dy in range(-int(HALF_HEIGHT), int(HALF_HEIGHT) + 1):
-		var width_at_y = int(HALF_WIDTH * (1.0 - abs(float(dy) / HALF_HEIGHT)))
+	for dy in range(-half_h, half_h + 1):
+		var width_at_y = int(half_w * (1.0 - abs(float(dy) / half_h)))
 		for dx in range(-width_at_y, width_at_y + 1):
-			var px = int(center_x + dx)
-			var py = int(center_y + dy)
+			var px = int(center.x + dx)
+			var py = int(center.y + dy)
 			if px >= 0 and px < img.get_width() and py >= 0 and py < img.get_height():
 				# Check if on border (edge of diamond)
-				var is_border = abs(dx) >= width_at_y - 1 or abs(dy) >= int(HALF_HEIGHT) - 1
+				var is_border = abs(dx) >= width_at_y - 1 or abs(dy) >= half_h - 1
 				img.set_pixel(px, py, border_color if is_border else fill_color)
 
 func _get_furniture_color(furniture_id: String) -> Color:
@@ -142,15 +123,3 @@ func _get_furniture_color(furniture_id: String) -> Color:
 			return Color(0.7, 0.7, 0.8, 0.8)  # Light gray
 		_:
 			return Color(0.5, 0.5, 0.5, 0.8)  # Default gray
-
-func _tile_to_world(tile_pos: Vector2i) -> Vector2:
-	return Vector2(
-		(tile_pos.x - tile_pos.y) * HALF_WIDTH,
-		(tile_pos.x + tile_pos.y) * HALF_HEIGHT + HALF_HEIGHT
-	)
-
-func _tile_to_world_float(tile_pos: Vector2) -> Vector2:
-	return Vector2(
-		(tile_pos.x - tile_pos.y) * HALF_WIDTH,
-		(tile_pos.x + tile_pos.y) * HALF_HEIGHT + HALF_HEIGHT
-	)

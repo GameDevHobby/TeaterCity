@@ -57,20 +57,12 @@ func get_placement_preview(furniture: FurnitureResource, position: Vector2i,
 
 func _get_footprint_tiles(furniture: FurnitureResource, position: Vector2i,
 						 rotation: int) -> Array[Vector2i]:
-	var tiles: Array[Vector2i] = []
 	if not furniture:
+		var tiles: Array[Vector2i] = []
 		tiles.append(position)
 		return tiles
 
-	var size = furniture.size
-	# Handle rotation - swap dimensions for 90/270 degree rotations
-	if rotation == 1 or rotation == 3:
-		size = Vector2i(size.y, size.x)
-
-	for x in range(size.x):
-		for y in range(size.y):
-			tiles.append(position + Vector2i(x, y))
-	return tiles
+	return RotationHelper.get_footprint_tiles(position, furniture.size, rotation)
 
 func _is_tile_valid(pos: Vector2i, room: RoomInstance) -> bool:
 	if not room:

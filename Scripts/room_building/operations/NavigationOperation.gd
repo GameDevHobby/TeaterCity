@@ -6,26 +6,9 @@ const SOURCE_ID := 1  # "Classic Walls" source
 const WALKABLE_TILE := Vector2i(0, 1)  # Floor tile with NavigationPolygon_20pc6 (walkable)
 const WALL_TILE := Vector2i(0, 0)       # Wall tile with NavigationPolygon_03owx (blocking)
 
-# UI coordinate system constants (must match RoomBuildUI)
-const HALF_WIDTH := 32.0
-const HALF_HEIGHT := 16.0
-
-# Convert UI tile coordinates to world position (must match RoomBuildUI._tile_to_world)
-func _ui_tile_to_world(tile_pos: Vector2i) -> Vector2:
-	return Vector2(
-		(tile_pos.x - tile_pos.y) * HALF_WIDTH,
-		(tile_pos.x + tile_pos.y) * HALF_HEIGHT + HALF_HEIGHT
-	)
-
-# Convert UI tile coordinates to tilemap tile coordinates
+# Convert UI tile coordinates to tilemap tile coordinates (uses IsometricMath utility)
 func _ui_to_tilemap_coords(ui_tile: Vector2i, tilemap: TileMapLayer) -> Vector2i:
-	# Double the offset to shift tiles down-right to correct position
-	var world_pos = Vector2(
-		(ui_tile.x - ui_tile.y) * HALF_WIDTH,
-		(ui_tile.x + ui_tile.y) * HALF_HEIGHT + 2 * HALF_HEIGHT
-	)
-	var local_pos = tilemap.to_local(world_pos)
-	return tilemap.local_to_map(local_pos)
+	return IsometricMath.ui_to_tilemap_coords(ui_tile, tilemap)
 
 func update_room_navigation(room: RoomInstance, tilemap: TileMapLayer) -> void:
 	if not tilemap:

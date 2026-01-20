@@ -9,10 +9,6 @@ const DOOR_TILE := Vector2i(0, 1)  # Walkable tile (doors are passable)
 const TERRAIN_SET := 0
 const TERRAIN_INDEX := 0
 
-# UI coordinate system constants (must match RoomBuildUI)
-const HALF_WIDTH := 32.0
-const HALF_HEIGHT := 16.0
-
 func is_valid_door_position(position: Vector2i, room: RoomInstance) -> bool:
 	if position not in room.walls:
 		return false
@@ -36,22 +32,9 @@ func determine_door_direction(position: Vector2i, room: RoomInstance) -> int:
 	else:
 		return 3
 
-# Convert UI tile coordinates to world position (must match RoomBuildUI._tile_to_world)
-func _ui_tile_to_world(tile_pos: Vector2i) -> Vector2:
-	return Vector2(
-		(tile_pos.x - tile_pos.y) * HALF_WIDTH,
-		(tile_pos.x + tile_pos.y) * HALF_HEIGHT + HALF_HEIGHT
-	)
-
-# Convert UI tile coordinates to tilemap tile coordinates
+# Convert UI tile coordinates to tilemap tile coordinates (uses IsometricMath utility)
 func _ui_to_tilemap_coords(ui_tile: Vector2i, tilemap_layer: TileMapLayer) -> Vector2i:
-	# Double the offset to shift tiles down-right to correct position
-	var world_pos = Vector2(
-		(ui_tile.x - ui_tile.y) * HALF_WIDTH,
-		(ui_tile.x + ui_tile.y) * HALF_HEIGHT + 2 * HALF_HEIGHT
-	)
-	var local_pos = tilemap_layer.to_local(world_pos)
-	return tilemap_layer.local_to_map(local_pos)
+	return IsometricMath.ui_to_tilemap_coords(ui_tile, tilemap_layer)
 
 func create_door_visuals(door: RoomInstance.DoorPlacement, tilemap_layer: TileMapLayer) -> void:
 	var tilemap_pos = _ui_to_tilemap_coords(door.position, tilemap_layer)

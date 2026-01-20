@@ -5,48 +5,38 @@ signal room_completed(room: RoomInstance)
 signal state_changed(new_state: String)
 
 @export var tilemap_layer: TileMapLayer
-@export_node_path("RoomBuildUI") var ui_path: NodePath
-@onready var ui: RoomBuildUI = get_node_or_null(ui_path) if ui_path else get_node_or_null("../UILayer/RoomBuildUI")
+@export var ui: RoomBuildUI
+@export var furniture_visuals: Node2D
 
 var current_room: RoomInstance
 var current_room_type: RoomTypeResource
 var state_name: String = "idle"
 
-var wall_op = WallOperation.new()
-var door_op = DoorOperation.new()
-var validation_op = ValidationOperation.new()
-var collision_op = CollisionOperation.new()
-var furniture_op: FurnitureOperation
-var navigation_op = NavigationOperation.new()
+var _wall_op = WallOperation.new()
+var _door_op = DoorOperation.new()
+var _validation_op = ValidationOperation.new()
+var _collision_op = CollisionOperation.new()
+var _furniture_op: FurnitureOperation
+var _navigation_op = NavigationOperation.new()
 
 var _room_counter: int = 0
-var _furniture_visuals: Node2D  # Container for furniture sprites
 
 func _ready() -> void:
-	# Find UI if not set via export
-	if not ui:
-		ui = get_node_or_null("../UILayer/RoomBuildUI")
-
 	# Initialize registries
 	RoomTypeRegistry.get_instance()
 	FurnitureRegistry.get_instance()
 
 	# Initialize furniture operation
-	furniture_op = FurnitureOperation.new()
-
-	# Create container for furniture visuals
-	_furniture_visuals = Node2D.new()
-	_furniture_visuals.name = "FurnitureVisuals"
-	add_child(_furniture_visuals)
+	_furniture_op = FurnitureOperation.new()
 
 	# Connect UI signals
 	if ui:
 		ui.room_type_selected.connect(_on_room_type_selected)
 		ui.box_draw_completed.connect(finish_box_draw)
 		ui.door_placed.connect(_on_door_placed)
-		ui.doors_done.connect(_on_doors_done)
+		ui.doors_placement_completed.connect(_on_doors_done)
 		ui.furniture_placed.connect(_on_furniture_placed)
-		ui.complete_pressed.connect(_on_complete_pressed)
+		ui.complete_button_pressed.connect(_on_complete_pressed)
 	else:
 		push_warning("RoomBuildController: UI not found!")
 
@@ -100,7 +90,7 @@ func finish_box_draw(start: Vector2i, end: Vector2i) -> void:
 	# Check if this room type has walls
 	if current_room_type and current_room_type.has_walls:
 		# Generate walls and transition to door placement
-		current_room.walls = wall_op.generate_walls(box)
+		current_room.walls = _wall_op.generate_walls(box)
 		state_name = "place_doors"
 		if ui:
 			ui.show_door_instructions(current_room, current_room_type)
@@ -110,8 +100,8 @@ func finish_box_draw(start: Vector2i, end: Vector2i) -> void:
 		_transition_to_furniture_placement()
 
 func _on_door_placed(position: Vector2i) -> void:
-	if door_op.is_valid_door_position(position, current_room):
-		var direction = door_op.determine_door_direction(position, current_room)
+	if _door_op.is_valid_door_position(position, current_room):
+		var direction = _door_op.determine_door_direction(position, current_room)
 		current_room.add_door(position, direction)
 
 func _on_doors_done() -> void:
@@ -128,7 +118,7 @@ func _on_furniture_placed(furniture: FurnitureResource, position: Vector2i, rota
 		return
 
 	# Use collision operation to validate placement
-	var result = collision_op.can_place_furniture(furniture, position, rotation, current_room)
+	var result = _collision_op.can_place_furniture(furniture, position, rotation, current_room)
 	if not result.can_place:
 		return
 
@@ -140,7 +130,7 @@ func _on_furniture_placed(furniture: FurnitureResource, position: Vector2i, rota
 		ui.update_furniture_counts()
 
 func _on_complete_pressed() -> void:
-	var result = validation_op.validate_complete(current_room)
+	var result = _validation_op.validate_complete(current_room)
 
 	if not result.is_valid:
 		if ui:
@@ -149,16 +139,16 @@ func _on_complete_pressed() -> void:
 
 	# Create wall visuals (only for rooms with walls)
 	if current_room_type and current_room_type.has_walls:
-		wall_op.create_wall_visuals(current_room, tilemap_layer)
+		_wall_op.create_wall_visuals(current_room, tilemap_layer)
 		for door in current_room.doors:
-			door_op.create_door_visuals(door, tilemap_layer)
+			_door_op.create_door_visuals(door, tilemap_layer)
 
 	# Create furniture visuals
 	for furn in current_room.furniture:
-		furniture_op.create_furniture_visual(furn, _furniture_visuals)
+		_furniture_op.create_furniture_visual(furn, furniture_visuals)
 
 	# Update navigation
-	navigation_op.update_room_navigation(current_room, tilemap_layer)
+	_navigation_op.update_room_navigation(current_room, tilemap_layer)
 
 	# Notify patrons to recalculate their paths
 	Targets.notify_navigation_changed()

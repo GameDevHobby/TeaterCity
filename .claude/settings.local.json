@@ -35,7 +35,11 @@
       "mcp__gdai-mcp__search_files",
       "Skill(gdscript-toolkit:godot-doc-search)",
       "mcp__plugin_context7_context7__resolve-library-id",
-      "mcp__plugin_context7_context7__query-docs"
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(wc:*)",
+      "Bash(for f in \"C:\\\\git\\\\TheaterCity\\\\Scripts\\\\room_building\\\\RoomBuildController.gd\" \"C:\\\\git\\\\TheaterCity\\\\Scripts\\\\room_building\\\\RoomBuildUI.gd\" \"C:\\\\git\\\\TheaterCity\\\\Patron\\\\patron.gd\" \"C:\\\\git\\\\TheaterCity\\\\Scripts\\\\storage\\\\RoomInstance.gd\" \"C:\\\\git\\\\TheaterCity\\\\Scripts\\\\room_building\\\\operations\\\\WallOperation.gd\")",
+      "Bash(do wc -l \"$f\")",
+      "Bash(done)"
     ]
   }
 }

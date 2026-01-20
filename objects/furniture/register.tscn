@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://b4r7n2k8m5pqx"]
+
+[ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_register"]
+size = Vector2(32, 16)
+
+[node name="Register" type="StaticBody2D"]
+collision_mask = 0
+script = ExtResource("1_base")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_register")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 1
+
+[node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]

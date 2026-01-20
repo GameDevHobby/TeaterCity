@@ -4,10 +4,10 @@ extends Control
 signal room_type_selected(room_type_id: String)
 signal box_draw_completed(start: Vector2i, end: Vector2i)
 signal door_placed(position: Vector2i)
-signal doors_done
+signal doors_placement_completed
 signal furniture_selected(furniture: FurnitureResource)
 signal furniture_placed(furniture: FurnitureResource, position: Vector2i, rotation: int)
-signal complete_pressed
+signal complete_button_pressed
 
 @export var room_type_container: Container
 @export var info_label: Label
@@ -55,7 +55,7 @@ var _current_room_type: RoomTypeResource
 
 # Furniture placement
 var _selected_furniture: FurnitureResource
-var current_rotation: int = 0
+var _current_rotation: int = 0
 var _preview_sprite: Sprite2D
 var _furniture_operation: FurnitureOperation
 var _collision_operation: CollisionOperation
@@ -84,39 +84,7 @@ func _create_room_type_buttons() -> void:
 	var registry = RoomTypeRegistry.get_instance()
 
 	for room_type in registry.get_all_room_types():
-		var button = Button.new()
-		button.text = room_type.display_name
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.custom_minimum_size = Vector2(200, 48)
-
-		# Style the button for pixel art look
-		var style_normal = StyleBoxFlat.new()
-		style_normal.bg_color = Color(0.25, 0.22, 0.3, 1.0)
-		style_normal.border_color = Color(0.5, 0.45, 0.4, 1.0)
-		style_normal.set_border_width_all(2)
-		style_normal.set_corner_radius_all(2)
-		style_normal.set_content_margin_all(8)
-
-		var style_hover = StyleBoxFlat.new()
-		style_hover.bg_color = Color(0.35, 0.32, 0.4, 1.0)
-		style_hover.border_color = Color(0.7, 0.6, 0.5, 1.0)
-		style_hover.set_border_width_all(2)
-		style_hover.set_corner_radius_all(2)
-		style_hover.set_content_margin_all(8)
-
-		var style_pressed = StyleBoxFlat.new()
-		style_pressed.bg_color = Color(0.18, 0.15, 0.22, 1.0)
-		style_pressed.border_color = Color(0.6, 0.5, 0.4, 1.0)
-		style_pressed.set_border_width_all(2)
-		style_pressed.set_corner_radius_all(2)
-		style_pressed.set_content_margin_all(8)
-
-		button.add_theme_stylebox_override("normal", style_normal)
-		button.add_theme_stylebox_override("hover", style_hover)
-		button.add_theme_stylebox_override("pressed", style_pressed)
-		button.add_theme_color_override("font_color", Color(0.9, 0.85, 0.8, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.9, 1.0))
-
+		var button = UIStyleHelper.create_styled_button(room_type.display_name)
 		button.pressed.connect(func(): room_type_selected.emit(room_type.id))
 		room_type_container.add_child(button)
 
@@ -185,40 +153,17 @@ func _input(event: InputEvent) -> void:
 	if _furniture_placement_active and _selected_furniture:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			var tile_pos = _screen_to_tile(event.global_position)
-			furniture_placed.emit(_selected_furniture, tile_pos, current_rotation)
+			furniture_placed.emit(_selected_furniture, tile_pos, _current_rotation)
 			queue_redraw()
 		elif event is InputEventMouseMotion:
 			_current_mouse_pos = _screen_to_tile(event.global_position)
 			queue_redraw()
 
-# Tile dimensions for isometric conversion (visual size after 0.5 scale)
-const TILE_WIDTH := 64.0
-const TILE_HEIGHT := 32.0
-const HALF_WIDTH := TILE_WIDTH / 2.0
-const HALF_HEIGHT := TILE_HEIGHT / 2.0
-
 func _screen_to_tile(screen_pos: Vector2) -> Vector2i:
-	# Convert screen position to world position
-	var canvas_transform = get_viewport().get_canvas_transform()
-	var world_pos = canvas_transform.affine_inverse() * screen_pos
-	# Offset to align with tile center (adjust for tile origin)
-	world_pos.y -= HALF_HEIGHT
-	# Isometric to tile conversion
-	var tile_x = (world_pos.x / HALF_WIDTH + world_pos.y / HALF_HEIGHT) / 2.0
-	var tile_y = (world_pos.y / HALF_HEIGHT - world_pos.x / HALF_WIDTH) / 2.0
-	return Vector2i(floor(tile_x), floor(tile_y))
-
-func _tile_to_world(tile_pos: Vector2i) -> Vector2:
-	# Tile to isometric world position (top corner of tile)
-	return Vector2(
-		(tile_pos.x - tile_pos.y) * HALF_WIDTH,
-		(tile_pos.x + tile_pos.y) * HALF_HEIGHT + HALF_HEIGHT
-	)
+	return IsometricMath.screen_to_tile(screen_pos, get_viewport())
 
 func _tile_to_screen(tile_pos: Vector2i) -> Vector2:
-	var world_pos = _tile_to_world(tile_pos)
-	var canvas_transform = get_viewport().get_canvas_transform()
-	return canvas_transform * world_pos
+	return IsometricMath.tile_to_screen(tile_pos, get_viewport())
 
 func _draw() -> void:
 	# Draw box selection preview during drag
@@ -346,7 +291,7 @@ func _draw_furniture_placement_hints() -> void:
 
 		# Use CollisionOperation to get preview including access tiles
 		var preview = _collision_operation.get_placement_preview(
-			_selected_furniture, hover_pos, current_rotation, _current_room
+			_selected_furniture, hover_pos, _current_rotation, _current_room
 		)
 
 		# Draw access tiles first (so furniture tiles draw on top)
@@ -365,9 +310,7 @@ func _draw_furniture_placement_hints() -> void:
 		# The generated placeholder texture has tile (0,0) at a specific position in the image
 		# We need to offset the sprite so tile (0,0) aligns with hover_pos
 		if _preview_sprite and _preview_sprite.texture:
-			var furn_size = _selected_furniture.size
-			if current_rotation == 1 or current_rotation == 3:
-				furn_size = Vector2i(furn_size.y, furn_size.x)
+			var furn_size = RotationHelper.get_rotated_size(_selected_furniture.size, _current_rotation)
 
 			# Get camera zoom scale from canvas transform
 			var canvas_transform = get_viewport().get_canvas_transform()
@@ -376,7 +319,7 @@ func _draw_furniture_placement_hints() -> void:
 			# In the placeholder texture, tile (0,0)'s top point is at x = furn_size.y * HALF_WIDTH, y = 0
 			# With centered=false, sprite position is top-left corner
 			# We want tile (0,0)'s top to align with the screen position of hover_pos
-			var tile_00_x = furn_size.y * HALF_WIDTH
+			var tile_00_x = furn_size.y * IsometricMath.HALF_WIDTH
 
 			# Position sprite's top-left so tile (0,0) top aligns with hover_pos
 			# Account for zoom: offset must be scaled
@@ -390,20 +333,12 @@ func _draw_furniture_placement_hints() -> void:
 			_preview_sprite.hide()
 
 func _get_furniture_footprint(pos: Vector2i, furniture: FurnitureResource, rot: int) -> Array[Vector2i]:
-	var tiles: Array[Vector2i] = []
 	if not furniture:
+		var tiles: Array[Vector2i] = []
 		tiles.append(pos)
 		return tiles
 
-	var furn_size = furniture.size
-	# Handle rotation - swap dimensions for 90/270 degree rotations
-	if rot == 1 or rot == 3:
-		furn_size = Vector2i(furn_size.y, furn_size.x)
-
-	for x in range(furn_size.x):
-		for y in range(furn_size.y):
-			tiles.append(pos + Vector2i(x, y))
-	return tiles
+	return RotationHelper.get_footprint_tiles(pos, furniture.size, rot)
 
 func _is_tile_valid_for_furniture(pos: Vector2i) -> bool:
 	if not _current_room:
@@ -425,42 +360,24 @@ func _is_tile_valid_for_furniture(pos: Vector2i) -> bool:
 	return true
 
 func _draw_tile_highlight(tile_pos: Vector2i, color: Color) -> void:
-	var top = _tile_to_screen(tile_pos)
-	var right = _tile_to_screen(Vector2i(tile_pos.x + 1, tile_pos.y))
-	var bottom = _tile_to_screen(Vector2i(tile_pos.x + 1, tile_pos.y + 1))
-	var left = _tile_to_screen(Vector2i(tile_pos.x, tile_pos.y + 1))
-
-	var points = PackedVector2Array([top, right, bottom, left])
-	draw_colored_polygon(points, color)
+	RoomBuildDrawing.draw_tile_highlight(self, tile_pos, color, get_viewport())
 
 func _setup_ui_styles() -> void:
 	# Apply styles to scene nodes
 	if done_doors_button:
-		_apply_button_style(done_doors_button)
+		UIStyleHelper.apply_button_style(done_doors_button)
 
 	if door_panel:
-		var door_style = StyleBoxFlat.new()
-		door_style.bg_color = Color(0.15, 0.12, 0.18, 0.95)
-		door_style.border_color = Color(0.4, 0.35, 0.3, 1.0)
-		door_style.set_border_width_all(2)
-		door_style.set_corner_radius_all(4)
-		door_style.set_content_margin_all(10)
-		door_panel.add_theme_stylebox_override("panel", door_style)
+		UIStyleHelper.apply_panel_style(door_panel)
 
 	if furniture_panel:
-		var style = StyleBoxFlat.new()
-		style.bg_color = Color(0.15, 0.12, 0.18, 0.95)
-		style.border_color = Color(0.4, 0.35, 0.3, 1.0)
-		style.set_border_width_all(2)
-		style.set_corner_radius_all(4)
-		style.set_content_margin_all(10)
-		furniture_panel.add_theme_stylebox_override("panel", style)
+		UIStyleHelper.apply_panel_style(furniture_panel)
 
 	if rotate_button:
-		_apply_button_style(rotate_button)
+		UIStyleHelper.apply_button_style(rotate_button)
 
 	if complete_room_button:
-		_apply_button_style(complete_room_button, Color(0.2, 0.5, 0.3))
+		UIStyleHelper.apply_button_style(complete_room_button, Color(0.2, 0.5, 0.3))
 
 func _connect_ui_signals() -> void:
 	if done_doors_button:
@@ -487,7 +404,7 @@ func _update_preview_sprite() -> void:
 		return
 
 	# Try to get preview sprite from resource's preview_sprites
-	var sprite_path = _selected_furniture.get_preview_sprite_for_rotation(current_rotation)
+	var sprite_path = _selected_furniture.get_preview_sprite_for_rotation(_current_rotation)
 	if sprite_path != "" and ResourceLoader.exists(sprite_path):
 		var texture = load(sprite_path)
 		if texture:
@@ -496,7 +413,7 @@ func _update_preview_sprite() -> void:
 			return
 
 	# Fallback: generate placeholder or use cached
-	var cache_key = _selected_furniture.id + "_" + str(current_rotation)
+	var cache_key = _selected_furniture.id + "_" + str(_current_rotation)
 	if not _preview_textures.has(cache_key):
 		var all_textures = _furniture_operation.generate_placeholder_sprites(_selected_furniture)
 		var direction_names = ["north", "east", "south", "west"]
@@ -506,34 +423,6 @@ func _update_preview_sprite() -> void:
 
 	_preview_sprite.texture = _preview_textures[cache_key]
 	_preview_sprite.show()
-
-func _apply_button_style(button: Button, base_color: Color = Color(0.25, 0.22, 0.3)) -> void:
-	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = base_color
-	style_normal.border_color = Color(0.5, 0.45, 0.4, 1.0)
-	style_normal.set_border_width_all(2)
-	style_normal.set_corner_radius_all(2)
-	style_normal.set_content_margin_all(8)
-
-	var style_hover = StyleBoxFlat.new()
-	style_hover.bg_color = base_color.lightened(0.15)
-	style_hover.border_color = Color(0.7, 0.6, 0.5, 1.0)
-	style_hover.set_border_width_all(2)
-	style_hover.set_corner_radius_all(2)
-	style_hover.set_content_margin_all(8)
-
-	var style_pressed = StyleBoxFlat.new()
-	style_pressed.bg_color = base_color.darkened(0.15)
-	style_pressed.border_color = Color(0.6, 0.5, 0.4, 1.0)
-	style_pressed.set_border_width_all(2)
-	style_pressed.set_corner_radius_all(2)
-	style_pressed.set_content_margin_all(8)
-
-	button.add_theme_stylebox_override("normal", style_normal)
-	button.add_theme_stylebox_override("hover", style_hover)
-	button.add_theme_stylebox_override("pressed", style_pressed)
-	button.add_theme_color_override("font_color", Color(0.9, 0.85, 0.8, 1.0))
-	button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.9, 1.0))
 
 func _on_done_doors_pressed() -> void:
 	# Validate minimum door count
@@ -547,24 +436,24 @@ func _on_done_doors_pressed() -> void:
 	if door_panel:
 		door_panel.hide()
 	queue_redraw()
-	doors_done.emit()
+	doors_placement_completed.emit()
 
 func _on_rotate_pressed() -> void:
-	current_rotation = (current_rotation + 1) % 4
-	var degrees = current_rotation * 90
+	_current_rotation = (_current_rotation + 1) % 4
+	var degrees = _current_rotation * 90
 	rotate_button.text = "Rotate (%d°)" % degrees
 	_update_preview_sprite()
 	queue_redraw()
 
 func _on_complete_room_pressed() -> void:
-	complete_pressed.emit()
+	complete_button_pressed.emit()
 
 func show_furniture_panel(room: RoomInstance, room_type: RoomTypeResource) -> void:
 	_furniture_placement_active = true
 	_current_room = room
 	_current_room_type = room_type
 	_selected_furniture = null
-	current_rotation = 0
+	_current_rotation = 0
 	rotate_button.text = "Rotate (0°)"
 
 	info_label.text = "Select and place furniture"
@@ -601,12 +490,13 @@ func _populate_furniture_buttons(room_type: RoomTypeResource) -> void:
 		var actual_count = _current_room.get_furniture_count_by_resource(req.furniture) if _current_room else 0
 		var display_name = req.furniture.name if req.furniture.name else req.furniture.id
 
-		var btn = Button.new()
-		btn.text = "%s (%d/%d)" % [display_name, actual_count, req.count]
-		btn.custom_minimum_size = Vector2(200, 48)
+		var btn = UIStyleHelper.create_styled_button(
+			"%s (%d/%d)" % [display_name, actual_count, req.count],
+			Vector2(200, 48),
+			Color(0.4, 0.25, 0.2)  # Reddish for required
+		)
 		btn.set_meta("furniture", req.furniture)
 		btn.set_meta("required_count", req.count)
-		_apply_button_style(btn, Color(0.4, 0.25, 0.2))  # Reddish for required
 		btn.pressed.connect(_on_furniture_button_pressed.bind(req.furniture))
 		furniture_container.add_child(btn)
 
@@ -616,11 +506,8 @@ func _populate_furniture_buttons(room_type: RoomTypeResource) -> void:
 			continue  # Skip if already in required
 		var display_name = furn.name if furn.name else furn.id
 
-		var btn = Button.new()
-		btn.text = display_name
-		btn.custom_minimum_size = Vector2(200, 48)
+		var btn = UIStyleHelper.create_styled_button(display_name)
 		btn.set_meta("furniture", furn)
-		_apply_button_style(btn)
 		btn.pressed.connect(_on_furniture_button_pressed.bind(furn))
 		furniture_container.add_child(btn)
 

@@ -29,20 +29,12 @@ class FurniturePlacement:
 		rotation = rot
 
 	func get_occupied_tiles() -> Array[Vector2i]:
-		var tiles: Array[Vector2i] = []
 		if not furniture:
+			var tiles: Array[Vector2i] = []
 			tiles.append(position)
 			return tiles
 
-		var size = furniture.size
-		# Handle rotation - swap dimensions for 90/270 degree rotations
-		if rotation == 1 or rotation == 3:
-			size = Vector2i(size.y, size.x)
-
-		for x in range(size.x):
-			for y in range(size.y):
-				tiles.append(position + Vector2i(x, y))
-		return tiles
+		return RotationHelper.get_footprint_tiles(position, furniture.size, rotation)
 
 	func get_access_tiles() -> Array[Vector2i]:
 		var tiles: Array[Vector2i] = []

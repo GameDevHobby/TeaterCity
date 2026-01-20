@@ -1,14 +1,14 @@
 [gd_scene load_steps=20 format=4 uid="uid://b5gx7yrfplj7k"]
 
-[ext_resource type="Texture2D" uid="uid://cgyyfd85xayf4" path="res://Tiles/RetroDiner_Tiles_128x128/RetroDiner_Tiles_Classic_128x128.png" id="1_r0du0"]
-[ext_resource type="Script" uid="uid://dyainvbf8joc2" path="res://main.gd" id="1_trn2v"]
-[ext_resource type="Texture2D" uid="uid://05qb4ulmfpci" path="res://Tiles/RetroDiner_Walls_128x128/RetroDiner_Walls_Classic_128x128.png" id="2_cm0pq"]
-[ext_resource type="Script" uid="uid://rbcym8oeshhc" path="res://Scripts/room_building/RoomBuildController.gd" id="3_trn2v"]
-[ext_resource type="Script" uid="uid://l3ymwa1i4n6s" path="res://Scripts/room_building/RoomBuildUI.gd" id="4_03owx"]
+[ext_resource type="Texture2D" uid="uid://cgyyfd85xayf4" path="res://resources/tiles/RetroDiner_Tiles_128x128/RetroDiner_Tiles_Classic_128x128.png" id="1_r0du0"]
+[ext_resource type="Script" uid="uid://dyainvbf8joc2" path="res://scripts/Main.gd" id="1_trn2v"]
+[ext_resource type="Texture2D" uid="uid://05qb4ulmfpci" path="res://resources/tiles/RetroDiner_Walls_128x128/RetroDiner_Walls_Classic_128x128.png" id="2_cm0pq"]
+[ext_resource type="Script" uid="uid://rbcym8oeshhc" path="res://scripts/room_building/RoomBuildController.gd" id="3_trn2v"]
+[ext_resource type="Script" uid="uid://l3ymwa1i4n6s" path="res://scripts/room_building/RoomBuildUI.gd" id="4_03owx"]
 [ext_resource type="Script" uid="uid://x2p4qlvmvt8j" path="res://addons/ppc/ppcamera.gd" id="4_cm0pq"]
-[ext_resource type="PackedScene" uid="uid://c006gl3x1x8qs" path="res://target.tscn" id="5_3dxm6"]
-[ext_resource type="PackedScene" uid="uid://ohglcmejviuu" path="res://spawner.tscn" id="5_fos0i"]
-[ext_resource type="TileSet" uid="uid://6pxb3e4flcdm" path="res://Tiles/wall_tileset.tres" id="7_03owx"]
+[ext_resource type="PackedScene" uid="uid://c006gl3x1x8qs" path="res://objects/target.tscn" id="5_3dxm6"]
+[ext_resource type="PackedScene" uid="uid://ohglcmejviuu" path="res://objects/spawner.tscn" id="5_fos0i"]
+[ext_resource type="TileSet" uid="uid://6pxb3e4flcdm" path="res://resources/tiles/wall_tileset.tres" id="7_03owx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.12, 0.1, 0.15, 0.95)
@@ -1240,10 +1240,13 @@ sources/1 = SubResource("TileSetAtlasSource_lgr22")
 tile_shape = 1
 tile_size = Vector2i(128, 64)
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("room_build_manager", "camera", "build_button")]
 y_sort_enabled = true
 texture_filter = 1
 script = ExtResource("1_trn2v")
+room_build_manager = NodePath("RoomBuildSystem/RoomBuildController")
+camera = NodePath("PinchPanCamera")
+build_button = NodePath("MainUILayer/BuildButton")
 
 [node name="PinchPanCamera" type="Marker2D" parent="."]
 position = Vector2(554, 347)
@@ -1255,10 +1258,13 @@ metadata/_custom_type_script = "uid://x2p4qlvmvt8j"
 
 [node name="RoomBuildSystem" type="Node2D" parent="."]
 
-[node name="RoomBuildController" type="Node" parent="RoomBuildSystem" node_paths=PackedStringArray("tilemap_layer")]
+[node name="RoomBuildController" type="Node" parent="RoomBuildSystem" node_paths=PackedStringArray("tilemap_layer", "ui", "furniture_visuals")]
 script = ExtResource("3_trn2v")
 tilemap_layer = NodePath("../../WallTileLayer")
-ui_path = NodePath("../UILayer/RoomBuildUI")
+ui = NodePath("../UILayer/RoomBuildUI")
+furniture_visuals = NodePath("FurnitureVisuals")
+
+[node name="FurnitureVisuals" type="Node2D" parent="RoomBuildSystem/RoomBuildController"]
 
 [node name="UILayer" type="CanvasLayer" parent="RoomBuildSystem"]
 

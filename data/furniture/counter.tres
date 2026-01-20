@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://cab1utpqnoch"]
+
+[ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://scripts/data/FurnitureResource.gd" id="1_ce3sp"]
+
+[resource]
+script = ExtResource("1_ce3sp")
+id = "counter"
+name = "Counter"
+size = Vector2i(2, 1)
+cost = 40
+monthly_upkeep = 2
+description = "Service counter"
+scene_path = "res://furniture/counter.tscn"
+access_offsets = Array[Vector2i]([Vector2i(0, -1), Vector2i(0, 1)])
+metadata/_custom_type_script = "uid://bd7777akkjjay"

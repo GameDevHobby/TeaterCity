@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="RoomTypeResource" load_steps=8 format=3 uid="uid://ccrdjn7q4e2xb"]
+
+[ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://scripts/data/FurnitureResource.gd" id="1_6th0o"]
+[ext_resource type="Script" uid="uid://cr7lym51nwuu5" path="res://scripts/data/RoomTypeResource.gd" id="1_glwu7"]
+[ext_resource type="Resource" uid="uid://ckxyupkkjmytt" path="res://data/furniture/seat.tres" id="2_seat"]
+[ext_resource type="Resource" uid="uid://cl16pjl28vnej" path="res://data/furniture/screen.tres" id="3_screen"]
+[ext_resource type="Script" uid="uid://ceg8hjdbx4y02" path="res://scripts/data/FurnitureRequirement.gd" id="4_furn_req"]
+
+[sub_resource type="Resource" id="req_seat"]
+script = ExtResource("4_furn_req")
+furniture = ExtResource("2_seat")
+count = 4
+
+[sub_resource type="Resource" id="req_screen"]
+script = ExtResource("4_furn_req")
+furniture = ExtResource("3_screen")
+
+[resource]
+script = ExtResource("1_glwu7")
+id = "theater_auditorium"
+display_name = "Theater Auditorium"
+description = "Main screening room for movies"
+min_size = Vector2i(4, 6)
+max_size = Vector2i(20, 16)
+has_seating = true
+base_cost = 500
+allowed_furniture = Array[ExtResource("1_6th0o")]([ExtResource("2_seat"), ExtResource("3_screen")])
+required_furniture = Array[ExtResource("4_furn_req")]([SubResource("req_seat"), SubResource("req_screen")])
+metadata/_custom_type_script = "uid://cr7lym51nwuu5"

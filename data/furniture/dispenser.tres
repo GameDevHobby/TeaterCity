@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://c1eumeunwl3my"]
+
+[ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://scripts/data/FurnitureResource.gd" id="1_o5tta"]
+
+[resource]
+script = ExtResource("1_o5tta")
+id = "dispenser"
+name = "Soap Dispenser"
+cost = 15
+description = "Soap/paper dispenser"
+scene_path = "res://furniture/dispenser.tscn"
+access_offsets = Array[Vector2i]([Vector2i(0, 1)])
+metadata/_custom_type_script = "uid://bd7777akkjjay"
