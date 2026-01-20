@@ -4,7 +4,7 @@ extends Resource
 @export var room_types: Array[RoomTypeResource] = []
 
 static var _instance: RoomTypeRegistry
-static var _path = "res://data/resources/configs/room_type_registry.tres"
+static var _path = "res://data/configs/room_type_registry.tres"
 
 static func get_instance() -> RoomTypeRegistry:
 	if _instance == null:

@@ -1,41 +1,31 @@
 class_name FurnitureOperation
 extends RefCounted
 
-func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_node: Node2D) -> Node2D:
+func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_node: Node2D, tilemap_layer: TileMapLayer = null) -> Node2D:
 	var furn = placement.furniture
 	var furniture_id = furn.id if furn else "unknown"
 
-	# Try to use scene-based furniture if scene_path is defined
-	if furn and furn.scene_path != "" and ResourceLoader.exists(furn.scene_path):
-		var scene = load(furn.scene_path) as PackedScene
-		if scene:
-			return _setup_furniture_instance(scene.instantiate(), placement, parent_node)
+	# Try to use scene-based furniture if scene is assigned
+	if furn and furn.scene:
+		return _setup_furniture_instance(furn.scene.instantiate(), placement, parent_node, tilemap_layer)
 
 	# Fallback to sprite-based visual
-	var sprite = Sprite2D.new()
-	sprite.name = "Furniture_%s_%d_%d" % [furniture_id, placement.position.x, placement.position.y]
+	var sprite_node = Sprite2D.new()
+	sprite_node.name = "Furniture_%s_%d_%d" % [furniture_id, placement.position.x, placement.position.y]
 
-	# Try to load sprite from resource
-	if furn and furn.sprite_path != "":
-		var texture = load(furn.sprite_path)
-		if texture:
-			sprite.texture = texture
-		else:
-			_create_placeholder_texture(sprite, furn, placement.rotation)
+	# Use sprite texture if available, otherwise create placeholder
+	if furn and furn.sprite:
+		sprite_node.texture = furn.sprite
 	else:
-		_create_placeholder_texture(sprite, furn, placement.rotation)
+		_create_placeholder_texture(sprite_node, furn, placement.rotation)
 
-	# Position using isometric conversion - center multi-tile furniture
-	var center_offset = Vector2.ZERO
-	if furn:
-		center_offset = RotationHelper.get_center_offset(furn.size, placement.rotation)
+	# Position using tilemap's coordinate system for precise alignment
+	sprite_node.position = _calculate_furniture_position(placement, furn, tilemap_layer)
 
-	sprite.position = IsometricMath.tile_to_world_float(Vector2(placement.position) + center_offset)
+	parent_node.add_child(sprite_node)
+	return sprite_node
 
-	parent_node.add_child(sprite)
-	return sprite
-
-func _setup_furniture_instance(instance: Node, placement: RoomInstance.FurniturePlacement, parent_node: Node2D) -> Node2D:
+func _setup_furniture_instance(instance: Node, placement: RoomInstance.FurniturePlacement, parent_node: Node2D, tilemap_layer: TileMapLayer = null) -> Node2D:
 	var furn = placement.furniture
 	var furniture_id = furn.id if furn else "unknown"
 
@@ -43,15 +33,21 @@ func _setup_furniture_instance(instance: Node, placement: RoomInstance.Furniture
 
 	# If it's a FurnitureBase instance, use its setup method
 	if instance is FurnitureBase:
-		instance.setup_from_resource(furn, placement.position, placement.rotation)
+		instance.setup_from_resource(furn, placement.position, placement.rotation, tilemap_layer)
 	else:
 		# Fallback positioning for non-FurnitureBase scenes
-		var size = furn.size if furn else Vector2i(1, 1)
-		var center_offset = RotationHelper.get_center_offset(size, placement.rotation)
-		instance.position = IsometricMath.tile_to_world_float(Vector2(placement.position) + center_offset)
+		instance.position = _calculate_furniture_position(placement, furn, tilemap_layer)
 
 	parent_node.add_child(instance)
 	return instance
+
+func _calculate_furniture_position(placement: RoomInstance.FurniturePlacement, furn: FurnitureResource, _tilemap_layer: TileMapLayer) -> Vector2:
+	var center_offset = Vector2.ZERO
+	if furn:
+		center_offset = RotationHelper.get_center_offset(furn.size, placement.rotation)
+
+	var tile_pos = Vector2(placement.position) + center_offset
+	return IsometricMath.tile_to_world_float(tile_pos)
 
 func _create_placeholder_texture(sprite: Sprite2D, furn: FurnitureResource, rotation: int = 0) -> void:
 	# Create isometric placeholder with diamond-shaped tiles

@@ -145,7 +145,7 @@ func _on_complete_pressed() -> void:
 
 	# Create furniture visuals
 	for furn in current_room.furniture:
-		_furniture_op.create_furniture_visual(furn, furniture_visuals)
+		_furniture_op.create_furniture_visual(furn, furniture_visuals, tilemap_layer)
 
 	# Update navigation
 	_navigation_op.update_room_navigation(current_room, tilemap_layer)

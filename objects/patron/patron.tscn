@@ -4,7 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://xrfj5pdvy1sx" path="res://objects/patron/Patron.png" id="2_pulac"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_44a8u"]
-load_path = "res://.godot/imported/Patron.png-288c3815ec36ae5850bc6f040b113f70.ctex"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lgr22"]
 atlas = SubResource("CompressedTexture2D_44a8u")
@@ -978,8 +977,9 @@ simplify_epsilon = 0.2
 avoidance_enabled = true
 radius = 8.0
 neighbor_distance = 24.0
-max_neighbors = 12
-time_horizon_obstacles = 1.0
+max_neighbors = 100
+time_horizon_agents = 5.0
+time_horizon_obstacles = 5.0
 max_speed = 50.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

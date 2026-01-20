@@ -6,7 +6,7 @@ extends StaticBody2D
 var _tile_position: Vector2i
 var _furniture_rotation: int
 
-func setup_from_resource(resource: FurnitureResource, pos: Vector2i, rot: int) -> void:
+func setup_from_resource(resource: FurnitureResource, pos: Vector2i, rot: int, _tilemap_layer: TileMapLayer = null) -> void:
 	furniture_resource = resource
 	_tile_position = pos
 	_furniture_rotation = rot
@@ -20,7 +20,8 @@ func setup_from_resource(resource: FurnitureResource, pos: Vector2i, rot: int) -
 
 	# Calculate center of footprint for positioning (use float for proper centering)
 	var center_offset = RotationHelper.get_center_offset(resource.size, rot)
-	position = IsometricMath.tile_to_world_float(Vector2(pos) + center_offset)
+	var tile_pos = Vector2(pos) + center_offset
+	position = IsometricMath.tile_to_world_float(tile_pos)
 
 	# Configure collision shape if we have one
 	_setup_collision_shape(size)

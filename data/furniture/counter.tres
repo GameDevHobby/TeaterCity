@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://cab1utpqnoch"]
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=3 format=3 uid="uid://cab1utpqnoch"]
 
 [ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://scripts/data/FurnitureResource.gd" id="1_ce3sp"]
+[ext_resource type="PackedScene" path="res://objects/furniture/counter.tscn" id="2_scene"]
 
 [resource]
 script = ExtResource("1_ce3sp")
@@ -10,6 +11,6 @@ size = Vector2i(2, 1)
 cost = 40
 monthly_upkeep = 2
 description = "Service counter"
-scene_path = "res://furniture/counter.tscn"
+scene = ExtResource("2_scene")
 access_offsets = Array[Vector2i]([Vector2i(0, -1), Vector2i(0, 1)])
 metadata/_custom_type_script = "uid://bd7777akkjjay"

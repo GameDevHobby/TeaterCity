@@ -4,7 +4,7 @@ extends Resource
 @export var furniture_items: Array[FurnitureResource] = []
 
 static var _instance: FurnitureRegistry
-static var _path = "res://data/resources/configs/furniture_registry.tres"
+static var _path = "res://data/configs/furniture_registry.tres"
 
 static func get_instance() -> FurnitureRegistry:
 	if _instance == null:

@@ -30,10 +30,6 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
-[dotnet]
-
-project/assembly_name="TheaterCity"
-
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gdai-mcp-plugin-godot/plugin.cfg", "res://addons/godot_visualstudio_debugger/plugin.cfg", "res://addons/ppc/plugin.cfg")

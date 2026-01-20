@@ -7,12 +7,14 @@ extends Resource
 @export var cost: int = 0
 @export var monthly_upkeep: int = 0
 @export var description: String = ""
-@export var sprite_path: String = ""
 
-@export_group("Scene & Collision")
-@export var scene_path: String = ""
-@export var access_offsets: Array[Vector2i] = []  # Direction offsets like [(0, 1)] for south access - applied to each footprint tile
-@export var preview_sprites: Dictionary = {}  # {"north": "...", "east": "...", "south": "...", "west": "..."}
+@export_group("Visuals")
+@export var scene: PackedScene  # Direct reference to furniture scene
+@export var sprite: Texture2D  # Fallback sprite if no scene
+
+@export_group("Placement")
+@export var access_offsets: Array[Vector2i] = []  # Direction offsets like [(0, 1)] for south access
+@export var preview_sprites: Dictionary = {}  # {"north": Texture2D, ...} for UI previews
 
 func get_grid_footprint() -> Array[Vector2i]:
 	var tiles: Array[Vector2i] = []

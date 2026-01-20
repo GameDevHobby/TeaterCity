@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://bo6s7srf4y6vn"]
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=3 format=3 uid="uid://bo6s7srf4y6vn"]
 
 [ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://scripts/data/FurnitureResource.gd" id="1_3dsb0"]
+[ext_resource type="PackedScene" path="res://objects/furniture/mirror.tscn" id="2_scene"]
 
 [resource]
 script = ExtResource("1_3dsb0")
@@ -9,6 +10,6 @@ name = "Mirror"
 cost = 20
 monthly_upkeep = 1
 description = "Mirror"
-scene_path = "res://furniture/mirror.tscn"
+scene = ExtResource("2_scene")
 access_offsets = Array[Vector2i]([])
 metadata/_custom_type_script = "uid://bd7777akkjjay"

@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://cl16pjl28vnej"]
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=3 format=3 uid="uid://cl16pjl28vnej"]
 
 [ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://scripts/data/FurnitureResource.gd" id="1_vxk2y"]
+[ext_resource type="PackedScene" path="res://objects/furniture/screen.tscn" id="2_scene"]
 
 [resource]
 script = ExtResource("1_vxk2y")
@@ -10,6 +11,6 @@ size = Vector2i(4, 1)
 cost = 200
 monthly_upkeep = 5
 description = "Projection screen"
-scene_path = "res://furniture/screen.tscn"
+scene = ExtResource("2_scene")
 access_offsets = Array[Vector2i]([])
 metadata/_custom_type_script = "uid://bd7777akkjjay"

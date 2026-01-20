@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="FurnitureResource" load_steps=2 format=3 uid="uid://pdu5xkeix5q1"]
+[gd_resource type="Resource" script_class="FurnitureResource" load_steps=3 format=3 uid="uid://pdu5xkeix5q1"]
 
 [ext_resource type="Script" uid="uid://bd7777akkjjay" path="res://scripts/data/FurnitureResource.gd" id="1_mqggo"]
+[ext_resource type="PackedScene" path="res://objects/furniture/speaker.tscn" id="2_scene"]
 
 [resource]
 script = ExtResource("1_mqggo")
@@ -9,6 +10,6 @@ name = "Speaker"
 cost = 25
 monthly_upkeep = 1
 description = "Audio speaker"
-scene_path = "res://furniture/speaker.tscn"
+scene = ExtResource("2_scene")
 access_offsets = Array[Vector2i]([])
 metadata/_custom_type_script = "uid://bd7777akkjjay"
