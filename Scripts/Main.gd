@@ -10,9 +10,19 @@ var _build_mode_active = false
 func _ready() -> void:
 	room_build_manager.room_completed.connect(_on_room_completed)
 
+	# Connect to RoomManager selection signals for future menu handling
+	RoomManager.room_selected.connect(_on_room_selected)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_build"):
 		_on_build_button_pressed()
+
+	# Deselect room when tapping empty space (touch release not consumed by Area2D)
+	if event is InputEventScreenTouch and not event.pressed:
+		# If we get here, no room area consumed the event
+		# Area2D.input_event fires BEFORE _unhandled_input
+		if RoomManager.get_selected_room():
+			RoomManager.clear_selection()
 
 func _on_build_button_pressed() -> void:
 	_build_mode_active = !_build_mode_active
@@ -26,6 +36,11 @@ func _on_build_button_pressed() -> void:
 
 func _on_room_completed(_room: RoomInstance) -> void:
 	_exit_build_mode()
+
+
+func _on_room_selected(room: RoomInstance) -> void:
+	# Placeholder for Phase 2 - will show room menu here
+	print("Room selected: ", room.id)
 
 func _exit_build_mode() -> void:
 	_build_mode_active = false

@@ -160,6 +160,10 @@ func _on_complete_pressed() -> void:
 		ui.end_all_modes()
 
 	room_completed.emit(current_room)
+
+	# Register with RoomManager for selection/editing
+	RoomManager.register_room(current_room)
+
 	current_room = null
 	current_room_type = null
 	state_name = "idle"
