@@ -13,6 +13,19 @@ func _ready() -> void:
 	# Connect to RoomManager selection signals for future menu handling
 	RoomManager.room_selected.connect(_on_room_selected)
 
+	# Create selection highlight overlay in its own CanvasLayer for screen-space rendering
+	# CanvasLayer ensures the Control draws in screen space (matching tile_to_screen coords)
+	var selection_layer = CanvasLayer.new()
+	selection_layer.name = "SelectionHighlightLayer"
+	selection_layer.layer = 0  # Same layer as game world, but rendered after
+	add_child(selection_layer)
+
+	var selection_highlight = RoomSelectionHighlight.new()
+	selection_highlight.name = "SelectionHighlight"
+	selection_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block input
+	selection_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)  # Cover full screen
+	selection_layer.add_child(selection_highlight)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_build"):
 		_on_build_button_pressed()
