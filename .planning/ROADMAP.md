@@ -31,7 +31,11 @@ This roadmap transforms the existing room building system into a full room edito
 3. Tapping outside any room deselects current selection
 4. Touch input does not conflict with camera pan (toggle camera.enable_pinch_pan)
 
-**Estimated Tasks:** 8-12
+**Plans:** 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md - RoomManager singleton with Area2D selection and tap detection
+- [ ] 01-02-PLAN.md - Selection highlight visual and system integration
 
 **Risk Flags:**
 - MEDIUM: Touch conflicts with camera pan - must toggle camera input during edit mode
@@ -324,7 +328,7 @@ This roadmap transforms the existing room building system into a full room edito
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 1 | Room Manager Foundation | Pending | SEL-01, SEL-02 |
+| 1 | Room Manager Foundation | Planning Complete | SEL-01, SEL-02 |
 | 2 | Room Menu & Edit Mode Entry | Pending | SEL-03, SEL-04 |
 | 3 | Persistence Infrastructure | Pending | PER-01, PER-02, PER-03, PER-04 |
 | 4 | Furniture Selection | Pending | FUR-01, FUR-02 |
