@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 1 in progress - Room Manager Foundation
+**Current Focus:** Phase 1 complete - Room Manager Foundation
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -22,13 +22,13 @@
 ## Current Position
 
 **Phase:** 1 of 10 (Room Manager Foundation)
-**Plan:** 1 of 2 complete
-**Status:** In progress
-**Last activity:** 2026-01-21 - Completed 01-01-PLAN.md
+**Plan:** 2 of 2 complete
+**Status:** Phase complete
+**Last activity:** 2026-01-21 - Completed 01-02-PLAN.md
 
 **Progress:**
 ```
-Phase  1: [=] Room Manager Foundation (1/2 plans)
+Phase  1: [X] Room Manager Foundation (2/2 plans) COMPLETE
 Phase  2: [ ] Room Menu & Edit Mode Entry
 Phase  3: [ ] Persistence Infrastructure
 Phase  4: [ ] Furniture Selection
@@ -40,7 +40,7 @@ Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 0/10 phases complete (0%)
+**Milestone Progress:** 1/10 phases complete (10%)
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 1 |
-| Plans Passed | 1 |
+| Plans Executed | 2 |
+| Plans Passed | 2 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -67,6 +67,9 @@ Phase 10: [ ] Testing & Verification
 | Follow Targets.gd pattern | Project consistency for autoload singletons | 1-01 |
 | 20px/300ms tap thresholds | Below camera pan thresholds, proven in research | 1-01 |
 | input_pickable = true | Required for Area2D hit detection (Godot default is false) | 1-01 |
+| CanvasLayer wrapper for highlight | Main.tscn is Node2D, Controls need screen-space rendering | 1-02 |
+| Highlight all room tiles | Clearer visual feedback than interior-only | 1-02 |
+| MOUSE_FILTER_IGNORE on highlight | Prevent blocking input to room Area2D below | 1-02 |
 | Parallel RoomEditController | Separate from build workflow, different lifecycle | 2 |
 | Atomic saves | Prevent corruption on mobile crashes | 3 |
 | Doors reset on resize | Simpler than auto-adjusting door positions | 8 |
@@ -78,6 +81,7 @@ Phase 10: [ ] Testing & Verification
 - Signals: Disconnect before dropping RoomInstance references to prevent leaks
 - Coordinates: Always store Vector2i tile coords, never world positions
 - Isometric hit detection: Convert bounding box to diamond polygon via IsometricMath.tile_to_world()
+- Screen-space Controls: Use CanvasLayer layer=0 wrapper in Node2D scenes for tile_to_screen alignment
 
 ### Blockers
 
@@ -87,7 +91,8 @@ None currently.
 
 - [x] Plan Phase 1: Room Manager Foundation
 - [x] Execute 01-01-PLAN.md: RoomManager singleton
-- [ ] Execute 01-02-PLAN.md: Integration with RoomBuildController
+- [x] Execute 01-02-PLAN.md: Integration with RoomBuildController
+- [ ] Begin Phase 2: Room Menu & Edit Mode Entry
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -96,25 +101,31 @@ None currently.
 
 ### What Was Done
 
-- Executed 01-01-PLAN.md: Created RoomManager singleton
-- Created scripts/RoomManager.gd with room tracking, Area2D selection, tap detection
-- Registered RoomManager as autoload in project.godot
-- Committed 2 tasks atomically (b6f828d, d0922bf)
+- Executed 01-02-PLAN.md: Selection integration and visual highlight
+- Created RoomSelectionHighlight.gd with signal-driven redraws
+- Modified RoomBuildController to register rooms on completion
+- Added CanvasLayer wrapper and deselection logic to Main.gd
+- Committed 3 tasks atomically (0d6f881, 2727d7a, 0651050)
 
 ### What's Next
 
-1. Execute 01-02-PLAN.md: Integration with RoomBuildController
-2. After Phase 1 complete, begin Phase 2: Room Menu & Edit Mode Entry
+1. Begin Phase 2: Room Menu & Edit Mode Entry
+2. First plan should create room edit menu shown on selection
 
 ### Context for Next Session
 
-RoomManager singleton is now globally accessible. It provides:
-- `register_room()` to track completed rooms
-- `select_room()` / `get_selected_room()` / `clear_selection()` for selection state
-- Area2D-based isometric hit detection with tap vs drag discrimination
-- Signals: `room_added`, `room_selected`, `selection_cleared`
+Phase 1 (Room Manager Foundation) is complete. The selection workflow is now functional:
+1. Build a room -> auto-registers with RoomManager
+2. Tap completed room -> visual yellow highlight appears
+3. Tap outside rooms -> selection clears
 
-Next plan (01-02) should integrate RoomBuildController to call `RoomManager.register_room()` when room construction completes.
+Key files created:
+- `Scripts/RoomManager.gd` - Singleton with room tracking, Area2D selection
+- `Scripts/room_building/RoomSelectionHighlight.gd` - Visual highlight Control
+
+Key signals available:
+- `RoomManager.room_selected(room)` - Use to trigger edit menu
+- `RoomManager.selection_cleared` - Use to hide edit menu
 
 ---
 
