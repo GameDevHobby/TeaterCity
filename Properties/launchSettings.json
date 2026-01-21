@@ -1,0 +1,19 @@
+
+{
+  "profiles": {
+	"Godot Debug": {
+	  "commandName": "Executable",
+	  "executablePath": "C:/Users/chris/OneDrive/Documents/Godot_v4.5.1/Godot_v4.5.1-stable_win64.exe",
+	  "commandLineArgs": "--path . --verbose",
+	  "workingDirectory": ".",
+	  "nativeDebugging": true
+	},
+	"Godot Debug Patron": {
+	  "commandName": "Executable",
+	  "executablePath": "C:/Users/chris/OneDrive/Documents/Godot_v4.5.1/Godot_v4.5.1-stable_win64.exe",
+	  "commandLineArgs": "--upwards ./objects/patron/patron.tscn --verbose",
+	  "workingDirectory": ".",
+	  "nativeDebugging": true
+	}
+  }
+}
