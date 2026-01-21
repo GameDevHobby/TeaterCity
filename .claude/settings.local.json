@@ -39,7 +39,15 @@
       "Bash(wc:*)",
       "Bash(for f in \"C:\\\\git\\\\TheaterCity\\\\Scripts\\\\room_building\\\\RoomBuildController.gd\" \"C:\\\\git\\\\TheaterCity\\\\Scripts\\\\room_building\\\\RoomBuildUI.gd\" \"C:\\\\git\\\\TheaterCity\\\\Patron\\\\patron.gd\" \"C:\\\\git\\\\TheaterCity\\\\Scripts\\\\storage\\\\RoomInstance.gd\" \"C:\\\\git\\\\TheaterCity\\\\Scripts\\\\room_building\\\\operations\\\\WallOperation.gd\")",
       "Bash(do wc -l \"$f\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(godot:*)",
+      "Bash(dir:*)",
+      "Bash(dir \"C:\\\\Program Files \\(x86\\)\\\\Godot\")",
+      "Bash(cmd /c \"where /r C:\\\\Users godot*.exe 2>nul\")",
+      "Bash(cmd /c \"dir \"\"C:\\\\Users\\\\chris\\\\OneDrive\\\\Documents\\\\Godot_v4.5.1\\\\*.exe\"\"\")",
+      "Bash(cmd /c \"dir \"\"C:\\\\Users\\\\chris\\\\OneDrive\\\\Documents\\\\Godot_v4.5.1\"\"\")",
+      "Bash(\"C:\\\\Users\\\\chris\\\\OneDrive\\\\Documents\\\\Godot_v4.5.1\\\\Godot_v4.5.1-stable_win64_console.exe\" --headless -s addons/gut/gut_cmdln.gd)",
+      "Bash(\"C:\\\\Users\\\\chris\\\\OneDrive\\\\Documents\\\\Godot_v4.5.1\\\\Godot_v4.5.1-stable_win64_console.exe\" --headless -s addons/gut/gut_cmdln.gd --path \"C:\\\\git\\\\TheaterCity\")"
     ]
   }
 }

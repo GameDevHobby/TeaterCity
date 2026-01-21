@@ -403,26 +403,38 @@ func _update_preview_sprite() -> void:
 			_preview_sprite.hide()
 		return
 
-	# Try to get preview sprite from resource's preview_sprites
-	var sprite_path = _selected_furniture.get_preview_sprite_for_rotation(_current_rotation)
-	if sprite_path != "" and ResourceLoader.exists(sprite_path):
-		var texture = load(sprite_path)
-		if texture:
-			_preview_sprite.texture = texture
-			_preview_sprite.show()
-			return
-
-	# Fallback: generate placeholder or use cached
+	# Check cache first
 	var cache_key = _selected_furniture.id + "_" + str(_current_rotation)
-	if not _preview_textures.has(cache_key):
-		var all_textures = _furniture_operation.generate_placeholder_sprites(_selected_furniture)
-		var direction_names = ["north", "east", "south", "west"]
-		for rot in range(4):
-			var key = _selected_furniture.id + "_" + str(rot)
-			_preview_textures[key] = all_textures[direction_names[rot]]
+	if _preview_textures.has(cache_key):
+		_preview_sprite.texture = _preview_textures[cache_key]
+		_preview_sprite.show()
+		return
 
-	_preview_sprite.texture = _preview_textures[cache_key]
-	_preview_sprite.show()
+	# Try to get texture from furniture scene's AnimatedSprite2D
+	if _selected_furniture.scene:
+		var temp_instance = _selected_furniture.scene.instantiate()
+		var animated_sprite = temp_instance.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+		if animated_sprite and animated_sprite.sprite_frames:
+			var sprite_frames = animated_sprite.sprite_frames
+			var frame_count = sprite_frames.get_frame_count("default")
+			if frame_count > 0:
+				# Cache all rotation textures from this furniture
+				for rot in range(4):
+					var frame_index: int
+					if frame_count == 2:
+						frame_index = rot % 2
+					else:
+						frame_index = rot % frame_count
+					var key = _selected_furniture.id + "_" + str(rot)
+					_preview_textures[key] = sprite_frames.get_frame_texture("default", frame_index)
+		temp_instance.queue_free()
+
+	# Use cached texture if available
+	if _preview_textures.has(cache_key):
+		_preview_sprite.texture = _preview_textures[cache_key]
+		_preview_sprite.show()
+	else:
+		_preview_sprite.hide()
 
 func _on_done_doors_pressed() -> void:
 	# Validate minimum door count

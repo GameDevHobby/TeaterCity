@@ -1258,9 +1258,10 @@ metadata/_custom_type_script = "uid://x2p4qlvmvt8j"
 
 [node name="RoomBuildSystem" type="Node2D" parent="."]
 
-[node name="RoomBuildController" type="Node" parent="RoomBuildSystem" node_paths=PackedStringArray("tilemap_layer", "ui", "furniture_visuals")]
+[node name="RoomBuildController" type="Node" parent="RoomBuildSystem" node_paths=PackedStringArray("tilemap_layer", "ground_tilemap_layer", "ui", "furniture_visuals")]
 script = ExtResource("3_trn2v")
 tilemap_layer = NodePath("../../WallTileLayer")
+ground_tilemap_layer = NodePath("../../GroundTileLayer")
 ui = NodePath("../UILayer/RoomBuildUI")
 furniture_visuals = NodePath("../../FurnitureVisuals")
 

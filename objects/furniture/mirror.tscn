@@ -1,20 +1,36 @@
-[gd_scene load_steps=4 format=3 uid="uid://c6m8n3k2r7pxy"]
+[gd_scene load_steps=6 format=3 uid="uid://c6m8n3k2r7pxy"]
 
 [ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
-[ext_resource type="Resource" uid="uid://bo6s7srf4y6vn" path="res://data/furniture/mirror.tres" id="2_ttpvy"]
+[ext_resource type="Texture2D" path="res://resources/IIP - Outlined/furniture/vanityGray_a.png" id="3_dir0"]
+[ext_resource type="Texture2D" path="res://resources/IIP - Outlined/furniture/vanityGray_b.png" id="4_dir1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mirror"]
 size = Vector2(32, 16)
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_mirror"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_dir0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_dir1")
+}],
+"loop": false,
+"name": &"default",
+"speed": 1.0
+}]
+
 [node name="Mirror" type="StaticBody2D"]
 collision_mask = 0
 script = ExtResource("1_base")
-furniture_resource = ExtResource("2_ttpvy")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_mirror")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_index = 1
+sprite_frames = SubResource("SpriteFrames_mirror")
+animation = &"default"
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]

@@ -1,13 +1,13 @@
 class_name FurnitureBase
 extends StaticBody2D
 
-@export var furniture_resource: FurnitureResource
+var _furniture_resource: FurnitureResource
 
 var _tile_position: Vector2i
 var _furniture_rotation: int
 
 func setup_from_resource(resource: FurnitureResource, pos: Vector2i, rot: int, _tilemap_layer: TileMapLayer = null) -> void:
-	furniture_resource = resource
+	_furniture_resource = resource
 	_tile_position = pos
 	_furniture_rotation = rot
 
@@ -26,8 +26,8 @@ func setup_from_resource(resource: FurnitureResource, pos: Vector2i, rot: int, _
 	# Configure collision shape if we have one
 	_setup_collision_shape(size)
 
-	# Generate and set placeholder sprite
-	_setup_sprite(resource, size)
+	# Set up directional sprite based on rotation
+	_setup_sprite()
 
 	# Configure navigation obstacle
 	_setup_navigation_obstacle(size)
@@ -75,38 +75,37 @@ func _setup_collision_shape(size: Vector2i) -> void:
 	polygon_shape.points = hull_vertices
 	collision_shape.shape = polygon_shape
 
-func _setup_sprite(resource: FurnitureResource, size: Vector2i) -> void:
-	var sprite = get_node_or_null("Sprite2D") as Sprite2D
-	if not sprite:
+func _setup_sprite() -> void:
+	# Try to find AnimatedSprite2D child for directional sprites
+	var animated_sprite = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	if animated_sprite and animated_sprite.sprite_frames:
+		# Set frame based on rotation direction (0=North, 1=East, 2=South, 3=West)
+		var frame_count = animated_sprite.sprite_frames.get_frame_count("default")
+		if frame_count > 0:
+			# For sprites with only 2 frames, map rotations 0,2 to frame 0 and 1,3 to frame 1
+			if frame_count == 2:
+				animated_sprite.frame = _furniture_rotation % 2
+			else:
+				animated_sprite.frame = _furniture_rotation % frame_count
+
+		# Position sprite - center horizontally, align bottom with tile position
+		# IIP sprites have their visual base at the bottom of the image
+		animated_sprite.centered = true
+
+		# Get the current frame texture to calculate offset
+		var texture = animated_sprite.sprite_frames.get_frame_texture("default", animated_sprite.frame)
+		if texture:
+			# Offset sprite so its bottom aligns with the isometric tile center
+			# The sprite's visual "foot" should be at our position
+			var sprite_height = texture.get_height()
+			animated_sprite.offset = Vector2(0, -sprite_height / 2.0 + IsometricMath.HALF_HEIGHT)
 		return
 
-	var half_w = IsometricMath.HALF_WIDTH
-	var half_h = IsometricMath.HALF_HEIGHT
-
-	# Generate placeholder texture
-	var texture = _create_isometric_placeholder(resource.id, size)
-	sprite.texture = texture
-	sprite.centered = true
-
-	# The sprite is centered on the furniture position, which is at the center of the footprint
-	# The texture is generated with tile (0,0) at a specific position, so we need to offset
-	# to center the texture properly on our position
-	var tex_width = (size.x + size.y) * half_w
-	var tex_height = (size.x + size.y) * half_h + half_h
-
-	# Tile (0,0) top in texture is at (size.y * HALF_WIDTH, 0)
-	# Our position is at the center of the footprint
-	# We need to offset the sprite so it draws correctly centered on our position
-	var tile_00_x = size.y * half_w
-	var tile_00_y = 0.0
-
-	# Center of footprint in local texture coords (relative to tile 0,0)
-	var center_tile = Vector2(float(size.x) / 2.0, float(size.y) / 2.0)
-	var center_in_tex_x = tile_00_x + (center_tile.x - center_tile.y) * half_w
-	var center_in_tex_y = tile_00_y + (center_tile.x + center_tile.y) * half_h
-
-	# Offset from texture center to footprint center
-	sprite.offset = Vector2(tex_width / 2.0 - center_in_tex_x, tex_height / 2.0 - center_in_tex_y)
+	# Fallback: check for legacy Sprite2D (placeholder - no setup needed)
+	var sprite = get_node_or_null("Sprite2D") as Sprite2D
+	if sprite:
+		# Legacy placeholder sprite - will be replaced by scene updates
+		pass
 
 func _setup_navigation_obstacle(size: Vector2i) -> void:
 	var obstacle = get_node_or_null("NavigationObstacle2D") as NavigationObstacle2D
@@ -133,67 +132,10 @@ func _setup_navigation_obstacle(size: Vector2i) -> void:
 			max_radius = dist
 	obstacle.radius = max_radius
 
-func _create_isometric_placeholder(furniture_id: String, size: Vector2i) -> ImageTexture:
-	# Calculate image size to fit isometric tiles
-	var img_size = IsometricMath.get_isometric_image_size(size)
-	var img = Image.create(img_size.x, img_size.y, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))  # Transparent background
-
-	var color = _get_furniture_color(furniture_id)
-	var border_color = color.darkened(0.3)
-
-	# Draw diamond-shaped isometric tiles
-	for tx in range(size.x):
-		for ty in range(size.y):
-			_draw_isometric_tile(img, tx, ty, size, color, border_color)
-
-	return ImageTexture.create_from_image(img)
-
-func _draw_isometric_tile(img: Image, tx: int, ty: int, total_size: Vector2i, fill_color: Color, border_color: Color) -> void:
-	# Calculate center of this tile in image space
-	var center = IsometricMath.get_tile_center_in_image(tx, ty, total_size)
-	var half_h = int(IsometricMath.HALF_HEIGHT)
-	var half_w = int(IsometricMath.HALF_WIDTH)
-
-	# Draw filled diamond
-	for dy in range(-half_h, half_h + 1):
-		var width_at_y = int(half_w * (1.0 - abs(float(dy) / half_h)))
-		for dx in range(-width_at_y, width_at_y + 1):
-			var px = int(center.x + dx)
-			var py = int(center.y + dy)
-			if px >= 0 and px < img.get_width() and py >= 0 and py < img.get_height():
-				var is_border = abs(dx) >= width_at_y - 1 or abs(dy) >= half_h - 1
-				img.set_pixel(px, py, border_color if is_border else fill_color)
-
-func _get_furniture_color(furniture_id: String) -> Color:
-	match furniture_id:
-		"seat", "chair", "seating_bench":
-			return Color(0.6, 0.4, 0.2, 0.9)  # Brown
-		"screen":
-			return Color(0.2, 0.2, 0.3, 0.9)  # Dark gray
-		"counter":
-			return Color(0.5, 0.4, 0.3, 0.9)  # Tan
-		"ticket_window":
-			return Color(0.3, 0.5, 0.6, 0.9)  # Teal
-		"toilet", "sink", "stall":
-			return Color(0.7, 0.7, 0.8, 0.9)  # Light gray
-		"register":
-			return Color(0.4, 0.5, 0.3, 0.9)  # Olive
-		"display_case":
-			return Color(0.5, 0.6, 0.7, 0.9)  # Light blue-gray
-		"dispenser":
-			return Color(0.6, 0.6, 0.6, 0.9)  # Gray
-		"mirror":
-			return Color(0.7, 0.8, 0.9, 0.9)  # Light blue
-		"speaker":
-			return Color(0.3, 0.3, 0.35, 0.9)  # Dark gray
-		_:
-			return Color(0.5, 0.5, 0.5, 0.9)  # Default gray
-
 ## Get the tiles that need to be accessible for patrons to use this furniture
 func get_access_tiles() -> Array[Vector2i]:
-	if furniture_resource:
-		var rotated_access = furniture_resource.get_rotated_access_tiles(_furniture_rotation)
+	if _furniture_resource:
+		var rotated_access = _furniture_resource.get_rotated_access_tiles(_furniture_rotation)
 		var world_access: Array[Vector2i] = []
 		for offset in rotated_access:
 			world_access.append(_tile_position + offset)

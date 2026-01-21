@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://dk4r7m2n5wpxy"]
+[gd_scene load_steps=3 format=3 uid="uid://dk4r7m2n5wpxy"]
 
 [ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
-[ext_resource type="Resource" uid="uid://pdu5xkeix5q1" path="res://data/furniture/speaker.tres" id="2_gyleh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_speaker"]
 size = Vector2(32, 16)
@@ -9,12 +8,12 @@ size = Vector2(32, 16)
 [node name="Speaker" type="StaticBody2D"]
 collision_mask = 0
 script = ExtResource("1_base")
-furniture_resource = ExtResource("2_gyleh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_speaker")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 z_index = 1
+modulate = Color(0.3, 0.3, 0.35, 0.9)
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]

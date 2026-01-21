@@ -1,20 +1,36 @@
-[gd_scene load_steps=4 format=3 uid="uid://b4r7n2k8m5pqx"]
+[gd_scene load_steps=6 format=3 uid="uid://b4r7n2k8m5pqx"]
 
 [ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
-[ext_resource type="Resource" uid="uid://djp6alha6mo3a" path="res://data/furniture/register.tres" id="2_cm8w6"]
+[ext_resource type="Texture2D" path="res://resources/IIP - Outlined/Props/laptop_a.png" id="3_dir0"]
+[ext_resource type="Texture2D" path="res://resources/IIP - Outlined/Props/laptop_b.png" id="4_dir1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_register"]
 size = Vector2(32, 16)
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_register"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_dir0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_dir1")
+}],
+"loop": false,
+"name": &"default",
+"speed": 1.0
+}]
+
 [node name="Register" type="StaticBody2D"]
 collision_mask = 0
 script = ExtResource("1_base")
-furniture_resource = ExtResource("2_cm8w6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_register")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_index = 1
+sprite_frames = SubResource("SpriteFrames_register")
+animation = &"default"
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]

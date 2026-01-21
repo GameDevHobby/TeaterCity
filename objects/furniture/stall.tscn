@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://c2k6n8m4r7pqt"]
+[gd_scene load_steps=3 format=3 uid="uid://c2k6n8m4r7pqt"]
 
 [ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
-[ext_resource type="Resource" uid="uid://8x8pjs1v1yu4" path="res://data/furniture/stall.tres" id="2_m3hdv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_stall"]
 size = Vector2(32, 32)
@@ -9,12 +8,12 @@ size = Vector2(32, 32)
 [node name="Stall" type="StaticBody2D"]
 collision_mask = 0
 script = ExtResource("1_base")
-furniture_resource = ExtResource("2_m3hdv")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_stall")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 z_index = 1
+modulate = Color(0.7, 0.7, 0.8, 0.9)
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]

@@ -12,9 +12,10 @@ script = ExtResource("1_base")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_base")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_index = 1
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]
 affect_navigation_mesh = true
 carve_navigation_mesh = true
+avoidance_layers = 2

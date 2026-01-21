@@ -32,7 +32,7 @@ window/handheld/orientation=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdai-mcp-plugin-godot/plugin.cfg", "res://addons/godot_visualstudio_debugger/plugin.cfg", "res://addons/ppc/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdai-mcp-plugin-godot/plugin.cfg", "res://addons/godot_visualstudio_debugger/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/ppc/plugin.cfg")
 
 [input]
 

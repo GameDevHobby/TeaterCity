@@ -1,20 +1,43 @@
-[gd_scene load_steps=4 format=3 uid="uid://c7p4fnk2mbxu2"]
+[gd_scene load_steps=8 format=3 uid="uid://c7p4fnk2mbxu2"]
 
 [ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
-[ext_resource type="Resource" uid="uid://ckxyupkkjmytt" path="res://data/furniture/seat.tres" id="2_u2hlp"]
+[ext_resource type="Texture2D" uid="uid://duqgkedanbn2x" path="res://resources/IIP - Outlined/furniture/chairBrown_a.png" id="3_dir0"]
+[ext_resource type="Texture2D" uid="uid://tke5bat55cyl" path="res://resources/IIP - Outlined/furniture/chairBrown_b.png" id="4_dir1"]
+[ext_resource type="Texture2D" uid="uid://daswogp1ia86" path="res://resources/IIP - Outlined/furniture/chairBrown_c.png" id="5_dir2"]
+[ext_resource type="Texture2D" uid="uid://bbunvyeaeqgh6" path="res://resources/IIP - Outlined/furniture/chairBrown_d.png" id="6_dir3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_seat"]
 size = Vector2(32, 16)
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_seat"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_dir0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_dir1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_dir2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_dir3")
+}],
+"loop": false,
+"name": &"default",
+"speed": 1.0
+}]
+
 [node name="Seat" type="StaticBody2D"]
 collision_mask = 0
 script = ExtResource("1_base")
-furniture_resource = ExtResource("2_u2hlp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_seat")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_index = 1
+sprite_frames = SubResource("SpriteFrames_seat")
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]

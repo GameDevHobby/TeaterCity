@@ -10,11 +10,9 @@ extends Resource
 
 @export_group("Visuals")
 @export var scene: PackedScene  # Direct reference to furniture scene
-@export var sprite: Texture2D  # Fallback sprite if no scene
 
 @export_group("Placement")
 @export var access_offsets: Array[Vector2i] = []  # Direction offsets like [(0, 1)] for south access
-@export var preview_sprites: Dictionary = {}  # {"north": Texture2D, ...} for UI previews
 
 func get_grid_footprint() -> Array[Vector2i]:
 	var tiles: Array[Vector2i] = []
@@ -40,11 +38,3 @@ func get_rotated_access_tiles(rotation: int) -> Array[Vector2i]:
 				tiles.append(access_tile)
 
 	return tiles
-
-## Maps rotation (0-3) to directional preview sprite path
-func get_preview_sprite_for_rotation(rotation: int) -> String:
-	var direction_names = ["north", "east", "south", "west"]
-	var direction = direction_names[rotation % 4]
-	if preview_sprites.has(direction):
-		return preview_sprites[direction]
-	return ""

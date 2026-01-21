@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://bx8r4m6oahptv"]
+[gd_scene load_steps=3 format=3 uid="uid://bx8r4m6oahptv"]
 
 [ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
-[ext_resource type="Resource" uid="uid://by0s5efp1whu4" path="res://data/furniture/ticket_window.tres" id="2_4scqn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ticket"]
 size = Vector2(64, 16)
@@ -9,12 +8,12 @@ size = Vector2(64, 16)
 [node name="TicketWindow" type="StaticBody2D"]
 collision_mask = 0
 script = ExtResource("1_base")
-furniture_resource = ExtResource("2_4scqn")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_ticket")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 z_index = 1
+modulate = Color(0.3, 0.5, 0.6, 0.9)
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]

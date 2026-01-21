@@ -4,7 +4,8 @@ extends Node
 signal room_completed(room: RoomInstance)
 signal state_changed(new_state: String)
 
-@export var tilemap_layer: TileMapLayer
+@export var tilemap_layer: TileMapLayer  # Wall layer for wall visuals
+@export var ground_tilemap_layer: TileMapLayer  # Ground layer for clearing nav tiles under furniture
 @export var ui: RoomBuildUI
 @export var furniture_visuals: Node2D
 
@@ -143,9 +144,9 @@ func _on_complete_pressed() -> void:
 		for door in current_room.doors:
 			_door_op.create_door_visuals(door, tilemap_layer)
 
-	# Create furniture visuals
+	# Create furniture visuals (clear ground tiles for navigation)
 	for furn in current_room.furniture:
-		_furniture_op.create_furniture_visual(furn, furniture_visuals, tilemap_layer)
+		_furniture_op.create_furniture_visual(furn, furniture_visuals, ground_tilemap_layer)
 
 	# Update navigation
 	_navigation_op.update_room_navigation(current_room, tilemap_layer)

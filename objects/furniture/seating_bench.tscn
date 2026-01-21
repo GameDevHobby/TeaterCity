@@ -1,20 +1,44 @@
-[gd_scene load_steps=4 format=3 uid="uid://dv8n3k5t7pfx4"]
+[gd_scene load_steps=8 format=3 uid="uid://dv8n3k5t7pfx4"]
 
 [ext_resource type="Script" uid="uid://d2xuayqo1w5c" path="res://objects/furniture/furniture_base.gd" id="1_base"]
-[ext_resource type="Resource" uid="uid://diqo1l4y8ovpi" path="res://data/furniture/seating_bench.tres" id="2_14bh3"]
+[ext_resource type="Texture2D" path="res://resources/IIP - Outlined/furniture/sofaGray_a.png" id="3_dir0"]
+[ext_resource type="Texture2D" path="res://resources/IIP - Outlined/furniture/sofaGray_b.png" id="4_dir1"]
+[ext_resource type="Texture2D" path="res://resources/IIP - Outlined/furniture/sofaGray_c.png" id="5_dir2"]
+[ext_resource type="Texture2D" path="res://resources/IIP - Outlined/furniture/sofaGray_d.png" id="6_dir3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bench"]
 size = Vector2(64, 16)
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_bench"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_dir0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_dir1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_dir2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_dir3")
+}],
+"loop": false,
+"name": &"default",
+"speed": 1.0
+}]
+
 [node name="SeatingBench" type="StaticBody2D"]
 collision_mask = 0
 script = ExtResource("1_base")
-furniture_resource = ExtResource("2_14bh3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_bench")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_index = 1
+sprite_frames = SubResource("SpriteFrames_bench")
+animation = &"default"
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]
