@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-01-21
+**Last Updated:** 2026-01-22
 
 ---
 
@@ -22,13 +22,13 @@
 ## Current Position
 
 **Phase:** 1 of 10 (Room Manager Foundation)
-**Plan:** 2 of 2 complete
+**Plan:** 3 of 3 complete (gap closure plan added)
 **Status:** Phase complete
-**Last activity:** 2026-01-21 - Completed 01-02-PLAN.md
+**Last activity:** 2026-01-22 - Completed 01-03-PLAN.md (UAT gap closure)
 
 **Progress:**
 ```
-Phase  1: [X] Room Manager Foundation (2/2 plans) COMPLETE
+Phase  1: [X] Room Manager Foundation (3/3 plans) COMPLETE
 Phase  2: [ ] Room Menu & Edit Mode Entry
 Phase  3: [ ] Persistence Infrastructure
 Phase  4: [ ] Furniture Selection
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 2 |
-| Plans Passed | 2 |
+| Plans Executed | 3 |
+| Plans Passed | 3 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -70,13 +70,15 @@ Phase 10: [ ] Testing & Verification
 | CanvasLayer wrapper for highlight | Main.tscn is Node2D, Controls need screen-space rendering | 1-02 |
 | Highlight all room tiles | Clearer visual feedback than interior-only | 1-02 |
 | MOUSE_FILTER_IGNORE on highlight | Prevent blocking input to room Area2D below | 1-02 |
+| Dual input handling | Handle both InputEventMouseButton and InputEventScreenTouch | 1-03 |
 | Parallel RoomEditController | Separate from build workflow, different lifecycle | 2 |
 | Atomic saves | Prevent corruption on mobile crashes | 3 |
 | Doors reset on resize | Simpler than auto-adjusting door positions | 8 |
 
 ### Technical Notes
 
-- Touch input: Use 20px/300ms threshold to distinguish tap from drag
+- Input handling: Desktop uses InputEventMouseButton, mobile uses InputEventScreenTouch
+- Touch/click input: Use 20px/300ms threshold to distinguish tap from drag
 - Navigation: Must update mesh after ANY room modification
 - Signals: Disconnect before dropping RoomInstance references to prevent leaks
 - Coordinates: Always store Vector2i tile coords, never world positions
@@ -92,6 +94,8 @@ None currently.
 - [x] Plan Phase 1: Room Manager Foundation
 - [x] Execute 01-01-PLAN.md: RoomManager singleton
 - [x] Execute 01-02-PLAN.md: Integration with RoomBuildController
+- [x] Execute 01-03-PLAN.md: Desktop mouse input fix (UAT gap closure)
+- [ ] Re-run UAT to verify all tests pass
 - [ ] Begin Phase 2: Room Menu & Edit Mode Entry
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
@@ -101,26 +105,27 @@ None currently.
 
 ### What Was Done
 
-- Executed 01-02-PLAN.md: Selection integration and visual highlight
-- Created RoomSelectionHighlight.gd with signal-driven redraws
-- Modified RoomBuildController to register rooms on completion
-- Added CanvasLayer wrapper and deselection logic to Main.gd
-- Committed 3 tasks atomically (0d6f881, 2727d7a, 0651050)
+- Executed 01-03-PLAN.md: UAT gap closure for desktop mouse input
+- Added InputEventMouseButton handling to RoomManager._on_area_input()
+- Preserved InputEventScreenTouch for mobile compatibility
+- Fixed root cause: selection only worked on mobile, not desktop
+- Committed fix (88d6963)
 
 ### What's Next
 
-1. Begin Phase 2: Room Menu & Edit Mode Entry
-2. First plan should create room edit menu shown on selection
+1. Re-run UAT to verify tests 2-6 now pass with mouse input
+2. Begin Phase 2: Room Menu & Edit Mode Entry
+3. First plan should create room edit menu shown on selection
 
 ### Context for Next Session
 
-Phase 1 (Room Manager Foundation) is complete. The selection workflow is now functional:
+Phase 1 (Room Manager Foundation) is complete with UAT gap fixed. The selection workflow now works on both desktop and mobile:
 1. Build a room -> auto-registers with RoomManager
-2. Tap completed room -> visual yellow highlight appears
-3. Tap outside rooms -> selection clears
+2. Click/tap completed room -> visual yellow highlight appears
+3. Click/tap outside rooms -> selection clears
 
-Key files created:
-- `Scripts/RoomManager.gd` - Singleton with room tracking, Area2D selection
+Key files:
+- `Scripts/RoomManager.gd` - Singleton with room tracking, Area2D selection (dual input handling)
 - `Scripts/room_building/RoomSelectionHighlight.gd` - Visual highlight Control
 
 Key signals available:
@@ -130,4 +135,4 @@ Key signals available:
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-21*
+*Last updated: 2026-01-22*
