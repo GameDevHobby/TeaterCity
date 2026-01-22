@@ -64,6 +64,7 @@ var _preview_textures: Dictionary = {}  # Cache for generated preview textures
 # UI references (assigned via @export from scene)
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE  # Allow Area2D input_event to receive clicks
 	hide()  # Start hidden until build mode is activated
 	_create_room_type_buttons()
 	_setup_ui_styles()
