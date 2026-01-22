@@ -31,11 +31,13 @@ This roadmap transforms the existing room building system into a full room edito
 3. Tapping outside any room deselects current selection
 4. Touch input does not conflict with camera pan (toggle camera.enable_pinch_pan)
 
-**Plans:** 2 plans
+**Plans:** 4 plans
 
 Plans:
 - [x] 01-01-PLAN.md - RoomManager singleton with Area2D selection and tap detection
 - [x] 01-02-PLAN.md - Selection highlight visual and system integration
+- [x] 01-03-PLAN.md - Desktop mouse input fix (gap closure)
+- [x] 01-04-PLAN.md - RoomBuildUI mouse filter fix (gap closure)
 
 **Risk Flags:**
 - MEDIUM: Touch conflicts with camera pan - must toggle camera input during edit mode
