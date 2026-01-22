@@ -112,19 +112,25 @@ func _room_to_polygon(room: RoomInstance) -> PackedVector2Array:
 
 
 func _on_area_input(_viewport: Node, event: InputEvent, _shape_idx: int, room: RoomInstance) -> void:
-	if not event is InputEventScreenTouch:
+	# Handle mouse clicks (desktop)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_touch_start_pos = event.position
+			_touch_start_time = Time.get_ticks_msec()
+		else:
+			var distance := event.position.distance_to(_touch_start_pos)
+			var duration := Time.get_ticks_msec() - _touch_start_time
+			if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
+				select_room(room)
 		return
 
-	var touch_event := event as InputEventScreenTouch
-
-	if touch_event.pressed:
-		# Touch started - record position and time
-		_touch_start_pos = touch_event.position
-		_touch_start_time = Time.get_ticks_msec()
-	else:
-		# Touch released - check if it's a tap
-		var distance := touch_event.position.distance_to(_touch_start_pos)
-		var duration := Time.get_ticks_msec() - _touch_start_time
-
-		if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
-			select_room(room)
+	# Handle touch events (mobile)
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_touch_start_pos = event.position
+			_touch_start_time = Time.get_ticks_msec()
+		else:
+			var distance := event.position.distance_to(_touch_start_pos)
+			var duration := Time.get_ticks_msec() - _touch_start_time
+			if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
+				select_room(room)
