@@ -96,10 +96,16 @@ Plans:
 **Success Criteria:**
 1. Closing and reopening the game restores all rooms to their last saved state
 2. Room positions, doors, and furniture all persist correctly
-3. Save file exists at user://saves/rooms.dat (or .json per PROJECT.md preference)
+3. Save file exists at user://saves/rooms.json
 4. Corrupted save file does not crash the game (graceful fallback)
 
-**Estimated Tasks:** 10-14
+**Plans:** 4 plans
+
+Plans:
+- [ ] 03-01-PLAN.md - RoomInstance serialization (to_dict/from_dict methods)
+- [ ] 03-02-PLAN.md - RoomSerializer atomic JSON file I/O
+- [ ] 03-03-PLAN.md - Auto-save integration and load on startup
+- [ ] 03-04-PLAN.md - Visual restoration and human verification
 
 **Risk Flags:**
 - HIGH: Save file corruption on mobile - use atomic writes (temp file + rename)
@@ -340,7 +346,7 @@ Plans:
 |-------|------|--------|--------------|
 | 1 | Room Manager Foundation | Complete | SEL-01, SEL-02 |
 | 2 | Room Menu & Edit Mode Entry | Complete | SEL-03, SEL-04 |
-| 3 | Persistence Infrastructure | Pending | PER-01, PER-02, PER-03, PER-04 |
+| 3 | Persistence Infrastructure | Planned | PER-01, PER-02, PER-03, PER-04 |
 | 4 | Furniture Selection | Planned | FUR-01, FUR-02 |
 | 5 | Furniture Editing Operations | Pending | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
 | 6 | Door Editing | Pending | DOOR-01, DOOR-02, DOOR-03 |
@@ -410,4 +416,5 @@ Phase 9 (Admin Menu)                                              Phase 8 (Room 
 ---
 
 *Roadmap created: 2026-01-21*
+*Phase 3 planned: 2026-01-22*
 *Phase 4 planned: 2026-01-22*
