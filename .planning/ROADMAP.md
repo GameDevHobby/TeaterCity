@@ -335,7 +335,7 @@ Plans:
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
 | 1 | Room Manager Foundation | Complete | SEL-01, SEL-02 |
-| 2 | Room Menu & Edit Mode Entry | In Progress | SEL-03, SEL-04 |
+| 2 | Room Menu & Edit Mode Entry | Complete | SEL-03, SEL-04 |
 | 3 | Persistence Infrastructure | Pending | PER-01, PER-02, PER-03, PER-04 |
 | 4 | Furniture Selection | Pending | FUR-01, FUR-02 |
 | 5 | Furniture Editing Operations | Pending | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
