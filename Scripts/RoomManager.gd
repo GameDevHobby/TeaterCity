@@ -44,6 +44,20 @@ func _setup_save_timer() -> void:
 	add_child(_save_debounce_timer)
 
 
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_WM_GO_BACKGROUND:
+			# App going to background (mobile) - save immediately
+			if _save_pending:
+				_save_debounce_timer.stop()
+				_perform_save()
+		NOTIFICATION_WM_CLOSE_REQUEST:
+			# Window close requested (desktop) - save immediately
+			if _save_pending:
+				_save_debounce_timer.stop()
+				_perform_save()
+
+
 func _load_saved_rooms() -> void:
 	var saved_rooms := RoomSerializer.load_rooms()
 	for room in saved_rooms:
