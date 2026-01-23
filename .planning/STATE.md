@@ -22,16 +22,16 @@
 ## Current Position
 
 **Phase:** 4 of 10 (Furniture Selection)
-**Plan:** 1 of 2 complete
+**Plan:** 2 of 2 complete
 **Status:** In progress
-**Last activity:** 2026-01-23 - Completed 04-01-PLAN.md (FurnitureEditController)
+**Last activity:** 2026-01-23 - Completed 03-03-PLAN.md (SaveLoad Integration)
 
 **Progress:**
 ```
 Phase  1: [X] Room Manager Foundation (4/4 plans) COMPLETE
 Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
-Phase  3: [>] Persistence Infrastructure (2/4 plans)
-Phase  4: [>] Furniture Selection (1/2 plans)
+Phase  3: [>] Persistence Infrastructure (3/4 plans)
+Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [ ] Furniture Editing Operations
 Phase  6: [ ] Door Editing
 Phase  7: [ ] Room Deletion
@@ -40,7 +40,7 @@ Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 2/10 phases complete (20%)
+**Milestone Progress:** 3/10 phases complete (30%)
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 7 |
-| Plans Passed | 7 |
+| Plans Executed | 8 |
+| Plans Passed | 8 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -86,6 +86,8 @@ Phase 10: [ ] Testing & Verification
 | Cyan furniture highlight | Color(0.2, 0.8, 1.0) distinct from room yellow | 4-01 |
 | 44px minimum tap target | Mobile accessibility guideline for touch targets | 4-01 |
 | FurnitureEditLayer at layer 0 | Same z-order as SelectionHighlightLayer | 4-01 |
+| 5-second save debounce | Balances responsiveness with disk I/O efficiency | 3-03 |
+| Immediate save on app suspend | Mobile apps can be killed without warning | 3-03 |
 
 ### Technical Notes
 
@@ -100,6 +102,8 @@ Phase 10: [ ] Testing & Verification
 - Menu positioning: Use IsometricMath.tile_to_screen, await process_frame for panel size, clamp to viewport
 - Serialization: Use direct array assignment in from_dict() to avoid placement_changed signals
 - Furniture selection: Create Area2D per furniture piece, expand small footprints to 44x44 min tap target
+- Auto-save: 5-second debounce timer consolidates rapid changes into single save
+- Save on suspend: Handle NOTIFICATION_WM_GO_BACKGROUND for mobile, NOTIFICATION_WM_CLOSE_REQUEST for desktop
 
 ### Blockers
 
@@ -118,10 +122,10 @@ None currently.
 - [x] Verify Phase 2 complete (5/5 must-haves)
 - [x] Execute 03-01-PLAN.md: RoomInstance serialization
 - [x] Execute 03-02-PLAN.md: RoomSerializer atomic file I/O
-- [ ] Execute 03-03-PLAN.md: SaveLoad integration
+- [x] Execute 03-03-PLAN.md: SaveLoad integration
 - [ ] Execute 03-04-PLAN.md: Auto-save on room changes
 - [x] Execute 04-01-PLAN.md: FurnitureEditController
-- [ ] Execute 04-02-PLAN.md: List Selection UI
+- [x] Execute 04-02-PLAN.md: List Selection UI
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -130,37 +134,36 @@ None currently.
 
 ### What Was Done
 
-- Executed 04-01-PLAN.md: FurnitureEditController and highlight
-- Created FurnitureEditController with Area2D tap detection per furniture piece
-- Created FurnitureSelectionHighlight with cyan color for visual feedback
-- Integrated into Main.gd with edit_furniture_pressed signal connection
-- Commits: b0c3012, f769fdc, 3384d86
+- Executed 03-03-PLAN.md: SaveLoad Integration
+- Added load-on-startup to RoomManager via _load_saved_rooms()
+- Added debounced auto-save with 5-second timer
+- Added app suspension save (NOTIFICATION_WM_GO_BACKGROUND/CLOSE_REQUEST)
+- Commits: ca4d30b, 2f40bf2, 78884a5
 
 ### What's Next
 
-1. Execute 04-02-PLAN.md: List Selection UI (if exists)
-2. Complete Phase 3 remaining plans (SaveManager, SaveLoad, Auto-save)
-3. Continue to Phase 5 (Furniture Editing Operations)
+1. Execute 03-04-PLAN.md: Auto-save on room changes (if exists, or may be complete)
+2. Continue to Phase 5 (Furniture Editing Operations)
+3. Consider spike planning for Phase 8 (Room Resize)
 
 ### Context for Next Session
 
-Phase 4 Plan 1 complete. Furniture selection infrastructure ready:
-- `FurnitureEditController` - Manages furniture edit mode, tap detection on furniture
-- `FurnitureSelectionHighlight` - Draws cyan highlight on selected furniture
-- Entry flow: Room selected -> Edit Furniture button -> furniture edit mode
+Phase 3 Plan 3 complete. Persistence integration is ready:
+- Rooms load from `user://saves/rooms.json` on game start
+- New rooms auto-save after 5-second debounce
+- placement_changed signal triggers auto-save
+- Mobile app backgrounding triggers immediate save
 
-Key files created:
-- `Scripts/room_editing/FurnitureEditController.gd` - Selection controller with signals
-- `Scripts/room_editing/FurnitureSelectionHighlight.gd` - Visual highlight
-- `Scripts/Main.gd` - Updated with furniture editing integration
+Key file modified:
+- `Scripts/RoomManager.gd` - Auto-save and load-on-startup
 
-Selection flow:
-1. User taps room -> yellow highlight + RoomEditMenu
-2. User taps "Edit Furniture" -> enters furniture edit mode
-3. User taps furniture -> cyan highlight on that piece
-4. User taps empty space -> deselect furniture
+Save flow:
+1. Game starts -> _load_saved_rooms() -> RoomSerializer.load_rooms()
+2. Room built -> register_room() -> _schedule_save() -> 5s debounce -> save
+3. Furniture added -> placement_changed -> _on_room_changed() -> _schedule_save()
+4. App background -> _notification() -> immediate save
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-23*
+*Last updated: 2026-01-23 (03-03-PLAN.md complete)*
