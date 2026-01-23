@@ -47,7 +47,11 @@
       "Bash(cmd /c \"dir \"\"C:\\\\Users\\\\chris\\\\OneDrive\\\\Documents\\\\Godot_v4.5.1\\\\*.exe\"\"\")",
       "Bash(cmd /c \"dir \"\"C:\\\\Users\\\\chris\\\\OneDrive\\\\Documents\\\\Godot_v4.5.1\"\"\")",
       "Bash(\"C:\\\\Users\\\\chris\\\\OneDrive\\\\Documents\\\\Godot_v4.5.1\\\\Godot_v4.5.1-stable_win64_console.exe\" --headless -s addons/gut/gut_cmdln.gd)",
-      "Bash(\"C:\\\\Users\\\\chris\\\\OneDrive\\\\Documents\\\\Godot_v4.5.1\\\\Godot_v4.5.1-stable_win64_console.exe\" --headless -s addons/gut/gut_cmdln.gd --path \"C:\\\\git\\\\TheaterCity\")"
+      "Bash(\"C:\\\\Users\\\\chris\\\\OneDrive\\\\Documents\\\\Godot_v4.5.1\\\\Godot_v4.5.1-stable_win64_console.exe\" --headless -s addons/gut/gut_cmdln.gd --path \"C:\\\\git\\\\TheaterCity\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git -C \"C:\\\\git\\\\TheaterCity\" check-ignore -q .planning)"
     ]
   }
 }

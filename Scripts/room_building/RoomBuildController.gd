@@ -159,10 +159,11 @@ func _on_complete_pressed() -> void:
 		ui.hide_furniture_panel()
 		ui.end_all_modes()
 
-	room_completed.emit(current_room)
-
-	# Register with RoomManager for selection/editing
+	# Register with RoomManager BEFORE emitting signal
+	# (signal handler calls end_build_mode which clears current_room)
 	RoomManager.register_room(current_room)
+
+	room_completed.emit(current_room)
 
 	current_room = null
 	current_room_type = null
