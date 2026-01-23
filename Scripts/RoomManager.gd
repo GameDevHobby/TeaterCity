@@ -118,7 +118,7 @@ func _on_area_input(_viewport: Node, event: InputEvent, _shape_idx: int, room: R
 			_touch_start_pos = event.position
 			_touch_start_time = Time.get_ticks_msec()
 		else:
-			var distance := event.position.distance_to(_touch_start_pos)
+			var distance:float = event.position.distance_to(_touch_start_pos)
 			var duration := Time.get_ticks_msec() - _touch_start_time
 			if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
 				select_room(room)
@@ -130,7 +130,7 @@ func _on_area_input(_viewport: Node, event: InputEvent, _shape_idx: int, room: R
 			_touch_start_pos = event.position
 			_touch_start_time = Time.get_ticks_msec()
 		else:
-			var distance := event.position.distance_to(_touch_start_pos)
+			var distance:float = event.position.distance_to(_touch_start_pos)
 			var duration := Time.get_ticks_msec() - _touch_start_time
 			if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
 				select_room(room)
