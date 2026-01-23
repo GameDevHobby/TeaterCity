@@ -6,6 +6,7 @@ extends Node2D
 @export var build_button: Button
 
 var _build_mode_active = false
+var _furniture_controller: FurnitureEditController = null
 
 func _ready() -> void:
 	room_build_manager.room_completed.connect(_on_room_completed)
@@ -42,6 +43,30 @@ func _ready() -> void:
 	edit_menu.edit_room_pressed.connect(_on_edit_room_requested)
 	edit_menu.room_type_action_pressed.connect(_on_room_type_action_requested)
 
+	# Create furniture editing CanvasLayer (same layer as room selection for correct z-order)
+	var furniture_edit_layer = CanvasLayer.new()
+	furniture_edit_layer.name = "FurnitureEditLayer"
+	furniture_edit_layer.layer = 0  # Same layer as SelectionHighlightLayer
+	add_child(furniture_edit_layer)
+
+	# Create FurnitureEditController
+	_furniture_controller = FurnitureEditController.new()
+	_furniture_controller.name = "FurnitureEditController"
+	_furniture_controller.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_furniture_controller.set_anchors_preset(Control.PRESET_FULL_RECT)
+	furniture_edit_layer.add_child(_furniture_controller)
+
+	# Create FurnitureSelectionHighlight
+	var furniture_highlight = FurnitureSelectionHighlight.new()
+	furniture_highlight.name = "FurnitureSelectionHighlight"
+	furniture_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	furniture_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
+	furniture_edit_layer.add_child(furniture_highlight)
+	furniture_highlight.set_controller(_furniture_controller)
+
+	# Connect furniture controller mode_exited signal
+	_furniture_controller.mode_exited.connect(_on_furniture_edit_exited)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_build"):
@@ -74,7 +99,11 @@ func _on_room_selected(room: RoomInstance) -> void:
 
 
 func _on_edit_furniture_requested(room: RoomInstance) -> void:
-	print("Edit furniture requested: ", room.id)
+	print("Entering furniture edit mode: ", room.id)
+	# Hide room edit menu while in furniture edit mode
+	# (RoomEditMenu hides itself when selection_cleared fires)
+	RoomManager.clear_selection()
+	_furniture_controller.enter_edit_mode(room)
 
 
 func _on_edit_room_requested(room: RoomInstance) -> void:
@@ -83,6 +112,11 @@ func _on_edit_room_requested(room: RoomInstance) -> void:
 
 func _on_room_type_action_requested(room: RoomInstance) -> void:
 	print("Room type action requested: ", room.id, " type: ", room.room_type_id)
+
+
+func _on_furniture_edit_exited() -> void:
+	print("Exited furniture edit mode")
+	# Room can be re-selected now via normal RoomManager flow
 
 
 func _exit_build_mode() -> void:
