@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 3 in progress - Persistence Infrastructure
+**Current Focus:** Phase 4 in progress - Furniture Selection
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,17 +21,17 @@
 
 ## Current Position
 
-**Phase:** 3 of 10 (Persistence Infrastructure)
-**Plan:** 1 of 4 complete
+**Phase:** 4 of 10 (Furniture Selection)
+**Plan:** 1 of 2 complete
 **Status:** In progress
-**Last activity:** 2026-01-23 - Completed 03-01-PLAN.md (RoomInstance serialization)
+**Last activity:** 2026-01-23 - Completed 04-01-PLAN.md (FurnitureEditController)
 
 **Progress:**
 ```
 Phase  1: [X] Room Manager Foundation (4/4 plans) COMPLETE
 Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
 Phase  3: [>] Persistence Infrastructure (1/4 plans)
-Phase  4: [ ] Furniture Selection
+Phase  4: [>] Furniture Selection (1/2 plans)
 Phase  5: [ ] Furniture Editing Operations
 Phase  6: [ ] Door Editing
 Phase  7: [ ] Room Deletion
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 6 |
-| Plans Passed | 6 |
+| Plans Executed | 7 |
+| Plans Passed | 7 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -81,6 +81,9 @@ Phase 10: [ ] Testing & Verification
 | Vector2i as {x,y} objects | JSON.parse_string() handles objects better than arrays | 3-01 |
 | Schema versioning | Enables future data migrations without breaking old saves | 3-01 |
 | Registry lookup in from_dict | FurniturePlacement restores resource reference by ID | 3-01 |
+| Cyan furniture highlight | Color(0.2, 0.8, 1.0) distinct from room yellow | 4-01 |
+| 44px minimum tap target | Mobile accessibility guideline for touch targets | 4-01 |
+| FurnitureEditLayer at layer 0 | Same z-order as SelectionHighlightLayer | 4-01 |
 
 ### Technical Notes
 
@@ -94,6 +97,7 @@ Phase 10: [ ] Testing & Verification
 - MOUSE_FILTER_IGNORE: Required on full-rect Controls to allow Area2D.input_event to receive clicks
 - Menu positioning: Use IsometricMath.tile_to_screen, await process_frame for panel size, clamp to viewport
 - Serialization: Use direct array assignment in from_dict() to avoid placement_changed signals
+- Furniture selection: Create Area2D per furniture piece, expand small footprints to 44x44 min tap target
 
 ### Blockers
 
@@ -114,6 +118,8 @@ None currently.
 - [ ] Execute 03-02-PLAN.md: SaveManager implementation
 - [ ] Execute 03-03-PLAN.md: SaveLoad integration
 - [ ] Execute 03-04-PLAN.md: Auto-save on room changes
+- [x] Execute 04-01-PLAN.md: FurnitureEditController
+- [ ] Execute 04-02-PLAN.md: List Selection UI
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -122,41 +128,35 @@ None currently.
 
 ### What Was Done
 
-- Executed 03-01-PLAN.md: RoomInstance serialization methods
-- Added to_dict()/from_dict() to DoorPlacement and FurniturePlacement inner classes
-- Added to_dict()/from_dict() to RoomInstance class
-- Added SCHEMA_VERSION constant for future migration support
-- Commits: 1de1a46, 32417d8, 7545b50
+- Executed 04-01-PLAN.md: FurnitureEditController and highlight
+- Created FurnitureEditController with Area2D tap detection per furniture piece
+- Created FurnitureSelectionHighlight with cyan color for visual feedback
+- Integrated into Main.gd with edit_furniture_pressed signal connection
+- Commits: b0c3012, f769fdc, 3384d86
 
 ### What's Next
 
-1. Execute 03-02-PLAN.md: SaveManager implementation
-2. Execute 03-03-PLAN.md: SaveLoad integration
-3. Execute 03-04-PLAN.md: Auto-save on room changes
-4. Verify Phase 3 complete
+1. Execute 04-02-PLAN.md: List Selection UI (if exists)
+2. Complete Phase 3 remaining plans (SaveManager, SaveLoad, Auto-save)
+3. Continue to Phase 5 (Furniture Editing Operations)
 
 ### Context for Next Session
 
-Phase 3 Plan 1 complete. RoomInstance now supports serialization:
-- `room.to_dict()` - Converts room to Dictionary for JSON
-- `RoomInstance.from_dict(data)` - Creates room from Dictionary
-- Schema version 1 embedded in output for future migrations
+Phase 4 Plan 1 complete. Furniture selection infrastructure ready:
+- `FurnitureEditController` - Manages furniture edit mode, tap detection on furniture
+- `FurnitureSelectionHighlight` - Draws cyan highlight on selected furniture
+- Entry flow: Room selected -> Edit Furniture button -> furniture edit mode
 
-Serialization format:
-```json
-{
-  "schema_version": 1,
-  "id": "room_1234",
-  "room_type_id": "lobby",
-  "bounding_box": {"x": 5, "y": 10, "width": 6, "height": 4},
-  "walls": [{"x": 5, "y": 10}, ...],
-  "doors": [{"position": {"x": 7, "y": 10}, "direction": 2}],
-  "furniture": [{"furniture_id": "chair_01", "position": {"x": 6, "y": 11}, "rotation": 0}]
-}
-```
+Key files created:
+- `Scripts/room_editing/FurnitureEditController.gd` - Selection controller with signals
+- `Scripts/room_editing/FurnitureSelectionHighlight.gd` - Visual highlight
+- `Scripts/Main.gd` - Updated with furniture editing integration
 
-Key file modified:
-- `Scripts/storage/RoomInstance.gd` - Now has full serialization support
+Selection flow:
+1. User taps room -> yellow highlight + RoomEditMenu
+2. User taps "Edit Furniture" -> enters furniture edit mode
+3. User taps furniture -> cyan highlight on that piece
+4. User taps empty space -> deselect furniture
 
 ---
 
