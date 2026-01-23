@@ -41,6 +41,9 @@ func _ready() -> void:
 	else:
 		push_warning("RoomBuildController: UI not found!")
 
+	# Connect to RoomManager for visual restoration of loaded rooms
+	RoomManager.room_restored.connect(_on_room_restored)
+
 func start_build_mode() -> void:
 	if ui:
 		ui.show_all()
@@ -169,3 +172,27 @@ func _on_complete_pressed() -> void:
 	current_room_type = null
 	state_name = "idle"
 	state_changed.emit("idle")
+
+
+## Restore visuals for rooms loaded from save file
+func _on_room_restored(room: RoomInstance) -> void:
+	if room == null:
+		return
+
+	# Get room type to check if it has walls
+	var room_type := RoomTypeRegistry.get_instance().get_room_type(room.room_type_id)
+
+	# Restore wall visuals (only for rooms with walls)
+	if room_type and room_type.has_walls and room.walls.size() > 0:
+		_wall_op.create_wall_visuals(room, tilemap_layer)
+		for door in room.doors:
+			_door_op.create_door_visuals(door, tilemap_layer)
+
+	# Restore furniture visuals
+	for furn in room.furniture:
+		_furniture_op.create_furniture_visual(furn, furniture_visuals, ground_tilemap_layer)
+
+	# Update navigation for this room
+	_navigation_op.update_room_navigation(room, tilemap_layer)
+
+	print("RoomBuildController: Restored visuals for room %s" % room.id)
