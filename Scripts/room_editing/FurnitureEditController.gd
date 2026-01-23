@@ -58,6 +58,18 @@ func is_active() -> bool:
 	return _active
 
 
+func select_furniture(furniture: RoomInstance.FurniturePlacement) -> void:
+	if not _active or _current_room == null:
+		return
+
+	# Verify furniture belongs to current room
+	if furniture not in _current_room.furniture:
+		return
+
+	_selected_furniture = furniture
+	furniture_selected.emit(_current_room, furniture)
+
+
 # --- Private Methods ---
 
 func _create_furniture_areas(room: RoomInstance) -> void:

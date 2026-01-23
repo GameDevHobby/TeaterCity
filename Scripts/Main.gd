@@ -7,6 +7,7 @@ extends Node2D
 
 var _build_mode_active = false
 var _furniture_controller: FurnitureEditController = null
+var _furniture_list_panel: FurnitureListPanel = null
 
 func _ready() -> void:
 	room_build_manager.room_completed.connect(_on_room_completed)
@@ -67,6 +68,16 @@ func _ready() -> void:
 	# Connect furniture controller mode_exited signal
 	_furniture_controller.mode_exited.connect(_on_furniture_edit_exited)
 
+	# Create furniture list panel (in EditMenuLayer since it's screen-space UI)
+	_furniture_list_panel = FurnitureListPanel.new()
+	_furniture_list_panel.name = "FurnitureListPanel"
+	edit_menu_layer.add_child(_furniture_list_panel)
+	_furniture_list_panel.set_controller(_furniture_controller)
+
+	# Connect list panel signals
+	_furniture_list_panel.furniture_item_selected.connect(_on_furniture_list_item_selected)
+	_furniture_list_panel.done_pressed.connect(_on_furniture_edit_done)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_build"):
@@ -104,6 +115,7 @@ func _on_edit_furniture_requested(room: RoomInstance) -> void:
 	# (RoomEditMenu hides itself when selection_cleared fires)
 	RoomManager.clear_selection()
 	_furniture_controller.enter_edit_mode(room)
+	_furniture_list_panel.show_for_room(room)  # Show list panel
 
 
 func _on_edit_room_requested(room: RoomInstance) -> void:
@@ -117,6 +129,14 @@ func _on_room_type_action_requested(room: RoomInstance) -> void:
 func _on_furniture_edit_exited() -> void:
 	print("Exited furniture edit mode")
 	# Room can be re-selected now via normal RoomManager flow
+
+
+func _on_furniture_list_item_selected(_index: int, furniture: RoomInstance.FurniturePlacement) -> void:
+	_furniture_controller.select_furniture(furniture)
+
+
+func _on_furniture_edit_done() -> void:
+	_furniture_controller.exit_edit_mode()
 
 
 func _exit_build_mode() -> void:
