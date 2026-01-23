@@ -66,14 +66,18 @@ Plans:
 3. Placeholder button shows room-type-specific label (e.g., "Theater Schedule")
 4. Menu dismisses when tapping outside or selecting another room
 
-**Estimated Tasks:** 6-10
+**Plans:** 1 plan
+
+Plans:
+- [ ] 02-01-PLAN.md - RoomEditMenu Control with contextual buttons and positioning
 
 **Risk Flags:**
 - LOW: Standard UI pattern
 
 **Research Notes:**
-- Create RoomEditController state machine parallel to RoomBuildController
-- State flow: idle -> select_room -> edit_mode -> [sub-operations] -> idle
+- Use PanelContainer (not PopupMenu) for custom-styled buttons
+- Position menu using IsometricMath.tile_to_screen() with CanvasLayer layer=1
+- Manual dismiss handling via _unhandled_input (both touch and mouse)
 
 ---
 
@@ -330,8 +334,8 @@ Plans:
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 1 | Room Manager Foundation | ✓ Complete | SEL-01, SEL-02 |
-| 2 | Room Menu & Edit Mode Entry | Pending | SEL-03, SEL-04 |
+| 1 | Room Manager Foundation | Complete | SEL-01, SEL-02 |
+| 2 | Room Menu & Edit Mode Entry | In Progress | SEL-03, SEL-04 |
 | 3 | Persistence Infrastructure | Pending | PER-01, PER-02, PER-03, PER-04 |
 | 4 | Furniture Selection | Pending | FUR-01, FUR-02 |
 | 5 | Furniture Editing Operations | Pending | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
