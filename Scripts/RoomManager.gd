@@ -12,6 +12,9 @@ signal selection_cleared
 const TAP_DISTANCE_THRESHOLD := 20.0  # pixels
 const TAP_TIME_THRESHOLD := 300  # milliseconds
 
+# Auto-save configuration
+const SAVE_DEBOUNCE_SECONDS := 5.0
+
 # Private state
 var _rooms: Array[RoomInstance] = []
 var _selected_room: RoomInstance = null
@@ -21,11 +24,24 @@ var _selection_areas: Dictionary = {}  # room.id -> Area2D
 var _touch_start_pos: Vector2 = Vector2.ZERO
 var _touch_start_time: int = 0
 
+# Auto-save state
+var _save_debounce_timer: Timer = null
+var _save_pending := false
+
 
 # --- Lifecycle ---
 
 func _ready() -> void:
 	_load_saved_rooms()
+	_setup_save_timer()
+
+
+func _setup_save_timer() -> void:
+	_save_debounce_timer = Timer.new()
+	_save_debounce_timer.one_shot = true
+	_save_debounce_timer.wait_time = SAVE_DEBOUNCE_SECONDS
+	_save_debounce_timer.timeout.connect(_on_save_timer_timeout)
+	add_child(_save_debounce_timer)
 
 
 func _load_saved_rooms() -> void:
@@ -66,7 +82,14 @@ func register_room(room: RoomInstance) -> void:
 
 	_rooms.append(room)
 	_create_selection_area(room)
+
+	# Connect to placement_changed for auto-save
+	room.placement_changed.connect(_on_room_changed)
+
 	room_added.emit(room)
+
+	# Schedule save for new room
+	_schedule_save()
 
 
 func get_all_rooms() -> Array[RoomInstance]:
@@ -168,5 +191,28 @@ func _on_area_input(_viewport: Node, event: InputEvent, _shape_idx: int, room: R
 
 
 func _on_room_changed() -> void:
-	# Placeholder for auto-save - will be implemented in Task 2
-	pass
+	_schedule_save()
+
+
+# --- Auto-save Methods ---
+
+func _schedule_save() -> void:
+	_save_pending = true
+	# Reset timer if already running (debounce)
+	if _save_debounce_timer.is_stopped():
+		_save_debounce_timer.start()
+	# Timer already running, it will save when it fires
+
+
+func _on_save_timer_timeout() -> void:
+	if _save_pending:
+		_save_pending = false
+		_perform_save()
+
+
+func _perform_save() -> void:
+	var success := RoomSerializer.save_rooms(_rooms)
+	if success:
+		print("RoomManager: Auto-saved %d rooms" % _rooms.size())
+	else:
+		push_error("RoomManager: Auto-save failed!")
