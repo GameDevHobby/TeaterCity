@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-23
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 1 complete - Room Manager Foundation
+**Current Focus:** Phase 2 in progress - Room Menu & Edit Mode Entry
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,15 +21,15 @@
 
 ## Current Position
 
-**Phase:** 1 of 10 (Room Manager Foundation)
-**Plan:** 4 of 4 complete (second gap closure plan added)
-**Status:** Phase verified ✓
-**Last activity:** 2026-01-22 - Completed 01-04-PLAN.md (RoomBuildUI mouse filter fix)
+**Phase:** 2 of 10 (Room Menu & Edit Mode Entry)
+**Plan:** 1 of ? complete
+**Status:** In progress
+**Last activity:** 2026-01-23 - Completed 02-01-PLAN.md (RoomEditMenu contextual menu)
 
 **Progress:**
 ```
 Phase  1: [X] Room Manager Foundation (4/4 plans) COMPLETE
-Phase  2: [ ] Room Menu & Edit Mode Entry
+Phase  2: [/] Room Menu & Edit Mode Entry (1/? plans)
 Phase  3: [ ] Persistence Infrastructure
 Phase  4: [ ] Furniture Selection
 Phase  5: [ ] Furniture Editing Operations
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 4 |
-| Plans Passed | 4 |
+| Plans Executed | 5 |
+| Plans Passed | 5 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -75,6 +75,9 @@ Phase 10: [ ] Testing & Verification
 | Parallel RoomEditController | Separate from build workflow, different lifecycle | 2 |
 | Atomic saves | Prevent corruption on mobile crashes | 3 |
 | Doors reset on resize | Simpler than auto-adjusting door positions | 8 |
+| MOUSE_FILTER_IGNORE on menu Control | Full-rect with STOP on panel for click capture | 2-01 |
+| Menu offset 30px right of center | Keep menu near but not covering room | 2-01 |
+| Contextual room-type button labels | Match statement maps room_type_id to feature names | 2-01 |
 
 ### Technical Notes
 
@@ -86,6 +89,7 @@ Phase 10: [ ] Testing & Verification
 - Isometric hit detection: Convert bounding box to diamond polygon via IsometricMath.tile_to_world()
 - Screen-space Controls: Use CanvasLayer layer=0 wrapper in Node2D scenes for tile_to_screen alignment
 - MOUSE_FILTER_IGNORE: Required on full-rect Controls to allow Area2D.input_event to receive clicks
+- Menu positioning: Use IsometricMath.tile_to_screen, await process_frame for panel size, clamp to viewport
 
 ### Blockers
 
@@ -98,8 +102,10 @@ None currently.
 - [x] Execute 01-02-PLAN.md: Integration with RoomBuildController
 - [x] Execute 01-03-PLAN.md: Desktop mouse input fix (UAT gap closure)
 - [x] Execute 01-04-PLAN.md: RoomBuildUI mouse filter fix (second gap closure)
-- [ ] Re-run UAT to verify all tests pass
-- [ ] Begin Phase 2: Room Menu & Edit Mode Entry
+- [x] Re-run UAT to verify all tests pass (6/6 passed)
+- [x] Begin Phase 2: Room Menu & Edit Mode Entry
+- [x] Execute 02-01-PLAN.md: RoomEditMenu contextual menu
+- [ ] Execute remaining Phase 2 plans (if any)
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -108,38 +114,36 @@ None currently.
 
 ### What Was Done
 
-- Executed 01-04-PLAN.md: RoomBuildUI mouse filter gap closure
-- Added mouse_filter = MOUSE_FILTER_IGNORE to RoomBuildUI._ready()
-- Root cause: Full-rect Control was blocking Area2D.input_event signals
-- Committed fix (4162e3b)
+- Executed 02-01-PLAN.md: RoomEditMenu contextual menu
+- Created RoomEditMenu.gd Control with three buttons (Edit Furniture, Edit Room, room-type-specific)
+- Integrated into Main.gd with EditMenuLayer CanvasLayer (layer=1)
+- Connected menu signals to stub handlers for future phases
+- Commits: ab2493f, a7132b4
 
 ### What's Next
 
-1. Re-run UAT to verify tests 2-6 now pass with complete fix chain
-2. Begin Phase 2: Room Menu & Edit Mode Entry
-3. First plan should create room edit menu shown on selection
+1. Manual test: Run game, build room, select it, verify menu appears
+2. Continue Phase 2 plans (if any remaining)
+3. Or proceed to Phase 3: Persistence Infrastructure
 
 ### Context for Next Session
 
-Phase 1 (Room Manager Foundation) is complete with both input fixes applied:
-1. 01-03: Added InputEventMouseButton handling to RoomManager._on_area_input
-2. 01-04: Set MOUSE_FILTER_IGNORE on RoomBuildUI to allow event propagation
-
-The selection workflow now works on both desktop and mobile:
+Phase 2 Plan 1 complete. RoomEditMenu is now functional:
 1. Build a room -> auto-registers with RoomManager
-2. Click/tap completed room -> visual yellow highlight appears
-3. Click/tap outside rooms -> selection clears
+2. Click/tap completed room -> yellow highlight AND edit menu appear
+3. Menu has three buttons: Edit Furniture, Edit Room, Room Options
+4. Click/tap outside menu -> menu hides and selection clears
 
-Key files:
-- `Scripts/RoomManager.gd` - Singleton with room tracking, Area2D selection (dual input handling)
-- `Scripts/room_building/RoomBuildUI.gd` - MOUSE_FILTER_IGNORE for event passthrough
-- `Scripts/room_building/RoomSelectionHighlight.gd` - Visual highlight Control
+Key new files:
+- `Scripts/room_editing/RoomEditMenu.gd` - Contextual menu Control
+- `Scripts/Main.gd` - Updated with EditMenuLayer and menu integration
 
-Key signals available:
-- `RoomManager.room_selected(room)` - Use to trigger edit menu
-- `RoomManager.selection_cleared` - Use to hide edit menu
+Menu signals for future phases:
+- `edit_furniture_pressed(room)` - Phase 4/5
+- `edit_room_pressed(room)` - Phase 6/7/8
+- `room_type_action_pressed(room)` - Room-specific features
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-23*
