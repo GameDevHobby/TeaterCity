@@ -47,7 +47,7 @@ func _setup_save_timer() -> void:
 
 func _notification(what: int) -> void:
 	match what:
-		NOTIFICATION_WM_GO_BACKGROUND:
+		NOTIFICATION_APPLICATION_PAUSED:
 			# App going to background (mobile) - save immediately
 			if _save_pending:
 				_save_debounce_timer.stop()
