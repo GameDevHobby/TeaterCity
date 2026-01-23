@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 2 complete - Room Menu & Edit Mode Entry
+**Current Focus:** Phase 3 in progress - Persistence Infrastructure
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,16 +21,16 @@
 
 ## Current Position
 
-**Phase:** 2 of 10 (Room Menu & Edit Mode Entry)
-**Plan:** 1 of 1 complete
-**Status:** Phase verified ✓
-**Last activity:** 2026-01-23 - Phase 2 verified (5/5 must-haves)
+**Phase:** 3 of 10 (Persistence Infrastructure)
+**Plan:** 1 of 4 complete
+**Status:** In progress
+**Last activity:** 2026-01-23 - Completed 03-01-PLAN.md (RoomInstance serialization)
 
 **Progress:**
 ```
 Phase  1: [X] Room Manager Foundation (4/4 plans) COMPLETE
 Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
-Phase  3: [ ] Persistence Infrastructure
+Phase  3: [>] Persistence Infrastructure (1/4 plans)
 Phase  4: [ ] Furniture Selection
 Phase  5: [ ] Furniture Editing Operations
 Phase  6: [ ] Door Editing
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 5 |
-| Plans Passed | 5 |
+| Plans Executed | 6 |
+| Plans Passed | 6 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -78,6 +78,9 @@ Phase 10: [ ] Testing & Verification
 | MOUSE_FILTER_IGNORE on menu Control | Full-rect with STOP on panel for click capture | 2-01 |
 | Menu offset 30px right of center | Keep menu near but not covering room | 2-01 |
 | Contextual room-type button labels | Match statement maps room_type_id to feature names | 2-01 |
+| Vector2i as {x,y} objects | JSON.parse_string() handles objects better than arrays | 3-01 |
+| Schema versioning | Enables future data migrations without breaking old saves | 3-01 |
+| Registry lookup in from_dict | FurniturePlacement restores resource reference by ID | 3-01 |
 
 ### Technical Notes
 
@@ -90,6 +93,7 @@ Phase 10: [ ] Testing & Verification
 - Screen-space Controls: Use CanvasLayer layer=0 wrapper in Node2D scenes for tile_to_screen alignment
 - MOUSE_FILTER_IGNORE: Required on full-rect Controls to allow Area2D.input_event to receive clicks
 - Menu positioning: Use IsometricMath.tile_to_screen, await process_frame for panel size, clamp to viewport
+- Serialization: Use direct array assignment in from_dict() to avoid placement_changed signals
 
 ### Blockers
 
@@ -106,6 +110,10 @@ None currently.
 - [x] Begin Phase 2: Room Menu & Edit Mode Entry
 - [x] Execute 02-01-PLAN.md: RoomEditMenu contextual menu
 - [x] Verify Phase 2 complete (5/5 must-haves)
+- [x] Execute 03-01-PLAN.md: RoomInstance serialization
+- [ ] Execute 03-02-PLAN.md: SaveManager implementation
+- [ ] Execute 03-03-PLAN.md: SaveLoad integration
+- [ ] Execute 03-04-PLAN.md: Auto-save on room changes
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -114,34 +122,41 @@ None currently.
 
 ### What Was Done
 
-- Executed 02-01-PLAN.md: RoomEditMenu contextual menu
-- Created RoomEditMenu.gd Control with three buttons (Edit Furniture, Edit Room, room-type-specific)
-- Integrated into Main.gd with EditMenuLayer CanvasLayer (layer=1)
-- Connected menu signals to stub handlers for future phases
-- Commits: ab2493f, a7132b4
+- Executed 03-01-PLAN.md: RoomInstance serialization methods
+- Added to_dict()/from_dict() to DoorPlacement and FurniturePlacement inner classes
+- Added to_dict()/from_dict() to RoomInstance class
+- Added SCHEMA_VERSION constant for future migration support
+- Commits: 1de1a46, 32417d8, 7545b50
 
 ### What's Next
 
-1. Manual test: Run game, build room, select it, verify menu appears (human verification)
-2. Proceed to Phase 3: Persistence Infrastructure
-3. Or Phase 4: Furniture Selection (can run parallel to Phase 3)
+1. Execute 03-02-PLAN.md: SaveManager implementation
+2. Execute 03-03-PLAN.md: SaveLoad integration
+3. Execute 03-04-PLAN.md: Auto-save on room changes
+4. Verify Phase 3 complete
 
 ### Context for Next Session
 
-Phase 2 Plan 1 complete. RoomEditMenu is now functional:
-1. Build a room -> auto-registers with RoomManager
-2. Click/tap completed room -> yellow highlight AND edit menu appear
-3. Menu has three buttons: Edit Furniture, Edit Room, Room Options
-4. Click/tap outside menu -> menu hides and selection clears
+Phase 3 Plan 1 complete. RoomInstance now supports serialization:
+- `room.to_dict()` - Converts room to Dictionary for JSON
+- `RoomInstance.from_dict(data)` - Creates room from Dictionary
+- Schema version 1 embedded in output for future migrations
 
-Key new files:
-- `Scripts/room_editing/RoomEditMenu.gd` - Contextual menu Control
-- `Scripts/Main.gd` - Updated with EditMenuLayer and menu integration
+Serialization format:
+```json
+{
+  "schema_version": 1,
+  "id": "room_1234",
+  "room_type_id": "lobby",
+  "bounding_box": {"x": 5, "y": 10, "width": 6, "height": 4},
+  "walls": [{"x": 5, "y": 10}, ...],
+  "doors": [{"position": {"x": 7, "y": 10}, "direction": 2}],
+  "furniture": [{"furniture_id": "chair_01", "position": {"x": 6, "y": 11}, "rotation": 0}]
+}
+```
 
-Menu signals for future phases:
-- `edit_furniture_pressed(room)` - Phase 4/5
-- `edit_room_pressed(room)` - Phase 6/7/8
-- `room_type_action_pressed(room)` - Room-specific features
+Key file modified:
+- `Scripts/storage/RoomInstance.gd` - Now has full serialization support
 
 ---
 
