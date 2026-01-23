@@ -22,6 +22,37 @@ var _touch_start_pos: Vector2 = Vector2.ZERO
 var _touch_start_time: int = 0
 
 
+# --- Lifecycle ---
+
+func _ready() -> void:
+	_load_saved_rooms()
+
+
+func _load_saved_rooms() -> void:
+	var saved_rooms := RoomSerializer.load_rooms()
+	for room in saved_rooms:
+		# Register without triggering save (we just loaded!)
+		if room == null:
+			continue
+
+		# Check if room already registered (shouldn't happen, but safe)
+		var already_exists := false
+		for existing in _rooms:
+			if existing.id == room.id:
+				already_exists = true
+				break
+
+		if not already_exists:
+			_rooms.append(room)
+			_create_selection_area(room)
+			# Don't emit room_added here - these are restored, not newly added
+			# Connect to placement_changed for future changes
+			room.placement_changed.connect(_on_room_changed)
+
+	if saved_rooms.size() > 0:
+		print("RoomManager: Restored %d rooms from save file" % saved_rooms.size())
+
+
 # --- Public Methods ---
 
 func register_room(room: RoomInstance) -> void:
@@ -134,3 +165,8 @@ func _on_area_input(_viewport: Node, event: InputEvent, _shape_idx: int, room: R
 			var duration := Time.get_ticks_msec() - _touch_start_time
 			if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
 				select_room(room)
+
+
+func _on_room_changed() -> void:
+	# Placeholder for auto-save - will be implemented in Task 2
+	pass
