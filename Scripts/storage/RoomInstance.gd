@@ -184,18 +184,18 @@ static func from_dict(data: Dictionary) -> RoomInstance:
 	var bbox = data.bounding_box
 	room.bounding_box = Rect2i(bbox.x, bbox.y, bbox.width, bbox.height)
 
-	# Restore walls
-	room.walls = []
+	# Restore walls (clear and append to preserve typed array)
+	room.walls.clear()
 	for wall_data in data.get("walls", []):
 		room.walls.append(Vector2i(wall_data.x, wall_data.y))
 
-	# Restore doors
-	room.doors = []
+	# Restore doors (clear and append to preserve typed array)
+	room.doors.clear()
 	for door_data in data.get("doors", []):
 		room.doors.append(DoorPlacement.from_dict(door_data))
 
-	# Restore furniture
-	room.furniture = []
+	# Restore furniture (clear and append to preserve typed array)
+	room.furniture.clear()
 	for furn_data in data.get("furniture", []):
 		room.furniture.append(FurniturePlacement.from_dict(furn_data))
 
