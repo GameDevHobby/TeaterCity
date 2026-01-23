@@ -30,7 +30,7 @@
 ```
 Phase  1: [X] Room Manager Foundation (4/4 plans) COMPLETE
 Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
-Phase  3: [>] Persistence Infrastructure (1/4 plans)
+Phase  3: [>] Persistence Infrastructure (2/4 plans)
 Phase  4: [>] Furniture Selection (1/2 plans)
 Phase  5: [ ] Furniture Editing Operations
 Phase  6: [ ] Door Editing
@@ -81,6 +81,8 @@ Phase 10: [ ] Testing & Verification
 | Vector2i as {x,y} objects | JSON.parse_string() handles objects better than arrays | 3-01 |
 | Schema versioning | Enables future data migrations without breaking old saves | 3-01 |
 | Registry lookup in from_dict | FurniturePlacement restores resource reference by ID | 3-01 |
+| Atomic write pattern | Write to .tmp, verify JSON, rename to final | 3-02 |
+| Static serializer methods | RoomSerializer is stateless helper, not singleton | 3-02 |
 | Cyan furniture highlight | Color(0.2, 0.8, 1.0) distinct from room yellow | 4-01 |
 | 44px minimum tap target | Mobile accessibility guideline for touch targets | 4-01 |
 | FurnitureEditLayer at layer 0 | Same z-order as SelectionHighlightLayer | 4-01 |
@@ -115,7 +117,7 @@ None currently.
 - [x] Execute 02-01-PLAN.md: RoomEditMenu contextual menu
 - [x] Verify Phase 2 complete (5/5 must-haves)
 - [x] Execute 03-01-PLAN.md: RoomInstance serialization
-- [ ] Execute 03-02-PLAN.md: SaveManager implementation
+- [x] Execute 03-02-PLAN.md: RoomSerializer atomic file I/O
 - [ ] Execute 03-03-PLAN.md: SaveLoad integration
 - [ ] Execute 03-04-PLAN.md: Auto-save on room changes
 - [x] Execute 04-01-PLAN.md: FurnitureEditController
