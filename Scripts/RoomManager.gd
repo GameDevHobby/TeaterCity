@@ -5,6 +5,7 @@ extends Node
 
 # Signals
 signal room_added(room: RoomInstance)
+signal room_restored(room: RoomInstance)
 signal room_selected(room: RoomInstance)
 signal selection_cleared
 
@@ -75,9 +76,10 @@ func _load_saved_rooms() -> void:
 		if not already_exists:
 			_rooms.append(room)
 			_create_selection_area(room)
-			# Don't emit room_added here - these are restored, not newly added
 			# Connect to placement_changed for future changes
 			room.placement_changed.connect(_on_room_changed)
+			# Emit signal for visual restoration (RoomBuildController subscribes to this)
+			room_restored.emit(room)
 
 	if saved_rooms.size() > 0:
 		print("RoomManager: Restored %d rooms from save file" % saved_rooms.size())
