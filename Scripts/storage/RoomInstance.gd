@@ -1,6 +1,8 @@
 class_name RoomInstance
 extends RefCounted
 
+const SCHEMA_VERSION := 1
+
 signal placement_changed
 
 var id: String
@@ -157,6 +159,7 @@ func to_dict() -> Dictionary:
 		walls_arr.append({"x": wall.x, "y": wall.y})
 
 	return {
+		"schema_version": SCHEMA_VERSION,
 		"id": id,
 		"room_type_id": room_type_id,
 		"bounding_box": {
@@ -171,6 +174,10 @@ func to_dict() -> Dictionary:
 	}
 
 static func from_dict(data: Dictionary) -> RoomInstance:
+	var version = data.get("schema_version", 1)
+	if version > SCHEMA_VERSION:
+		push_warning("RoomInstance: Loading data from newer schema version %d (current: %d)" % [version, SCHEMA_VERSION])
+
 	var room = RoomInstance.new(data.id, data.room_type_id)
 
 	# Restore bounding_box
