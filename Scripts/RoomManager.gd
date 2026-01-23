@@ -33,8 +33,9 @@ var _save_pending := false
 # --- Lifecycle ---
 
 func _ready() -> void:
-	_load_saved_rooms()
 	_setup_save_timer()
+	# Defer loading until scene tree is ready (allows scene nodes to connect to room_restored first)
+	call_deferred("_load_saved_rooms")
 
 
 func _setup_save_timer() -> void:
