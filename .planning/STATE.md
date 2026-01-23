@@ -23,8 +23,8 @@
 
 **Phase:** 4 of 10 (Furniture Selection)
 **Plan:** 2 of 2 complete
-**Status:** In progress
-**Last activity:** 2026-01-23 - Completed 03-03-PLAN.md (SaveLoad Integration)
+**Status:** Phase complete
+**Last activity:** 2026-01-23 - Completed 04-02-PLAN.md (FurnitureListPanel)
 
 **Progress:**
 ```
@@ -88,6 +88,9 @@ Phase 10: [ ] Testing & Verification
 | FurnitureEditLayer at layer 0 | Same z-order as SelectionHighlightLayer | 4-01 |
 | 5-second save debounce | Balances responsiveness with disk I/O efficiency | 3-03 |
 | Immediate save on app suspend | Mobile apps can be killed without warning | 3-03 |
+| List panel bottom-left position | Clear of room view, accessible for right-handed users | 4-02 |
+| Cyan accent for list selection | Matches furniture highlight color in room view | 4-02 |
+| Bi-directional signal sync | List and room tap selection stay synchronized | 4-02 |
 
 ### Technical Notes
 
@@ -104,6 +107,8 @@ Phase 10: [ ] Testing & Verification
 - Furniture selection: Create Area2D per furniture piece, expand small footprints to 44x44 min tap target
 - Auto-save: 5-second debounce timer consolidates rapid changes into single save
 - Save on suspend: Handle NOTIFICATION_WM_GO_BACKGROUND for mobile, NOTIFICATION_WM_CLOSE_REQUEST for desktop
+- List selection: ScrollContainer with dynamic height (max 200px) for furniture item overflow
+- Bi-directional sync: List click -> select_furniture() -> signal; Room tap -> signal -> select_item()
 
 ### Blockers
 
@@ -134,36 +139,37 @@ None currently.
 
 ### What Was Done
 
-- Executed 03-03-PLAN.md: SaveLoad Integration
-- Added load-on-startup to RoomManager via _load_saved_rooms()
-- Added debounced auto-save with 5-second timer
-- Added app suspension save (NOTIFICATION_WM_GO_BACKGROUND/CLOSE_REQUEST)
-- Commits: ca4d30b, 2f40bf2, 78884a5
+- Executed 04-02-PLAN.md: FurnitureListPanel with bi-directional sync
+- Created FurnitureListPanel with scrollable list of furniture items
+- Added select_furniture() to FurnitureEditController for list-based selection
+- Integrated list panel into Main.gd with signal wiring
+- Commits: 0572996, 540b8b0
 
 ### What's Next
 
-1. Execute 03-04-PLAN.md: Auto-save on room changes (if exists, or may be complete)
+1. Complete Phase 3 remaining plans (03-04 if exists)
 2. Continue to Phase 5 (Furniture Editing Operations)
 3. Consider spike planning for Phase 8 (Room Resize)
 
 ### Context for Next Session
 
-Phase 3 Plan 3 complete. Persistence integration is ready:
-- Rooms load from `user://saves/rooms.json` on game start
-- New rooms auto-save after 5-second debounce
-- placement_changed signal triggers auto-save
-- Mobile app backgrounding triggers immediate save
+Phase 4 complete. Furniture selection infrastructure ready:
+- FurnitureEditController manages selection state and tap detection
+- FurnitureListPanel provides alternative list-based selection
+- FurnitureSelectionHighlight draws cyan highlight on selected furniture
 
-Key file modified:
-- `Scripts/RoomManager.gd` - Auto-save and load-on-startup
+Key files created/modified:
+- `Scripts/room_editing/FurnitureListPanel.gd` - List panel UI
+- `Scripts/room_editing/FurnitureEditController.gd` - Added select_furniture()
+- `Scripts/Main.gd` - Panel creation and signal wiring
 
-Save flow:
-1. Game starts -> _load_saved_rooms() -> RoomSerializer.load_rooms()
-2. Room built -> register_room() -> _schedule_save() -> 5s debounce -> save
-3. Furniture added -> placement_changed -> _on_room_changed() -> _schedule_save()
-4. App background -> _notification() -> immediate save
+Selection flow:
+1. User taps room -> yellow highlight + RoomEditMenu
+2. User taps "Edit Furniture" -> furniture edit mode, list panel shows
+3. User taps furniture in room OR clicks item in list -> cyan highlight (bi-directional sync)
+4. User clicks "Done" -> exit furniture edit mode, list hides
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-23 (03-03-PLAN.md complete)*
+*Last updated: 2026-01-23 (04-02-PLAN.md complete)*
