@@ -1,14 +1,14 @@
 ---
 status: complete
 phase: 01-room-manager-foundation
-source: [01-01-SUMMARY.md, 01-02-SUMMARY.md]
+source: [01-01-SUMMARY.md, 01-02-SUMMARY.md, 01-03-SUMMARY.md, 01-04-SUMMARY.md]
 started: 2026-01-21T16:00:00Z
-updated: 2026-01-21T16:15:00Z
+updated: 2026-01-22T16:00:00Z
 ---
 
 ## Current Test
 
-[testing complete]
+[testing complete - all tests passed]
 
 ## Tests
 
@@ -17,47 +17,39 @@ expected: Build a room to completion. After completing, the room is registered w
 result: pass
 
 ### 2. Tap Room to Select
-expected: Tap inside a completed room. Console prints "Room selected: room_X". Yellow highlight appears covering all tiles in the room.
-result: issue
-reported: "nothing happens when tapping the room, or anywhere in the scene as far as I can tell"
-severity: major
+expected: Click inside a completed room with mouse. Console prints "Room selected: room_X". Yellow highlight appears covering all tiles in the room.
+result: pass
+note: Fixed by reordering register_room before room_completed.emit (signal handler was clearing current_room)
 
 ### 3. Visual Highlight on Selection
 expected: When room is selected, a semi-transparent yellow tint covers all tiles (walls + interior) of the selected room.
-result: skipped
-reason: Selection not working (blocked by test 2 issue)
+result: pass
 
 ### 4. Tap Outside to Deselect
-expected: With a room selected (yellow highlight visible), tap anywhere outside of any room. Highlight disappears. Selection clears.
-result: skipped
-reason: Selection not working (blocked by test 2 issue)
+expected: With a room selected (yellow highlight visible), click anywhere outside of any room. Highlight disappears. Selection clears.
+result: pass
 
 ### 5. Tap vs Drag Discrimination
-expected: Start a tap inside a room but drag your finger more than 20 pixels before releasing. Room should NOT select (this is camera pan, not tap).
-result: skipped
-reason: Selection not working (blocked by test 2 issue)
+expected: Start a click inside a room but drag your mouse more than 20 pixels before releasing. Room should NOT select (this is camera pan, not click).
+result: pass
 
 ### 6. Switch Selection Between Rooms
-expected: Build a second room. Tap first room (highlights). Tap second room (first room's highlight clears, second room highlights). Only one room highlighted at a time.
-result: skipped
-reason: Selection not working (blocked by test 2 issue)
+expected: Build a second room. Click first room (highlights). Click second room (first room's highlight clears, second room highlights). Only one room highlighted at a time.
+result: pass
 
 ## Summary
 
 total: 6
-passed: 1
-issues: 1
+passed: 6
+issues: 0
 pending: 0
-skipped: 4
+skipped: 0
 
 ## Gaps
 
-- truth: "Tap inside a completed room selects it and shows yellow highlight"
-  status: failed
-  reason: "User reported: nothing happens when tapping the room, or anywhere in the scene as far as I can tell"
-  severity: major
-  test: 2
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+[none - all issues resolved]
+
+### Resolved Issues
+
+1. **RoomBuildUI mouse_filter** (01-04-PLAN): Set MOUSE_FILTER_IGNORE to allow Area2D input events
+2. **register_room ordering** (fixed during UAT): Moved register_room call before room_completed.emit to prevent signal handler from clearing current_room
