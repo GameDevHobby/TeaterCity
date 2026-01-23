@@ -26,6 +26,23 @@ func _ready() -> void:
 	selection_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)  # Cover full screen
 	selection_layer.add_child(selection_highlight)
 
+	# Create edit menu CanvasLayer (above selection highlight)
+	var edit_menu_layer = CanvasLayer.new()
+	edit_menu_layer.name = "EditMenuLayer"
+	edit_menu_layer.layer = 1  # Above selection highlight (layer 0)
+	add_child(edit_menu_layer)
+
+	# Create RoomEditMenu instance
+	var edit_menu = RoomEditMenu.new()
+	edit_menu.name = "RoomEditMenu"
+	edit_menu_layer.add_child(edit_menu)
+
+	# Connect edit menu signals to stub handlers
+	edit_menu.edit_furniture_pressed.connect(_on_edit_furniture_requested)
+	edit_menu.edit_room_pressed.connect(_on_edit_room_requested)
+	edit_menu.room_type_action_pressed.connect(_on_room_type_action_requested)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_build"):
 		_on_build_button_pressed()
@@ -52,8 +69,21 @@ func _on_room_completed(_room: RoomInstance) -> void:
 
 
 func _on_room_selected(room: RoomInstance) -> void:
-	# Placeholder for Phase 2 - will show room menu here
+	# RoomEditMenu handles showing the menu via its own signal connection
 	print("Room selected: ", room.id)
+
+
+func _on_edit_furniture_requested(room: RoomInstance) -> void:
+	print("Edit furniture requested: ", room.id)
+
+
+func _on_edit_room_requested(room: RoomInstance) -> void:
+	print("Edit room requested: ", room.id)
+
+
+func _on_room_type_action_requested(room: RoomInstance) -> void:
+	print("Room type action requested: ", room.id, " type: ", room.room_type_id)
+
 
 func _exit_build_mode() -> void:
 	_build_mode_active = false
