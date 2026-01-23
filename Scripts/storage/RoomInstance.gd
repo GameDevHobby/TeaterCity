@@ -18,6 +18,16 @@ class DoorPlacement:
 		position = pos
 		direction = dir
 
+	func to_dict() -> Dictionary:
+		return {
+			"position": {"x": position.x, "y": position.y},
+			"direction": direction
+		}
+
+	static func from_dict(data: Dictionary) -> DoorPlacement:
+		var pos = Vector2i(data.position.x, data.position.y)
+		return DoorPlacement.new(pos, data.direction)
+
 class FurniturePlacement:
 	var furniture: FurnitureResource
 	var position: Vector2i
@@ -27,6 +37,22 @@ class FurniturePlacement:
 		furniture = furn
 		position = pos
 		rotation = rot
+
+	func to_dict() -> Dictionary:
+		return {
+			"furniture_id": furniture.id if furniture else "",
+			"position": {"x": position.x, "y": position.y},
+			"rotation": rotation
+		}
+
+	static func from_dict(data: Dictionary) -> FurniturePlacement:
+		var pos = Vector2i(data.position.x, data.position.y)
+		var furn_id = data.get("furniture_id", "")
+		var furn: FurnitureResource = null
+		if furn_id != "":
+			furn = FurnitureRegistry.get_instance().get_furniture(furn_id)
+		var rot = data.get("rotation", 0)
+		return FurniturePlacement.new(furn, pos, rot)
 
 	func get_occupied_tiles() -> Array[Vector2i]:
 		if not furniture:
