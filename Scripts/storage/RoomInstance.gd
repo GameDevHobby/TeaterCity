@@ -142,3 +142,54 @@ func get_monthly_upkeep() -> int:
 			upkeep += furn.furniture.monthly_upkeep
 
 	return upkeep
+
+func to_dict() -> Dictionary:
+	var doors_arr: Array = []
+	for door in doors:
+		doors_arr.append(door.to_dict())
+
+	var furniture_arr: Array = []
+	for furn in furniture:
+		furniture_arr.append(furn.to_dict())
+
+	var walls_arr: Array = []
+	for wall in walls:
+		walls_arr.append({"x": wall.x, "y": wall.y})
+
+	return {
+		"id": id,
+		"room_type_id": room_type_id,
+		"bounding_box": {
+			"x": bounding_box.position.x,
+			"y": bounding_box.position.y,
+			"width": bounding_box.size.x,
+			"height": bounding_box.size.y
+		},
+		"walls": walls_arr,
+		"doors": doors_arr,
+		"furniture": furniture_arr
+	}
+
+static func from_dict(data: Dictionary) -> RoomInstance:
+	var room = RoomInstance.new(data.id, data.room_type_id)
+
+	# Restore bounding_box
+	var bbox = data.bounding_box
+	room.bounding_box = Rect2i(bbox.x, bbox.y, bbox.width, bbox.height)
+
+	# Restore walls
+	room.walls = []
+	for wall_data in data.get("walls", []):
+		room.walls.append(Vector2i(wall_data.x, wall_data.y))
+
+	# Restore doors
+	room.doors = []
+	for door_data in data.get("doors", []):
+		room.doors.append(DoorPlacement.from_dict(door_data))
+
+	# Restore furniture
+	room.furniture = []
+	for furn_data in data.get("furniture", []):
+		room.furniture.append(FurniturePlacement.from_dict(furn_data))
+
+	return room
