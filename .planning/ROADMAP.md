@@ -69,7 +69,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md - RoomEditMenu Control with contextual buttons and positioning
+- [x] 02-01-PLAN.md - RoomEditMenu Control with contextual buttons and positioning
 
 **Risk Flags:**
 - LOW: Standard UI pattern
@@ -130,7 +130,11 @@ Plans:
 3. Furniture list panel displays all furniture in selected room
 4. Selecting from list highlights corresponding furniture in room
 
-**Estimated Tasks:** 8-12
+**Plans:** 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md - FurnitureEditController with tap selection and cyan highlight
+- [ ] 04-02-PLAN.md - FurnitureListPanel with bi-directional selection sync
 
 **Risk Flags:**
 - MEDIUM: Touch target size for small furniture - ensure minimum tap area
@@ -138,7 +142,7 @@ Plans:
 
 **Research Notes:**
 - Dual selection (tap + list) improves accessibility and discoverability
-- Track selected furniture in RoomEditController state
+- Track selected furniture in FurnitureEditController state
 
 ---
 
@@ -337,7 +341,7 @@ Plans:
 | 1 | Room Manager Foundation | Complete | SEL-01, SEL-02 |
 | 2 | Room Menu & Edit Mode Entry | Complete | SEL-03, SEL-04 |
 | 3 | Persistence Infrastructure | Pending | PER-01, PER-02, PER-03, PER-04 |
-| 4 | Furniture Selection | Pending | FUR-01, FUR-02 |
+| 4 | Furniture Selection | Planned | FUR-01, FUR-02 |
 | 5 | Furniture Editing Operations | Pending | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
 | 6 | Door Editing | Pending | DOOR-01, DOOR-02, DOOR-03 |
 | 7 | Room Deletion | Pending | EDIT-04, EDIT-05 |
@@ -406,3 +410,4 @@ Phase 9 (Admin Menu)                                              Phase 8 (Room 
 ---
 
 *Roadmap created: 2026-01-21*
+*Phase 4 planned: 2026-01-22*
