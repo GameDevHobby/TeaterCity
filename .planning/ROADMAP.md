@@ -346,8 +346,8 @@ Plans:
 |-------|------|--------|--------------|
 | 1 | Room Manager Foundation | Complete | SEL-01, SEL-02 |
 | 2 | Room Menu & Edit Mode Entry | Complete | SEL-03, SEL-04 |
-| 3 | Persistence Infrastructure | Planned | PER-01, PER-02, PER-03, PER-04 |
-| 4 | Furniture Selection | Planned | FUR-01, FUR-02 |
+| 3 | Persistence Infrastructure | Complete | PER-01, PER-02, PER-03, PER-04 |
+| 4 | Furniture Selection | Complete | FUR-01, FUR-02 |
 | 5 | Furniture Editing Operations | Pending | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
 | 6 | Door Editing | Pending | DOOR-01, DOOR-02, DOOR-03 |
 | 7 | Room Deletion | Pending | EDIT-04, EDIT-05 |
