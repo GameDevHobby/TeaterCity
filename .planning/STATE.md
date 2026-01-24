@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 4 in progress - Furniture Selection
+**Current Focus:** Phase 5 in progress - Furniture Editing Operations
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,10 +21,10 @@
 
 ## Current Position
 
-**Phase:** 4 of 10 (Furniture Selection)
-**Plan:** 2 of 2 complete
-**Status:** Phase complete
-**Last activity:** 2026-01-23 - Completed 04-02-PLAN.md (FurnitureListPanel)
+**Phase:** 5 of 10 (Furniture Editing Operations)
+**Plan:** 1 of 3 complete
+**Status:** In progress
+**Last activity:** 2026-01-23 - Completed 05-01-PLAN.md (Drag-to-move)
 
 **Progress:**
 ```
@@ -32,7 +32,7 @@ Phase  1: [X] Room Manager Foundation (4/4 plans) COMPLETE
 Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
 Phase  3: [>] Persistence Infrastructure (3/4 plans)
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
-Phase  5: [ ] Furniture Editing Operations
+Phase  5: [>] Furniture Editing Operations (1/3 plans)
 Phase  6: [ ] Door Editing
 Phase  7: [ ] Room Deletion
 Phase  8: [ ] Room Resize (Complex)
@@ -40,7 +40,7 @@ Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 3/10 phases complete (30%)
+**Milestone Progress:** 4/10 phases complete (40%)
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 8 |
-| Plans Passed | 8 |
+| Plans Executed | 9 |
+| Plans Passed | 9 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -91,6 +91,8 @@ Phase 10: [ ] Testing & Verification
 | List panel bottom-left position | Clear of room view, accessible for right-handed users | 4-02 |
 | Cyan accent for list selection | Matches furniture highlight color in room view | 4-02 |
 | Bi-directional signal sync | List and room tap selection stay synchronized | 4-02 |
+| Temporary removal during validation | Avoid self-collision when validating drag position | 5-01 |
+| visual_node reference in FurniturePlacement | Enable efficient position updates without tree traversal | 5-01 |
 
 ### Technical Notes
 
@@ -109,6 +111,9 @@ Phase 10: [ ] Testing & Verification
 - Save on suspend: Handle NOTIFICATION_WM_GO_BACKGROUND for mobile, NOTIFICATION_WM_CLOSE_REQUEST for desktop
 - List selection: ScrollContainer with dynamic height (max 200px) for furniture item overflow
 - Bi-directional sync: List click -> select_furniture() -> signal; Room tap -> signal -> select_item()
+- Drag detection: InputEventMouseMotion (desktop) and InputEventScreenDrag (mobile) with 20px threshold
+- Drag validation: Temporarily remove furniture from array to avoid self-collision during can_place_furniture check
+- Visual node updates: FurniturePlacement.visual_node reference enables direct position updates during drag
 
 ### Blockers
 
@@ -131,6 +136,9 @@ None currently.
 - [ ] Execute 03-04-PLAN.md: Auto-save on room changes
 - [x] Execute 04-01-PLAN.md: FurnitureEditController
 - [x] Execute 04-02-PLAN.md: List Selection UI
+- [x] Execute 05-01-PLAN.md: Drag-to-move functionality
+- [ ] Execute 05-02-PLAN.md: Furniture rotation
+- [ ] Execute 05-03-PLAN.md: Furniture deletion
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -139,37 +147,44 @@ None currently.
 
 ### What Was Done
 
-- Executed 04-02-PLAN.md: FurnitureListPanel with bi-directional sync
-- Created FurnitureListPanel with scrollable list of furniture items
-- Added select_furniture() to FurnitureEditController for list-based selection
-- Integrated list panel into Main.gd with signal wiring
-- Commits: 0572996, 540b8b0
+- Executed 05-01-PLAN.md: Drag-to-move functionality
+- Added drag state machine to FurnitureEditController with _dragging, _drag_offset, _preview_position
+- Implemented motion event handlers for InputEventMouseMotion and InputEventScreenDrag
+- Created drag lifecycle methods: _start_drag, _update_drag_position, _end_drag
+- Added visual_node property to FurniturePlacement for efficient position updates
+- Integrated CollisionOperation for real-time validation during drag
+- Connected to auto-save via placement_changed signal
+- Commits: 35c126a, f7cd72d, b74d677
 
 ### What's Next
 
-1. Complete Phase 3 remaining plans (03-04 if exists)
-2. Continue to Phase 5 (Furniture Editing Operations)
-3. Consider spike planning for Phase 8 (Room Resize)
+1. Execute 05-02-PLAN.md: Furniture rotation
+2. Execute 05-03-PLAN.md: Furniture deletion
+3. Complete Phase 3 remaining plans (03-04 if exists)
+4. Consider spike planning for Phase 8 (Room Resize)
 
 ### Context for Next Session
 
-Phase 4 complete. Furniture selection infrastructure ready:
-- FurnitureEditController manages selection state and tap detection
-- FurnitureListPanel provides alternative list-based selection
-- FurnitureSelectionHighlight draws cyan highlight on selected furniture
+Phase 5 Plan 01 complete. Drag-to-move infrastructure ready:
+- Furniture can be dragged to new positions with tap-vs-drag discrimination
+- 20px motion threshold prevents accidental drags during taps
+- CollisionOperation validates positions in real-time during drag
+- visual_node reference enables live position updates without tree traversal
+- Auto-save triggers on successful move via placement_changed signal
 
-Key files created/modified:
-- `Scripts/room_editing/FurnitureListPanel.gd` - List panel UI
-- `Scripts/room_editing/FurnitureEditController.gd` - Added select_furniture()
-- `Scripts/Main.gd` - Panel creation and signal wiring
+Key files modified:
+- `Scripts/room_editing/FurnitureEditController.gd` - Drag state machine and motion handlers
+- `Scripts/storage/RoomInstance.gd` - visual_node property and cleanup_visual()
+- `Scripts/room_building/operations/FurnitureOperation.gd` - Store visual_node reference
 
-Selection flow:
-1. User taps room -> yellow highlight + RoomEditMenu
-2. User taps "Edit Furniture" -> furniture edit mode, list panel shows
-3. User taps furniture in room OR clicks item in list -> cyan highlight (bi-directional sync)
-4. User clicks "Done" -> exit furniture edit mode, list hides
+Drag flow:
+1. User taps furniture -> selection (< 20px motion)
+2. User drags furniture -> _start_drag when motion >= 20px
+3. During drag -> _update_drag_position validates position via CollisionOperation
+4. On release -> _end_drag commits position if valid, emits placement_changed
+5. Auto-save system responds to placement_changed signal
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-23 (04-02-PLAN.md complete)*
+*Last updated: 2026-01-23 (05-01-PLAN.md complete)*
