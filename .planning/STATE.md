@@ -22,9 +22,9 @@
 ## Current Position
 
 **Phase:** 5 of 10 (Furniture Editing Operations)
-**Plan:** 3 of 3 complete
-**Status:** Phase complete
-**Last activity:** 2026-01-24 - Completed 05-02-PLAN.md (Drag preview)
+**Plan:** 4 of 6 complete
+**Status:** In progress
+**Last activity:** 2026-01-24 - Completed 05-04-PLAN.md (Furniture add operation)
 
 **Progress:**
 ```
@@ -32,7 +32,7 @@ Phase  1: [X] Room Manager Foundation (4/4 plans) COMPLETE
 Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
 Phase  3: [>] Persistence Infrastructure (3/4 plans)
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
-Phase  5: [X] Furniture Editing Operations (3/3 plans) COMPLETE
+Phase  5: [>] Furniture Editing Operations (4/6 plans)
 Phase  6: [ ] Door Editing
 Phase  7: [ ] Room Deletion
 Phase  8: [ ] Room Resize (Complex)
@@ -40,7 +40,7 @@ Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 5/10 phases complete (50%)
+**Milestone Progress:** 4/10 phases complete (40%)
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 11 |
-| Plans Passed | 11 |
+| Plans Executed | 12 |
+| Plans Passed | 12 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -99,6 +99,9 @@ Phase 10: [ ] Testing & Verification
 | Drag preview replaces selection highlight | Clearer feedback - users see landing position, not current | 5-02 |
 | Original position shown as gray ghost | Provides reference for how far furniture has moved | 5-02 |
 | Green valid, red invalid drag preview | Universal color convention for success/error states | 5-02 |
+| Placement mode as separate state | Independent from selection/drag, has own input handling | 5-04 |
+| Picker shows room type constraints | Only allowed/required furniture for current room type | 5-04 |
+| Visual creation delegated via signal | Controller emits furniture_added, Main creates visual node | 5-04 |
 
 ### Technical Notes
 
@@ -125,6 +128,9 @@ Phase 10: [ ] Testing & Verification
 - Delete UI: Button shows when selected, error label shows inline for validation failures
 - Drag preview: Signal-driven rendering via furniture_drag_preview, state-based _draw() branching
 - Preview rendering: Multi-layer (access tiles → footprint → original ghost), color-coded validity
+- Placement mode: Separate state from drag, clears selection on entry, validates with CollisionOperation
+- Furniture picker: Positioned above list panel, populated from room type constraints
+- Add workflow: Add button → picker → select furniture → placement mode → tap to place → auto-save
 
 ### Blockers
 
@@ -150,7 +156,10 @@ None currently.
 - [x] Execute 05-01-PLAN.md: Drag-to-move functionality
 - [x] Execute 05-02-PLAN.md: Drag preview visual feedback
 - [x] Execute 05-03-PLAN.md: Furniture deletion
-- [x] Complete Phase 5: Furniture Editing Operations
+- [x] Execute 05-04-PLAN.md: Furniture add operation
+- [ ] Execute 05-05-PLAN.md: Furniture rotation
+- [ ] Execute 05-06-PLAN.md: (if exists)
+- [ ] Complete Phase 5: Furniture Editing Operations
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -159,41 +168,46 @@ None currently.
 
 ### What Was Done
 
-- Executed 05-02-PLAN.md: Furniture drag preview with visual feedback
-- Added drag preview state variables and color constants to FurnitureSelectionHighlight
-- Connected to furniture_drag_preview and furniture_drag_ended signals
-- Implemented _draw_drag_preview() with multi-layer rendering (access tiles, footprint, original ghost)
-- Added green/red color feedback for valid/invalid placement during drag
-- Commits: 43d8d71, be36d25
+- Executed 05-04-PLAN.md: Furniture add operation with placement mode
+- Added placement mode state and methods to FurnitureEditController (enter/exit/confirm/rotate)
+- Added furniture picker overlay to FurnitureListPanel showing room-type-constrained furniture
+- Created Add button in list panel, positioned above delete button
+- Wired placement flow in Main.gd: picker selection → placement mode → visual creation
+- Added get_tilemap_layer and get_furniture_parent helpers to RoomBuildController
+- Commits: aed31bc, 44f626a, e3c06b2
 
 ### What's Next
 
-1. Execute Phase 6: Door Editing
-2. Complete Phase 3 remaining plans (03-04 if exists)
-3. Execute Phase 7: Room Deletion
-4. Consider spike planning for Phase 8 (Room Resize)
+1. Execute 05-05-PLAN.md: Furniture rotation (if exists)
+2. Execute 05-06-PLAN.md: (if exists)
+3. Complete Phase 5: Furniture Editing Operations
+4. Execute Phase 6: Door Editing
+5. Complete Phase 3 remaining plans (03-04 if exists)
 
 ### Context for Next Session
 
-Phase 5 COMPLETE. Furniture editing operations fully implemented:
-- Drag-to-move with real-time collision validation (05-01)
-- Visual drag preview with green/red validity feedback (05-02)
-- Furniture deletion with room type validation (05-03)
+Phase 5 Plan 04 complete. Furniture add operation ready:
+- Add button in list panel opens picker with allowed furniture for room type
+- Selecting furniture from picker enters placement mode
+- Placement mode validates position in real-time via CollisionOperation
+- Tapping valid position places furniture, creates visual node, triggers auto-save
+- List refreshes to show newly added furniture
 
-Drag preview features:
-- During drag, preview shows at cursor position with green (valid) or red (invalid) coloring
-- Original furniture position shown as faint gray ghost for reference
-- Access tiles rendered with lighter alpha for visual hierarchy
-- Preview disappears on drag end, selection highlight returns to normal
+Add workflow:
+1. User taps Add button → picker panel appears above list
+2. User selects furniture → picker hides, placement mode entered
+3. User moves cursor → preview validation updates (FurnitureSelectionHighlight will render preview)
+4. User taps valid position → furniture added, visual created, auto-save triggered
 
-Key files:
-- `Scripts/room_editing/FurnitureSelectionHighlight.gd` - Drag preview rendering with state-based _draw()
-- `Scripts/room_editing/FurnitureEditController.gd` - Drag state machine and deletion logic
-- `Scripts/room_editing/FurnitureListPanel.gd` - List UI with delete button
+Key files modified:
+- `Scripts/room_editing/FurnitureEditController.gd` - Placement mode state, preview validation
+- `Scripts/room_editing/FurnitureListPanel.gd` - Add button, picker panel, signal handlers
+- `Scripts/Main.gd` - Placement mode signal wiring, visual node creation
+- `Scripts/room_building/RoomBuildController.gd` - Helper methods for tilemap/furniture parent access
 
-Next phase should focus on door editing operations (Phase 6).
+Remaining Phase 5 plans: 05-05 (rotation), possibly 05-06.
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-24 (05-02-PLAN.md complete, Phase 5 COMPLETE)*
+*Last updated: 2026-01-24 (05-04-PLAN.md complete)*
