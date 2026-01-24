@@ -163,10 +163,14 @@ func _create_picker_panel(room: RoomInstance) -> void:
 	UIStyleHelper.apply_panel_style(_picker_panel)
 	add_child(_picker_panel)
 
-	# Position above the list panel
-	_picker_panel.set_anchors_preset(PRESET_BOTTOM_LEFT)
-	_picker_panel.position = Vector2(PANEL_MARGIN, -PANEL_MARGIN - 300)  # Above list panel
-	_picker_panel.custom_minimum_size = Vector2(PANEL_WIDTH, 150)
+	# Position at bottom-right (consistent with other dialogs)
+	_picker_panel.set_anchors_preset(PRESET_BOTTOM_RIGHT)
+	_picker_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN  # Grow left from anchor
+	_picker_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN  # Grow up from anchor
+	_picker_panel.offset_right = -PANEL_MARGIN
+	_picker_panel.offset_bottom = -PANEL_MARGIN
+	_picker_panel.offset_left = -PANEL_MARGIN - PANEL_WIDTH
+	# No fixed height - let it grow to fit content
 
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 12)
