@@ -34,6 +34,7 @@ class FurniturePlacement:
 	var furniture: FurnitureResource
 	var position: Vector2i
 	var rotation: int
+	var visual_node: Node2D = null  # Reference to visual node for position updates and cleanup
 
 	func _init(furn: FurnitureResource, pos: Vector2i, rot: int = 0):
 		furniture = furn
@@ -74,6 +75,11 @@ class FurniturePlacement:
 		for offset in rotated_offsets:
 			tiles.append(position + offset)
 		return tiles
+
+	func cleanup_visual() -> void:
+		if visual_node and is_instance_valid(visual_node):
+			visual_node.queue_free()
+		visual_node = null
 
 func _init(new_id: String, new_type_id: String):
 	id = new_id

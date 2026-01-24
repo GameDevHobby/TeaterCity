@@ -10,6 +10,8 @@ signal furniture_selected(room: RoomInstance, furniture: RoomInstance.FurnitureP
 signal furniture_deselected
 signal furniture_drag_preview(position: Vector2i, is_valid: bool)
 signal furniture_drag_ended
+signal furniture_deleted(room: RoomInstance, furniture: RoomInstance.FurniturePlacement)
+signal furniture_delete_failed(reason: String)
 signal mode_exited
 
 # Tap detection thresholds (same as RoomManager)
@@ -37,6 +39,7 @@ var _original_position: Vector2i = Vector2i.ZERO  # For revert on invalid drop
 
 # Operation helpers
 var _collision_operation: CollisionOperation = null
+var _validation_operation: ValidationOperation = null
 
 
 # --- Public Methods ---
@@ -51,6 +54,9 @@ func enter_edit_mode(room: RoomInstance) -> void:
 
 	if _collision_operation == null:
 		_collision_operation = CollisionOperation.new()
+
+	if _validation_operation == null:
+		_validation_operation = ValidationOperation.new()
 
 	_create_furniture_areas(room)
 
@@ -89,6 +95,62 @@ func select_furniture(furniture: RoomInstance.FurniturePlacement) -> void:
 
 func _screen_to_tile(screen_pos: Vector2) -> Vector2i:
 	return IsometricMath.screen_to_tile(screen_pos, get_viewport())
+
+
+## Attempt to delete the currently selected furniture
+## Returns true if deletion succeeded, false if blocked
+func delete_furniture() -> bool:
+	if not _active or _current_room == null or _selected_furniture == null:
+		return false
+
+	# Validate deletion against room type requirements
+	var validation = _validation_operation.can_delete_furniture(_current_room, _selected_furniture)
+	if not validation.can_delete:
+		furniture_delete_failed.emit(validation.reason)
+		return false
+
+	# Store reference before clearing selection
+	var deleted_furniture = _selected_furniture
+	var furniture_index = _current_room.furniture.find(deleted_furniture)
+
+	# Clear selection first
+	_selected_furniture = null
+	furniture_deselected.emit()
+
+	# Remove Area2D for this furniture
+	if _furniture_areas.has(furniture_index):
+		var area = _furniture_areas[furniture_index]
+		if area and is_instance_valid(area):
+			area.queue_free()
+		_furniture_areas.erase(furniture_index)
+
+	# Cleanup visual node
+	if deleted_furniture.visual_node and is_instance_valid(deleted_furniture.visual_node):
+		deleted_furniture.visual_node.queue_free()
+	deleted_furniture.visual_node = null
+
+	# Remove from room's furniture array
+	if furniture_index >= 0:
+		_current_room.furniture.remove_at(furniture_index)
+
+	# Trigger auto-save
+	_current_room.placement_changed.emit()
+
+	# Emit deleted signal
+	furniture_deleted.emit(_current_room, deleted_furniture)
+
+	# Recreate furniture areas with updated indices
+	_recreate_furniture_areas()
+
+	return true
+
+
+func _recreate_furniture_areas() -> void:
+	# Clear all existing areas
+	_clear_furniture_areas()
+	# Recreate with current furniture
+	if _current_room:
+		_create_furniture_areas(_current_room)
 
 
 # --- Private Methods ---
