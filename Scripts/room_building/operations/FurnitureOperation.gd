@@ -11,7 +11,9 @@ func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_
 
 	# Use scene-based furniture (required - no fallback)
 	if furn and furn.scene:
-		return _setup_furniture_instance(furn.scene.instantiate(), placement, parent_node, tilemap_layer)
+		var instance = _setup_furniture_instance(furn.scene.instantiate(), placement, parent_node, tilemap_layer)
+		placement.visual_node = instance
+		return instance
 
 	# No scene assigned - create empty placeholder node
 	push_warning("Furniture '%s' has no scene assigned" % furniture_id)
@@ -19,6 +21,7 @@ func create_furniture_visual(placement: RoomInstance.FurniturePlacement, parent_
 	placeholder.name = "Furniture_%s_%d_%d" % [furniture_id, placement.position.x, placement.position.y]
 	placeholder.position = _calculate_furniture_position(placement, furn, tilemap_layer)
 	parent_node.add_child(placeholder)
+	placement.visual_node = placeholder
 	return placeholder
 
 func _setup_furniture_instance(instance: Node, placement: RoomInstance.FurniturePlacement, parent_node: Node2D, tilemap_layer: TileMapLayer = null) -> Node2D:
