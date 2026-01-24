@@ -8,6 +8,8 @@ extends Control
 # Signals
 signal furniture_selected(room: RoomInstance, furniture: RoomInstance.FurniturePlacement)
 signal furniture_deselected
+signal furniture_drag_preview(position: Vector2i, is_valid: bool)
+signal furniture_drag_ended
 signal mode_exited
 
 # Tap detection thresholds (same as RoomManager)
@@ -25,6 +27,17 @@ var _furniture_areas: Dictionary = {}  # furniture index -> Area2D
 var _touch_start_pos: Vector2 = Vector2.ZERO
 var _touch_start_time: int = 0
 
+# Drag state
+var _dragging: bool = false
+var _drag_start_tile: Vector2i = Vector2i.ZERO
+var _drag_offset: Vector2i = Vector2i.ZERO  # Offset from furniture position to tap point
+var _preview_position: Vector2i = Vector2i.ZERO
+var _preview_valid: bool = false
+var _original_position: Vector2i = Vector2i.ZERO  # For revert on invalid drop
+
+# Operation helpers
+var _collision_operation: CollisionOperation = null
+
 
 # --- Public Methods ---
 
@@ -35,6 +48,10 @@ func enter_edit_mode(room: RoomInstance) -> void:
 	_active = true
 	_current_room = room
 	_selected_furniture = null
+
+	if _collision_operation == null:
+		_collision_operation = CollisionOperation.new()
+
 	_create_furniture_areas(room)
 
 
@@ -68,6 +85,10 @@ func select_furniture(furniture: RoomInstance.FurniturePlacement) -> void:
 
 	_selected_furniture = furniture
 	furniture_selected.emit(_current_room, furniture)
+
+
+func _screen_to_tile(screen_pos: Vector2) -> Vector2i:
+	return IsometricMath.screen_to_tile(screen_pos, get_viewport())
 
 
 # --- Private Methods ---
