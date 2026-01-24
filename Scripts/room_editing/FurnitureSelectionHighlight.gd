@@ -8,9 +8,18 @@ extends Control
 # Distinct cyan color (different from room selection yellow)
 const SELECTION_COLOR := Color(0.2, 0.8, 1.0, 0.4)  # Semi-transparent cyan
 const ACCESS_TILE_COLOR := Color(0.2, 0.8, 1.0, 0.2)  # Lighter cyan for access tiles
+const DRAG_VALID_COLOR := Color(0.2, 0.8, 0.4, 0.5)  # Green for valid placement
+const DRAG_INVALID_COLOR := Color(0.9, 0.2, 0.2, 0.5)  # Red for invalid placement
+const DRAG_ACCESS_VALID_COLOR := Color(0.2, 0.8, 0.4, 0.25)  # Lighter green for access tiles
+const DRAG_ACCESS_INVALID_COLOR := Color(0.9, 0.2, 0.2, 0.25)  # Lighter red for access tiles
 
 # Controller reference (set by Main.gd)
 var _controller: FurnitureEditController = null
+
+# Drag preview state
+var _is_dragging: bool = false
+var _drag_preview_position: Vector2i = Vector2i.ZERO
+var _drag_preview_valid: bool = false
 
 
 func _ready() -> void:
