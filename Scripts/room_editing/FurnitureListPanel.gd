@@ -163,14 +163,8 @@ func _create_picker_panel(room: RoomInstance) -> void:
 	UIStyleHelper.apply_panel_style(_picker_panel)
 	add_child(_picker_panel)
 
-	# Position at bottom-right (consistent with other dialogs)
-	_picker_panel.set_anchors_preset(PRESET_BOTTOM_RIGHT)
-	_picker_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN  # Grow left from anchor
-	_picker_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN  # Grow up from anchor
-	_picker_panel.offset_right = -PANEL_MARGIN
-	_picker_panel.offset_bottom = -PANEL_MARGIN
-	_picker_panel.offset_left = -PANEL_MARGIN - PANEL_WIDTH
-	# No fixed height - let it grow to fit content
+	# Position at bottom-right - calculate position after content is added
+	_picker_panel.custom_minimum_size = Vector2(PANEL_WIDTH, 0)
 
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 12)
@@ -198,6 +192,21 @@ func _create_picker_panel(room: RoomInstance) -> void:
 	_cancel_add_button = UIStyleHelper.create_styled_button("Cancel", Vector2(160, 36))
 	_cancel_add_button.pressed.connect(_on_cancel_add_pressed)
 	vbox.add_child(_cancel_add_button)
+
+	# Position at bottom-right after content is ready
+	call_deferred("_deferred_position_picker")
+
+
+func _deferred_position_picker() -> void:
+	if _picker_panel == null or not is_instance_valid(_picker_panel):
+		return
+	# Get viewport size and position at bottom-right with margin
+	var viewport_size = get_viewport().get_visible_rect().size
+	var panel_size = _picker_panel.get_combined_minimum_size()
+	_picker_panel.position = Vector2(
+		viewport_size.x - panel_size.x - PANEL_MARGIN,
+		viewport_size.y - panel_size.y - PANEL_MARGIN
+	)
 
 
 func _populate_picker_buttons(container: VBoxContainer, room_type: RoomTypeResource) -> void:
