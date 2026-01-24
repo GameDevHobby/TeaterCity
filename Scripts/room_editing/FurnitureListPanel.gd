@@ -6,12 +6,15 @@ extends Control
 
 # Signals
 signal furniture_item_selected(index: int, furniture: RoomInstance.FurniturePlacement)
+signal furniture_delete_requested
 signal done_pressed
 
 # UI elements
 var _panel: PanelContainer
 var _items_container: VBoxContainer
 var _done_button: Button
+var _delete_button: Button
+var _error_label: Label  # For showing delete error messages
 
 # State
 var _controller: FurnitureEditController = null
@@ -80,6 +83,21 @@ func _create_panel() -> void:
 	_items_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_items_container)
 
+	# Delete button (hidden until furniture selected)
+	_delete_button = UIStyleHelper.create_styled_button("Delete", Vector2(160, 40), Color(0.6, 0.2, 0.2))
+	_delete_button.pressed.connect(_on_delete_pressed)
+	_delete_button.hide()  # Hidden until selection
+	vbox.add_child(_delete_button)
+
+	# Error label for delete failures
+	_error_label = Label.new()
+	_error_label.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))
+	_error_label.add_theme_font_size_override("font_size", 12)
+	_error_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_error_label.custom_minimum_size = Vector2(160, 0)
+	_error_label.hide()
+	vbox.add_child(_error_label)
+
 	# Done button at bottom
 	_done_button = UIStyleHelper.create_styled_button("Done", Vector2(160, 40))
 	_done_button.pressed.connect(_on_done_pressed)
@@ -92,6 +110,8 @@ func set_controller(controller: FurnitureEditController) -> void:
 	_controller = controller
 	_controller.furniture_selected.connect(_on_controller_furniture_selected)
 	_controller.furniture_deselected.connect(_on_controller_furniture_deselected)
+	_controller.furniture_deleted.connect(_on_controller_furniture_deleted)
+	_controller.furniture_delete_failed.connect(_on_controller_furniture_delete_failed)
 	_controller.mode_exited.connect(_on_controller_mode_exited)
 
 
@@ -124,6 +144,14 @@ func select_item(index: int) -> void:
 		UIStyleHelper.apply_button_style(_item_buttons[_selected_index])
 
 	_selected_index = index
+
+	# Show/hide delete button based on selection
+	if index >= 0:
+		_delete_button.show()
+		_error_label.hide()  # Clear any previous error
+	else:
+		_delete_button.hide()
+		_error_label.hide()
 
 	# Highlight new selection with cyan accent color
 	if index >= 0 and index < _item_buttons.size():
@@ -176,6 +204,10 @@ func _on_done_pressed() -> void:
 	done_pressed.emit()
 
 
+func _on_delete_pressed() -> void:
+	furniture_delete_requested.emit()
+
+
 func _on_controller_furniture_selected(room: RoomInstance, furniture: RoomInstance.FurniturePlacement) -> void:
 	# Find index of this furniture in room.furniture array
 	var index := room.furniture.find(furniture)
@@ -185,6 +217,19 @@ func _on_controller_furniture_selected(room: RoomInstance, furniture: RoomInstan
 
 func _on_controller_furniture_deselected() -> void:
 	select_item(-1)  # Clear selection
+
+
+func _on_controller_furniture_deleted(room: RoomInstance, _furniture: RoomInstance.FurniturePlacement) -> void:
+	# Refresh the list
+	_populate_list(room)
+	_selected_index = -1
+	_delete_button.hide()
+	_error_label.hide()
+
+
+func _on_controller_furniture_delete_failed(reason: String) -> void:
+	_error_label.text = reason
+	_error_label.show()
 
 
 func _on_controller_mode_exited() -> void:

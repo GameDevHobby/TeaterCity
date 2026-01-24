@@ -76,6 +76,7 @@ func _ready() -> void:
 
 	# Connect list panel signals
 	_furniture_list_panel.furniture_item_selected.connect(_on_furniture_list_item_selected)
+	_furniture_list_panel.furniture_delete_requested.connect(_on_furniture_delete_requested)
 	_furniture_list_panel.done_pressed.connect(_on_furniture_edit_done)
 
 
@@ -133,6 +134,10 @@ func _on_furniture_edit_exited() -> void:
 
 func _on_furniture_list_item_selected(_index: int, furniture: RoomInstance.FurniturePlacement) -> void:
 	_furniture_controller.select_furniture(furniture)
+
+
+func _on_furniture_delete_requested() -> void:
+	_furniture_controller.delete_furniture()
 
 
 func _on_furniture_edit_done() -> void:
