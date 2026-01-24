@@ -121,6 +121,7 @@ func _on_edit_furniture_requested(room: RoomInstance) -> void:
 	# Hide room edit menu while in furniture edit mode
 	# (RoomEditMenu hides itself when selection_cleared fires)
 	RoomManager.clear_selection()
+	camera.enable_pinch_pan = false  # Disable camera panning during furniture edit
 	_furniture_controller.enter_edit_mode(room)
 	_furniture_list_panel.show_for_room(room)  # Show list panel
 
@@ -135,6 +136,7 @@ func _on_room_type_action_requested(room: RoomInstance) -> void:
 
 func _on_furniture_edit_exited() -> void:
 	print("Exited furniture edit mode")
+	camera.enable_pinch_pan = true  # Re-enable camera panning
 	# Room can be re-selected now via normal RoomManager flow
 
 
