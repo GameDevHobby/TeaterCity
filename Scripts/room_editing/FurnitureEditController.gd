@@ -406,22 +406,8 @@ func _on_furniture_input(_viewport: Node, event: InputEvent, _shape_idx: int, in
 				if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
 					_select_furniture(furn)
 
-	# Handle mouse motion for drag (desktop)
-	if event is InputEventMouseMotion:
-		if _selected_furniture != null and _touch_start_pos != Vector2.ZERO:
-			var distance = event.position.distance_to(_touch_start_pos)
-			if distance >= TAP_DISTANCE_THRESHOLD and not _dragging:
-				_start_drag()
-			if _dragging:
-				_update_drag_position(event.position)
-		return
-
-	# Handle touch drag (mobile)
-	if event is InputEventScreenDrag:
-		if _selected_furniture != null and not _dragging:
-			_start_drag()
-		if _dragging:
-			_update_drag_position(event.position)
+	# Note: Drag motion handling moved to _unhandled_input to work when mouse
+	# moves outside furniture Area2D during drag
 
 
 func _select_furniture(furn: RoomInstance.FurniturePlacement) -> void:
@@ -463,6 +449,41 @@ func _unhandled_input(event: InputEvent) -> void:
 				if _placement_preview_valid:
 					confirm_placement()
 					get_viewport().set_input_as_handled()
+			return
+
+	# Handle drag motion globally (mouse may move outside furniture Area2D during drag)
+	if _dragging:
+		if event is InputEventMouseMotion:
+			_update_drag_position(event.position)
+			get_viewport().set_input_as_handled()
+			return
+		if event is InputEventScreenDrag:
+			_update_drag_position(event.position)
+			get_viewport().set_input_as_handled()
+			return
+		# Handle drag end (mouse release)
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+			_end_drag()
+			get_viewport().set_input_as_handled()
+			return
+		if event is InputEventScreenTouch and not event.pressed:
+			_end_drag()
+			get_viewport().set_input_as_handled()
+			return
+
+	# Handle drag start - check if we should transition from tap to drag
+	if _selected_furniture != null and _touch_start_pos != Vector2.ZERO and not _dragging:
+		if event is InputEventMouseMotion:
+			var distance = event.position.distance_to(_touch_start_pos)
+			if distance >= TAP_DISTANCE_THRESHOLD:
+				_start_drag()
+				_update_drag_position(event.position)
+				get_viewport().set_input_as_handled()
+				return
+		if event is InputEventScreenDrag:
+			_start_drag()
+			_update_drag_position(event.position)
+			get_viewport().set_input_as_handled()
 			return
 
 	var is_tap := false
