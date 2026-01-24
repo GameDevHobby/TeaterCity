@@ -7,6 +7,9 @@ extends Control
 # Signals
 signal furniture_item_selected(index: int, furniture: RoomInstance.FurniturePlacement)
 signal furniture_delete_requested
+signal furniture_add_requested  # Request to show picker
+signal furniture_selected_for_add(furniture: FurnitureResource)  # Furniture chosen from picker
+signal placement_cancelled
 signal done_pressed
 
 # UI elements
@@ -15,6 +18,11 @@ var _items_container: VBoxContainer
 var _done_button: Button
 var _delete_button: Button
 var _error_label: Label  # For showing delete error messages
+var _add_button: Button
+var _picker_panel: PanelContainer = null  # Furniture picker overlay
+var _picker_buttons: Array[Button] = []
+var _cancel_add_button: Button = null
+var _rotate_button: Button = null
 
 # State
 var _controller: FurnitureEditController = null
@@ -83,6 +91,11 @@ func _create_panel() -> void:
 	_items_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_items_container)
 
+	# Add button (for adding new furniture)
+	_add_button = UIStyleHelper.create_styled_button("+ Add Furniture", Vector2(160, 40), Color(0.2, 0.4, 0.3))
+	_add_button.pressed.connect(_on_add_pressed)
+	vbox.add_child(_add_button)
+
 	# Delete button (hidden until furniture selected)
 	_delete_button = UIStyleHelper.create_styled_button("Delete", Vector2(160, 40), Color(0.6, 0.2, 0.2))
 	_delete_button.pressed.connect(_on_delete_pressed)
@@ -112,6 +125,8 @@ func set_controller(controller: FurnitureEditController) -> void:
 	_controller.furniture_deselected.connect(_on_controller_furniture_deselected)
 	_controller.furniture_deleted.connect(_on_controller_furniture_deleted)
 	_controller.furniture_delete_failed.connect(_on_controller_furniture_delete_failed)
+	_controller.placement_mode_exited.connect(_on_controller_placement_exited)
+	_controller.furniture_added.connect(_on_controller_furniture_added)
 	_controller.mode_exited.connect(_on_controller_mode_exited)
 
 
@@ -136,6 +151,80 @@ func hide_panel() -> void:
 	_current_room = null
 	_selected_index = -1
 	hide()
+
+
+func _create_picker_panel(room: RoomInstance) -> void:
+	if _picker_panel != null:
+		_picker_panel.queue_free()
+
+	_picker_panel = PanelContainer.new()
+	_picker_panel.name = "FurniturePicker"
+	_picker_panel.mouse_filter = MOUSE_FILTER_STOP
+	UIStyleHelper.apply_panel_style(_picker_panel)
+	add_child(_picker_panel)
+
+	# Position above the list panel
+	_picker_panel.set_anchors_preset(PRESET_BOTTOM_LEFT)
+	_picker_panel.position = Vector2(PANEL_MARGIN, -PANEL_MARGIN - 300)  # Above list panel
+	_picker_panel.custom_minimum_size = Vector2(PANEL_WIDTH, 150)
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_top", 12)
+	margin.add_theme_constant_override("margin_bottom", 12)
+	_picker_panel.add_child(margin)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	margin.add_child(vbox)
+
+	# Title
+	var title := Label.new()
+	title.text = "Select Furniture"
+	title.add_theme_color_override("font_color", UIStyleHelper.DEFAULT_FONT_COLOR)
+	vbox.add_child(title)
+
+	# Get room type for allowed furniture
+	var room_type = RoomTypeRegistry.get_instance().get_room_type(room.room_type_id)
+	if room_type:
+		_populate_picker_buttons(vbox, room_type)
+
+	# Cancel button
+	_cancel_add_button = UIStyleHelper.create_styled_button("Cancel", Vector2(160, 36))
+	_cancel_add_button.pressed.connect(_on_cancel_add_pressed)
+	vbox.add_child(_cancel_add_button)
+
+
+func _populate_picker_buttons(container: VBoxContainer, room_type: RoomTypeResource) -> void:
+	_picker_buttons.clear()
+
+	# Add all allowed furniture as buttons
+	var all_furniture: Array[FurnitureResource] = []
+
+	# Add required furniture
+	for req in room_type.get_required_furniture():
+		if req.furniture and req.furniture not in all_furniture:
+			all_furniture.append(req.furniture)
+
+	# Add optional allowed furniture
+	for furn in room_type.allowed_furniture:
+		if furn not in all_furniture:
+			all_furniture.append(furn)
+
+	for furn in all_furniture:
+		var display_name = furn.name if furn.name else furn.id
+		var btn = UIStyleHelper.create_styled_button(display_name, Vector2(160, 36))
+		btn.pressed.connect(_on_picker_furniture_selected.bind(furn))
+		container.add_child(btn)
+		_picker_buttons.append(btn)
+
+
+func _hide_picker() -> void:
+	if _picker_panel != null:
+		_picker_panel.queue_free()
+		_picker_panel = null
+	_picker_buttons.clear()
 
 
 func select_item(index: int) -> void:
@@ -200,6 +289,23 @@ func _on_item_pressed(index: int, furniture: RoomInstance.FurniturePlacement) ->
 	furniture_item_selected.emit(index, furniture)
 
 
+func _on_add_pressed() -> void:
+	if _current_room == null:
+		return
+	_create_picker_panel(_current_room)
+	furniture_add_requested.emit()
+
+
+func _on_cancel_add_pressed() -> void:
+	_hide_picker()
+	placement_cancelled.emit()
+
+
+func _on_picker_furniture_selected(furniture: FurnitureResource) -> void:
+	_hide_picker()
+	furniture_selected_for_add.emit(furniture)
+
+
 func _on_done_pressed() -> void:
 	done_pressed.emit()
 
@@ -230,6 +336,15 @@ func _on_controller_furniture_deleted(room: RoomInstance, _furniture: RoomInstan
 func _on_controller_furniture_delete_failed(reason: String) -> void:
 	_error_label.text = reason
 	_error_label.show()
+
+
+func _on_controller_placement_exited() -> void:
+	_hide_picker()
+
+
+func _on_controller_furniture_added(room: RoomInstance, _furniture: RoomInstance.FurniturePlacement) -> void:
+	# Refresh the list with new furniture
+	_populate_list(room)
 
 
 func _on_controller_mode_exited() -> void:
