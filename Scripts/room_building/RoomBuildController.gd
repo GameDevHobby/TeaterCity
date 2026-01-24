@@ -21,6 +21,7 @@ var _furniture_op: FurnitureOperation
 var _navigation_op = NavigationOperation.new()
 
 var _room_counter: int = 0
+var _counter_initialized: bool = false
 
 func _ready() -> void:
 	# Initialize registries
@@ -68,6 +69,11 @@ func end_build_mode() -> void:
 	state_changed.emit("idle")
 
 func _on_room_type_selected(room_type_id: String) -> void:
+	# Initialize counter from existing rooms (once per session)
+	if not _counter_initialized:
+		_initialize_room_counter()
+		_counter_initialized = true
+
 	_room_counter += 1
 	current_room = RoomInstance.new("room_%d" % _room_counter, room_type_id)
 	current_room_type = RoomTypeRegistry.get_instance().get_room_type(room_type_id)
@@ -75,6 +81,20 @@ func _on_room_type_selected(room_type_id: String) -> void:
 	if ui:
 		ui.show_drawing_instructions(current_room_type)
 	state_changed.emit("draw_box")
+
+
+func _initialize_room_counter() -> void:
+	# Find the highest room counter from existing rooms to avoid ID collisions
+	var max_counter := 0
+	for room in RoomManager.get_all_rooms():
+		# Parse room ID format "room_N" to extract the counter
+		if room.id.begins_with("room_"):
+			var num_str = room.id.substr(5)  # Skip "room_"
+			if num_str.is_valid_int():
+				var num = num_str.to_int()
+				max_counter = maxi(max_counter, num)
+	_room_counter = max_counter
+
 
 func finish_box_draw(start: Vector2i, end: Vector2i) -> void:
 	# Calculate proper bounding box from start/end positions
