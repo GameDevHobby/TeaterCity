@@ -54,9 +54,7 @@ func _create_panel() -> void:
 	UIStyleHelper.apply_panel_style(_panel)
 	add_child(_panel)
 
-	# Position at bottom-left with margin
-	_panel.set_anchors_preset(PRESET_BOTTOM_LEFT)
-	_panel.position = Vector2(PANEL_MARGIN, -PANEL_MARGIN)
+	# Set minimum size, position will be calculated after layout
 	_panel.custom_minimum_size = Vector2(PANEL_WIDTH, 150)
 
 	# Add margin container for padding
@@ -144,6 +142,20 @@ func show_for_room(room: RoomInstance) -> void:
 
 	show()
 	_panel.show()
+
+	# Position at bottom-left after layout is ready
+	call_deferred("_deferred_position_list_panel")
+
+
+func _deferred_position_list_panel() -> void:
+	if _panel == null or not is_instance_valid(_panel):
+		return
+	var viewport_size = get_viewport().get_visible_rect().size
+	var panel_size = _panel.get_combined_minimum_size()
+	_panel.position = Vector2(
+		PANEL_MARGIN,
+		viewport_size.y - panel_size.y - PANEL_MARGIN
+	)
 
 
 func hide_panel() -> void:

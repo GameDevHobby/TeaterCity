@@ -430,7 +430,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			var tile_pos = _screen_to_tile(event.position)
 			_update_placement_preview(tile_pos)
 
-		# Handle tap to place
+		# Handle tap to place - consume ALL input in placement mode to prevent room selection
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				var tile_pos = _screen_to_tile(event.position)
@@ -438,7 +438,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			else:
 				if _placement_preview_valid:
 					confirm_placement()
-					get_viewport().set_input_as_handled()
+			get_viewport().set_input_as_handled()
 			return
 
 		if event is InputEventScreenTouch:
@@ -448,7 +448,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			else:
 				if _placement_preview_valid:
 					confirm_placement()
-					get_viewport().set_input_as_handled()
+			get_viewport().set_input_as_handled()
 			return
 
 	# Handle drag motion globally (mouse may move outside furniture Area2D during drag)
