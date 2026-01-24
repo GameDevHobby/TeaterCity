@@ -12,6 +12,10 @@ signal furniture_drag_preview(position: Vector2i, is_valid: bool)
 signal furniture_drag_ended
 signal furniture_deleted(room: RoomInstance, furniture: RoomInstance.FurniturePlacement)
 signal furniture_delete_failed(reason: String)
+signal placement_mode_entered(furniture: FurnitureResource)
+signal placement_mode_exited
+signal furniture_added(room: RoomInstance, furniture: RoomInstance.FurniturePlacement)
+signal placement_preview_updated(position: Vector2i, is_valid: bool)
 signal mode_exited
 
 # Tap detection thresholds (same as RoomManager)
@@ -37,9 +41,17 @@ var _preview_position: Vector2i = Vector2i.ZERO
 var _preview_valid: bool = false
 var _original_position: Vector2i = Vector2i.ZERO  # For revert on invalid drop
 
+# Placement mode state (for adding new furniture)
+var _placement_mode: bool = false
+var _placement_furniture: FurnitureResource = null
+var _placement_rotation: int = 0
+var _placement_preview_pos: Vector2i = Vector2i.ZERO
+var _placement_preview_valid: bool = false
+
 # Operation helpers
 var _collision_operation: CollisionOperation = null
 var _validation_operation: ValidationOperation = null
+var _furniture_operation: FurnitureOperation = null
 
 
 # --- Public Methods ---
@@ -57,6 +69,9 @@ func enter_edit_mode(room: RoomInstance) -> void:
 
 	if _validation_operation == null:
 		_validation_operation = ValidationOperation.new()
+
+	if _furniture_operation == null:
+		_furniture_operation = FurnitureOperation.new()
 
 	_create_furniture_areas(room)
 
@@ -95,6 +110,97 @@ func select_furniture(furniture: RoomInstance.FurniturePlacement) -> void:
 
 func _screen_to_tile(screen_pos: Vector2) -> Vector2i:
 	return IsometricMath.screen_to_tile(screen_pos, get_viewport())
+
+
+func enter_placement_mode(furniture: FurnitureResource) -> void:
+	if not _active or _current_room == null:
+		return
+
+	# Clear any existing selection
+	if _selected_furniture != null:
+		_selected_furniture = null
+		furniture_deselected.emit()
+
+	_placement_mode = true
+	_placement_furniture = furniture
+	_placement_rotation = 0
+	_placement_preview_pos = Vector2i.ZERO
+	_placement_preview_valid = false
+
+	placement_mode_entered.emit(furniture)
+
+
+func exit_placement_mode() -> void:
+	_placement_mode = false
+	_placement_furniture = null
+	_placement_rotation = 0
+	placement_mode_exited.emit()
+
+
+func rotate_placement() -> void:
+	if not _placement_mode:
+		return
+	_placement_rotation = (_placement_rotation + 1) % 4
+	# Re-validate at current position
+	if _placement_preview_pos != Vector2i.ZERO:
+		_update_placement_preview(_placement_preview_pos)
+
+
+func is_in_placement_mode() -> bool:
+	return _placement_mode
+
+
+func get_placement_furniture() -> FurnitureResource:
+	return _placement_furniture
+
+
+func get_placement_rotation() -> int:
+	return _placement_rotation
+
+
+func _update_placement_preview(tile_pos: Vector2i) -> void:
+	_placement_preview_pos = tile_pos
+
+	var result = _collision_operation.can_place_furniture(
+		_placement_furniture,
+		tile_pos,
+		_placement_rotation,
+		_current_room
+	)
+
+	_placement_preview_valid = result.can_place
+	placement_preview_updated.emit(tile_pos, _placement_preview_valid)
+
+
+func confirm_placement() -> bool:
+	if not _placement_mode or _placement_furniture == null:
+		return false
+
+	if not _placement_preview_valid:
+		return false
+
+	# Add furniture to room
+	var placement = RoomInstance.FurniturePlacement.new(
+		_placement_furniture,
+		_placement_preview_pos,
+		_placement_rotation
+	)
+	_current_room.furniture.append(placement)
+
+	# Create visual node (need tilemap reference from Main)
+	# For now, we'll emit signal and let Main handle visual creation
+	furniture_added.emit(_current_room, placement)
+
+	# Trigger auto-save
+	_current_room.placement_changed.emit()
+
+	# Exit placement mode
+	exit_placement_mode()
+
+	# Recreate furniture areas to include new furniture
+	_recreate_furniture_areas()
+
+	return true
 
 
 ## Attempt to delete the currently selected furniture
@@ -326,6 +432,38 @@ func _select_furniture(furn: RoomInstance.FurniturePlacement) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not _active:
 		return
+
+	# Handle placement mode input
+	if _placement_mode:
+		# Track mouse/touch position for preview
+		if event is InputEventMouseMotion:
+			var tile_pos = _screen_to_tile(event.position)
+			_update_placement_preview(tile_pos)
+
+		if event is InputEventScreenDrag:
+			var tile_pos = _screen_to_tile(event.position)
+			_update_placement_preview(tile_pos)
+
+		# Handle tap to place
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				var tile_pos = _screen_to_tile(event.position)
+				_update_placement_preview(tile_pos)
+			else:
+				if _placement_preview_valid:
+					confirm_placement()
+					get_viewport().set_input_as_handled()
+			return
+
+		if event is InputEventScreenTouch:
+			if event.pressed:
+				var tile_pos = _screen_to_tile(event.position)
+				_update_placement_preview(tile_pos)
+			else:
+				if _placement_preview_valid:
+					confirm_placement()
+					get_viewport().set_input_as_handled()
+			return
 
 	var is_tap := false
 	var tap_pos := Vector2.ZERO
