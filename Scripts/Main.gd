@@ -77,7 +77,13 @@ func _ready() -> void:
 	# Connect list panel signals
 	_furniture_list_panel.furniture_item_selected.connect(_on_furniture_list_item_selected)
 	_furniture_list_panel.furniture_delete_requested.connect(_on_furniture_delete_requested)
+	_furniture_list_panel.furniture_selected_for_add.connect(_on_furniture_selected_for_add)
+	_furniture_list_panel.placement_cancelled.connect(_on_placement_cancelled)
 	_furniture_list_panel.done_pressed.connect(_on_furniture_edit_done)
+
+	# Connect controller placement signals
+	_furniture_controller.furniture_added.connect(_on_furniture_added)
+	_furniture_controller.placement_preview_updated.connect(_on_placement_preview_updated)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -138,6 +144,31 @@ func _on_furniture_list_item_selected(_index: int, furniture: RoomInstance.Furni
 
 func _on_furniture_delete_requested() -> void:
 	_furniture_controller.delete_furniture()
+
+
+func _on_furniture_selected_for_add(furniture: FurnitureResource) -> void:
+	_furniture_controller.enter_placement_mode(furniture)
+
+
+func _on_placement_cancelled() -> void:
+	_furniture_controller.exit_placement_mode()
+
+
+func _on_furniture_added(room: RoomInstance, placement: RoomInstance.FurniturePlacement) -> void:
+	# Get tilemap layer from room build manager
+	var tilemap_layer = room_build_manager.get_tilemap_layer()
+	var furniture_parent = room_build_manager.get_furniture_parent()
+
+	if tilemap_layer and furniture_parent:
+		var furniture_op = FurnitureOperation.new()
+		furniture_op.create_furniture_visual(placement, furniture_parent, tilemap_layer)
+
+	print("Furniture added: ", placement.furniture.name if placement.furniture else "unknown")
+
+
+func _on_placement_preview_updated(_position: Vector2i, _is_valid: bool) -> void:
+	# FurnitureSelectionHighlight handles visual preview via its own signal connection
+	pass
 
 
 func _on_furniture_edit_done() -> void:

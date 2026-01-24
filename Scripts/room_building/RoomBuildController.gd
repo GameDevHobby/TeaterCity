@@ -44,6 +44,14 @@ func _ready() -> void:
 	# Connect to RoomManager for visual restoration of loaded rooms
 	RoomManager.room_restored.connect(_on_room_restored)
 
+func get_tilemap_layer() -> TileMapLayer:
+	return ground_tilemap_layer
+
+
+func get_furniture_parent() -> Node2D:
+	return furniture_visuals
+
+
 func start_build_mode() -> void:
 	if ui:
 		ui.show_all()
