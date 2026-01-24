@@ -579,8 +579,13 @@ func _end_drag() -> void:
 
 		# Update visual node position if it exists
 		if _selected_furniture.visual_node and is_instance_valid(_selected_furniture.visual_node):
-			var world_pos = IsometricMath.tile_to_world(_preview_position)
-			_selected_furniture.visual_node.position = world_pos
+			# Use same positioning logic as FurnitureOperation._calculate_furniture_position
+			var furn = _selected_furniture.furniture
+			var center_offset = Vector2.ZERO
+			if furn:
+				center_offset = RotationHelper.get_center_offset(furn.size, _selected_furniture.rotation)
+			var tile_pos = Vector2(_preview_position) + center_offset
+			_selected_furniture.visual_node.position = IsometricMath.tile_to_world_float(tile_pos)
 
 		# Trigger auto-save
 		_current_room.placement_changed.emit()
