@@ -215,10 +215,13 @@ func _on_furniture_input(_viewport: Node, event: InputEvent, _shape_idx: int, in
 			_touch_start_pos = event.position
 			_touch_start_time = Time.get_ticks_msec()
 		else:
-			var distance: float = event.position.distance_to(_touch_start_pos)
-			var duration := Time.get_ticks_msec() - _touch_start_time
-			if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
-				_select_furniture(furn)
+			if _dragging:
+				_end_drag()
+			else:
+				var distance: float = event.position.distance_to(_touch_start_pos)
+				var duration := Time.get_ticks_msec() - _touch_start_time
+				if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
+					_select_furniture(furn)
 		return
 
 	# Handle touch events (mobile)
@@ -227,10 +230,30 @@ func _on_furniture_input(_viewport: Node, event: InputEvent, _shape_idx: int, in
 			_touch_start_pos = event.position
 			_touch_start_time = Time.get_ticks_msec()
 		else:
-			var distance: float = event.position.distance_to(_touch_start_pos)
-			var duration := Time.get_ticks_msec() - _touch_start_time
-			if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
-				_select_furniture(furn)
+			if _dragging:
+				_end_drag()
+			else:
+				var distance: float = event.position.distance_to(_touch_start_pos)
+				var duration := Time.get_ticks_msec() - _touch_start_time
+				if distance < TAP_DISTANCE_THRESHOLD and duration < TAP_TIME_THRESHOLD:
+					_select_furniture(furn)
+
+	# Handle mouse motion for drag (desktop)
+	if event is InputEventMouseMotion:
+		if _selected_furniture != null and _touch_start_pos != Vector2.ZERO:
+			var distance = event.position.distance_to(_touch_start_pos)
+			if distance >= TAP_DISTANCE_THRESHOLD and not _dragging:
+				_start_drag()
+			if _dragging:
+				_update_drag_position(event.position)
+		return
+
+	# Handle touch drag (mobile)
+	if event is InputEventScreenDrag:
+		if _selected_furniture != null and not _dragging:
+			_start_drag()
+		if _dragging:
+			_update_drag_position(event.position)
 
 
 func _select_furniture(furn: RoomInstance.FurniturePlacement) -> void:
@@ -275,3 +298,72 @@ func _unhandled_input(event: InputEvent) -> void:
 		_selected_furniture = null
 		furniture_deselected.emit()
 		get_viewport().set_input_as_handled()
+
+
+func _start_drag() -> void:
+	if _selected_furniture == null:
+		return
+	_dragging = true
+	_original_position = _selected_furniture.position
+	_drag_start_tile = _screen_to_tile(_touch_start_pos)
+	_drag_offset = _drag_start_tile - _selected_furniture.position
+	_preview_position = _selected_furniture.position
+	_preview_valid = true
+
+
+func _update_drag_position(screen_pos: Vector2) -> void:
+	if not _dragging or _selected_furniture == null:
+		return
+
+	var cursor_tile = _screen_to_tile(screen_pos)
+	var new_position = cursor_tile - _drag_offset
+
+	# Skip if position unchanged
+	if new_position == _preview_position:
+		return
+
+	# Temporarily remove this furniture from room to avoid self-collision
+	var furniture_index = _current_room.furniture.find(_selected_furniture)
+	var temp_removed = false
+	if furniture_index >= 0:
+		_current_room.furniture.remove_at(furniture_index)
+		temp_removed = true
+
+	# Validate new position
+	var result = _collision_operation.can_place_furniture(
+		_selected_furniture.furniture,
+		new_position,
+		_selected_furniture.rotation,
+		_current_room
+	)
+
+	# Restore furniture to array
+	if temp_removed:
+		_current_room.furniture.insert(furniture_index, _selected_furniture)
+
+	_preview_position = new_position
+	_preview_valid = result.can_place
+	furniture_drag_preview.emit(_preview_position, _preview_valid)
+
+
+func _end_drag() -> void:
+	if not _dragging:
+		return
+
+	_dragging = false
+
+	if _preview_valid and _preview_position != _original_position:
+		# Commit the move
+		_selected_furniture.position = _preview_position
+
+		# Update visual node position if it exists
+		if _selected_furniture.visual_node and is_instance_valid(_selected_furniture.visual_node):
+			var world_pos = IsometricMath.tile_to_world(_preview_position)
+			_selected_furniture.visual_node.position = world_pos
+
+		# Trigger auto-save
+		_current_room.placement_changed.emit()
+
+	# Reset drag state
+	_touch_start_pos = Vector2.ZERO
+	furniture_drag_ended.emit()
