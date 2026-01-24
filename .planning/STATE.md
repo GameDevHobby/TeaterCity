@@ -22,9 +22,9 @@
 ## Current Position
 
 **Phase:** 5 of 10 (Furniture Editing Operations)
-**Plan:** 2 of 3 complete
-**Status:** In progress
-**Last activity:** 2026-01-24 - Completed 05-03-PLAN.md (Furniture deletion)
+**Plan:** 3 of 3 complete
+**Status:** Phase complete
+**Last activity:** 2026-01-24 - Completed 05-02-PLAN.md (Drag preview)
 
 **Progress:**
 ```
@@ -32,7 +32,7 @@ Phase  1: [X] Room Manager Foundation (4/4 plans) COMPLETE
 Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
 Phase  3: [>] Persistence Infrastructure (3/4 plans)
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
-Phase  5: [>] Furniture Editing Operations (2/3 plans)
+Phase  5: [X] Furniture Editing Operations (3/3 plans) COMPLETE
 Phase  6: [ ] Door Editing
 Phase  7: [ ] Room Deletion
 Phase  8: [ ] Room Resize (Complex)
@@ -40,7 +40,7 @@ Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 4/10 phases complete (40%)
+**Milestone Progress:** 5/10 phases complete (50%)
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 10 |
-| Plans Passed | 10 |
+| Plans Executed | 11 |
+| Plans Passed | 11 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -96,6 +96,9 @@ Phase 10: [ ] Testing & Verification
 | Validate against room type requirements | Prevent deleting required furniture at minimum count | 5-03 |
 | Recreate furniture areas after deletion | Deletion shifts array indices, requiring Area2D rebuild | 5-03 |
 | Inline error messages in list panel | Less disruptive than modals for validation failures | 5-03 |
+| Drag preview replaces selection highlight | Clearer feedback - users see landing position, not current | 5-02 |
+| Original position shown as gray ghost | Provides reference for how far furniture has moved | 5-02 |
+| Green valid, red invalid drag preview | Universal color convention for success/error states | 5-02 |
 
 ### Technical Notes
 
@@ -120,6 +123,8 @@ Phase 10: [ ] Testing & Verification
 - Delete validation: ValidationOperation.can_delete_furniture() checks room type requirements before deletion
 - Furniture cleanup: queue_free() both visual_node and Area2D, recreate all areas with updated indices
 - Delete UI: Button shows when selected, error label shows inline for validation failures
+- Drag preview: Signal-driven rendering via furniture_drag_preview, state-based _draw() branching
+- Preview rendering: Multi-layer (access tiles → footprint → original ghost), color-coded validity
 
 ### Blockers
 
@@ -143,8 +148,9 @@ None currently.
 - [x] Execute 04-01-PLAN.md: FurnitureEditController
 - [x] Execute 04-02-PLAN.md: List Selection UI
 - [x] Execute 05-01-PLAN.md: Drag-to-move functionality
-- [ ] Execute 05-02-PLAN.md: Furniture rotation
+- [x] Execute 05-02-PLAN.md: Drag preview visual feedback
 - [x] Execute 05-03-PLAN.md: Furniture deletion
+- [x] Complete Phase 5: Furniture Editing Operations
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -153,47 +159,41 @@ None currently.
 
 ### What Was Done
 
-- Executed 05-03-PLAN.md: Furniture deletion with validation
-- Added ValidationOperation.can_delete_furniture() to check room type requirements
-- Implemented FurnitureEditController.delete_furniture() with validation and cleanup
-- Added delete button to FurnitureListPanel with error handling
-- Cleaned up visual_node and Area2D references on deletion
-- Recreated furniture areas after deletion to fix array indices
-- Commits: cd466c8, 4123e5b, ce95da3
+- Executed 05-02-PLAN.md: Furniture drag preview with visual feedback
+- Added drag preview state variables and color constants to FurnitureSelectionHighlight
+- Connected to furniture_drag_preview and furniture_drag_ended signals
+- Implemented _draw_drag_preview() with multi-layer rendering (access tiles, footprint, original ghost)
+- Added green/red color feedback for valid/invalid placement during drag
+- Commits: 43d8d71, be36d25
 
 ### What's Next
 
-1. Execute 05-02-PLAN.md: Furniture rotation (if exists)
-2. Complete Phase 5 remaining plans
-3. Execute Phase 6: Door Editing
-4. Complete Phase 3 remaining plans (03-04 if exists)
-5. Consider spike planning for Phase 8 (Room Resize)
+1. Execute Phase 6: Door Editing
+2. Complete Phase 3 remaining plans (03-04 if exists)
+3. Execute Phase 7: Room Deletion
+4. Consider spike planning for Phase 8 (Room Resize)
 
 ### Context for Next Session
 
-Phase 5 Plan 03 complete. Furniture deletion with validation ready:
-- Delete button appears in list panel when furniture is selected
-- ValidationOperation checks if furniture can be deleted without violating room type requirements
-- Error messages show inline in list panel for blocked deletions
-- Visual nodes and Area2D cleaned up properly on deletion
-- Auto-save triggered via placement_changed signal
+Phase 5 COMPLETE. Furniture editing operations fully implemented:
+- Drag-to-move with real-time collision validation (05-01)
+- Visual drag preview with green/red validity feedback (05-02)
+- Furniture deletion with room type validation (05-03)
 
-Key files modified:
-- `Scripts/room_building/operations/ValidationOperation.gd` - can_delete_furniture validation
-- `Scripts/room_editing/FurnitureEditController.gd` - delete_furniture method with cleanup
-- `Scripts/room_editing/FurnitureListPanel.gd` - Delete button and error handling UI
-- `Scripts/storage/RoomInstance.gd` - visual_node property added
-- `Scripts/Main.gd` - Signal wiring for delete request
+Drag preview features:
+- During drag, preview shows at cursor position with green (valid) or red (invalid) coloring
+- Original furniture position shown as faint gray ghost for reference
+- Access tiles rendered with lighter alpha for visual hierarchy
+- Preview disappears on drag end, selection highlight returns to normal
 
-Delete flow:
-1. User selects furniture in list or room -> delete button shows
-2. User taps delete -> furniture_delete_requested signal
-3. Controller validates via ValidationOperation.can_delete_furniture()
-4. If blocked -> furniture_delete_failed signal with reason, error shows in list
-5. If allowed -> cleanup visual_node and Area2D, remove from array, emit placement_changed
-6. List refreshes, auto-save triggers
+Key files:
+- `Scripts/room_editing/FurnitureSelectionHighlight.gd` - Drag preview rendering with state-based _draw()
+- `Scripts/room_editing/FurnitureEditController.gd` - Drag state machine and deletion logic
+- `Scripts/room_editing/FurnitureListPanel.gd` - List UI with delete button
+
+Next phase should focus on door editing operations (Phase 6).
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-24 (05-03-PLAN.md complete)*
+*Last updated: 2026-01-24 (05-02-PLAN.md complete, Phase 5 COMPLETE)*
