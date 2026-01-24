@@ -21,6 +21,11 @@ var _is_dragging: bool = false
 var _drag_preview_position: Vector2i = Vector2i.ZERO
 var _drag_preview_valid: bool = false
 
+# Placement mode state (for adding new furniture)
+var _in_placement_mode: bool = false
+var _placement_preview_position: Vector2i = Vector2i.ZERO
+var _placement_preview_valid: bool = false
+
 
 func _ready() -> void:
 	# Controller reference set by Main.gd after instantiation
@@ -40,6 +45,12 @@ func set_controller(controller: FurnitureEditController) -> void:
 			_controller.furniture_drag_preview.disconnect(_on_drag_preview)
 		if _controller.furniture_drag_ended.is_connected(_on_drag_ended):
 			_controller.furniture_drag_ended.disconnect(_on_drag_ended)
+		if _controller.placement_mode_entered.is_connected(_on_placement_mode_entered):
+			_controller.placement_mode_entered.disconnect(_on_placement_mode_entered)
+		if _controller.placement_mode_exited.is_connected(_on_placement_mode_exited):
+			_controller.placement_mode_exited.disconnect(_on_placement_mode_exited)
+		if _controller.placement_preview_updated.is_connected(_on_placement_preview_updated):
+			_controller.placement_preview_updated.disconnect(_on_placement_preview_updated)
 
 	_controller = controller
 
@@ -49,6 +60,9 @@ func set_controller(controller: FurnitureEditController) -> void:
 		_controller.mode_exited.connect(_on_mode_exited)
 		_controller.furniture_drag_preview.connect(_on_drag_preview)
 		_controller.furniture_drag_ended.connect(_on_drag_ended)
+		_controller.placement_mode_entered.connect(_on_placement_mode_entered)
+		_controller.placement_mode_exited.connect(_on_placement_mode_exited)
+		_controller.placement_preview_updated.connect(_on_placement_preview_updated)
 
 
 func _on_furniture_selected(_room: RoomInstance, _furniture: RoomInstance.FurniturePlacement) -> void:
@@ -75,15 +89,36 @@ func _on_drag_ended() -> void:
 	queue_redraw()
 
 
+func _on_placement_mode_entered(_furniture: FurnitureResource) -> void:
+	_in_placement_mode = true
+	queue_redraw()
+
+
+func _on_placement_mode_exited() -> void:
+	_in_placement_mode = false
+	queue_redraw()
+
+
+func _on_placement_preview_updated(position: Vector2i, is_valid: bool) -> void:
+	_placement_preview_position = position
+	_placement_preview_valid = is_valid
+	queue_redraw()
+
+
 func _draw() -> void:
 	if _controller == null:
+		return
+
+	var viewport := get_viewport()
+
+	# Placement mode preview (for adding new furniture)
+	if _in_placement_mode:
+		_draw_placement_preview(viewport)
 		return
 
 	var furniture := _controller.get_selected_furniture()
 	if furniture == null:
 		return
-
-	var viewport := get_viewport()
 
 	# During drag, show preview at drag position
 	if _is_dragging:
@@ -143,3 +178,42 @@ func _draw_drag_preview(furniture: RoomInstance.FurniturePlacement, viewport: Vi
 	var original_tiles := furniture.get_occupied_tiles()
 	for tile in original_tiles:
 		RoomBuildDrawing.draw_tile_highlight(self, tile, Color(0.5, 0.5, 0.5, 0.2), viewport)
+
+
+func _draw_placement_preview(viewport: Viewport) -> void:
+	var furniture := _controller.get_placement_furniture()
+	if furniture == null:
+		return
+
+	var rotation := _controller.get_placement_rotation()
+
+	# Get footprint tiles at preview position
+	var preview_tiles := RotationHelper.get_footprint_tiles(
+		_placement_preview_position,
+		furniture.size,
+		rotation
+	)
+
+	# Get access tiles at preview position
+	var access_offsets := furniture.get_rotated_access_tiles(rotation)
+	var preview_access_tiles: Array[Vector2i] = []
+	for offset in access_offsets:
+		preview_access_tiles.append(_placement_preview_position + offset)
+
+	# Choose colors based on validity
+	var tile_color: Color
+	var access_color: Color
+	if _placement_preview_valid:
+		tile_color = DRAG_VALID_COLOR
+		access_color = DRAG_ACCESS_VALID_COLOR
+	else:
+		tile_color = DRAG_INVALID_COLOR
+		access_color = DRAG_ACCESS_INVALID_COLOR
+
+	# Draw access tiles first
+	for tile in preview_access_tiles:
+		RoomBuildDrawing.draw_tile_highlight(self, tile, access_color, viewport)
+
+	# Draw footprint tiles on top
+	for tile in preview_tiles:
+		RoomBuildDrawing.draw_tile_highlight(self, tile, tile_color, viewport)
