@@ -175,12 +175,12 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 05-01-PLAN.md - Drag-to-move with tap detection and collision validation
-- [ ] 05-02-PLAN.md - Move drag preview visual feedback
-- [ ] 05-03-PLAN.md - Delete operation with room type validation
-- [ ] 05-04-PLAN.md - Add operation with furniture picker and placement mode
-- [ ] 05-05-PLAN.md - Add placement preview and RoomBuildController accessors
-- [ ] 05-06-PLAN.md - Human verification of all furniture operations
+- [x] 05-01-PLAN.md - Drag-to-move with tap detection and collision validation
+- [x] 05-02-PLAN.md - Move drag preview visual feedback
+- [x] 05-03-PLAN.md - Delete operation with room type validation
+- [x] 05-04-PLAN.md - Add operation with furniture picker and placement mode
+- [x] 05-05-PLAN.md - Add placement preview and RoomBuildController accessors
+- [x] 05-06-PLAN.md - Human verification of all furniture operations
 
 **Risk Flags:**
 - MEDIUM: Visual node cleanup on delete - must call queue_free() on furniture nodes
@@ -356,7 +356,7 @@ Plans:
 | 2 | Room Menu & Edit Mode Entry | Complete | SEL-03, SEL-04 |
 | 3 | Persistence Infrastructure | Complete | PER-01, PER-02, PER-03, PER-04 |
 | 4 | Furniture Selection | Complete | FUR-01, FUR-02 |
-| 5 | Furniture Editing Operations | Planned | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
+| 5 | Furniture Editing Operations | Complete | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
 | 6 | Door Editing | Pending | DOOR-01, DOOR-02, DOOR-03 |
 | 7 | Room Deletion | Pending | EDIT-04, EDIT-05 |
 | 8 | Room Resize (Complex) | Pending | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
