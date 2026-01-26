@@ -138,6 +138,25 @@ func get_selected_room() -> RoomInstance:
 	return _selected_room
 
 
+## Check if a tile position is inside any room other than the excluded one
+func is_tile_in_another_room(tile: Vector2i, exclude_room: RoomInstance) -> bool:
+	for room in _rooms:
+		if room == exclude_room:
+			continue
+		if _is_tile_in_room(tile, room):
+			return true
+	return false
+
+
+func _is_tile_in_room(tile: Vector2i, room: RoomInstance) -> bool:
+	var bbox = room.bounding_box
+	if tile.x < bbox.position.x or tile.x >= bbox.position.x + bbox.size.x:
+		return false
+	if tile.y < bbox.position.y or tile.y >= bbox.position.y + bbox.size.y:
+		return false
+	return true
+
+
 # --- Private Methods ---
 
 func _create_selection_area(room: RoomInstance) -> void:
