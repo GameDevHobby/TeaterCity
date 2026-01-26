@@ -8,6 +8,9 @@ extends Node2D
 var _build_mode_active = false
 var _furniture_controller: FurnitureEditController = null
 var _furniture_list_panel: FurnitureListPanel = null
+var _door_edit_controller: DoorEditController = null
+var _door_edit_highlight: DoorEditHighlight = null
+var _room_edit_menu: RoomEditMenu = null
 
 func _ready() -> void:
 	room_build_manager.room_completed.connect(_on_room_completed)
@@ -35,14 +38,14 @@ func _ready() -> void:
 	add_child(edit_menu_layer)
 
 	# Create RoomEditMenu instance
-	var edit_menu = RoomEditMenu.new()
-	edit_menu.name = "RoomEditMenu"
-	edit_menu_layer.add_child(edit_menu)
+	_room_edit_menu = RoomEditMenu.new()
+	_room_edit_menu.name = "RoomEditMenu"
+	edit_menu_layer.add_child(_room_edit_menu)
 
-	# Connect edit menu signals to stub handlers
-	edit_menu.edit_furniture_pressed.connect(_on_edit_furniture_requested)
-	edit_menu.edit_room_pressed.connect(_on_edit_room_requested)
-	edit_menu.room_type_action_pressed.connect(_on_room_type_action_requested)
+	# Connect edit menu signals to handlers
+	_room_edit_menu.edit_furniture_pressed.connect(_on_edit_furniture_requested)
+	_room_edit_menu.edit_room_pressed.connect(_on_edit_room_requested)
+	_room_edit_menu.room_type_action_pressed.connect(_on_room_type_action_requested)
 
 	# Create furniture editing CanvasLayer (same layer as room selection for correct z-order)
 	var furniture_edit_layer = CanvasLayer.new()
@@ -84,6 +87,34 @@ func _ready() -> void:
 	# Connect controller placement signals
 	_furniture_controller.furniture_added.connect(_on_furniture_added)
 	_furniture_controller.placement_preview_updated.connect(_on_placement_preview_updated)
+
+	# Create door editing CanvasLayer (same layer as room selection for correct z-order)
+	var door_edit_layer = CanvasLayer.new()
+	door_edit_layer.name = "DoorEditLayer"
+	door_edit_layer.layer = 0  # Same layer as SelectionHighlightLayer
+	add_child(door_edit_layer)
+
+	# Create DoorEditController
+	_door_edit_controller = DoorEditController.new()
+	_door_edit_controller.name = "DoorEditController"
+	_door_edit_controller.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_door_edit_controller.set_anchors_preset(Control.PRESET_FULL_RECT)
+	door_edit_layer.add_child(_door_edit_controller)
+
+	# Create DoorEditHighlight
+	_door_edit_highlight = DoorEditHighlight.new()
+	_door_edit_highlight.name = "DoorEditHighlight"
+	_door_edit_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_door_edit_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
+	door_edit_layer.add_child(_door_edit_highlight)
+	_door_edit_highlight.set_controller(_door_edit_controller)
+
+	# Connect door edit controller signals
+	_door_edit_controller.door_added.connect(_on_door_added)
+	_door_edit_controller.door_removed.connect(_on_door_removed)
+	_door_edit_controller.door_add_failed.connect(_on_door_add_failed)
+	_door_edit_controller.door_remove_failed.connect(_on_door_remove_failed)
+	_door_edit_controller.mode_exited.connect(_on_door_edit_mode_exited)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -127,7 +158,24 @@ func _on_edit_furniture_requested(room: RoomInstance) -> void:
 
 
 func _on_edit_room_requested(room: RoomInstance) -> void:
-	print("Edit room requested: ", room.id)
+	print("Entering door edit mode: ", room.id)
+
+	# Exit furniture edit if active
+	if _furniture_controller and _furniture_controller.is_active():
+		_furniture_controller.exit_edit_mode()
+
+	# Hide room menu
+	_room_edit_menu.hide()
+
+	# Clear room selection (menu already hidden)
+	RoomManager.clear_selection()
+
+	# Disable camera panning during door edit
+	camera.enable_pinch_pan = false
+
+	# Enter door edit mode
+	_door_edit_controller.enter_edit_mode(room)
+	_door_edit_highlight.queue_redraw()
 
 
 func _on_room_type_action_requested(room: RoomInstance) -> void:
@@ -183,3 +231,60 @@ func _exit_build_mode() -> void:
 	camera.enable_pinch_pan = true  # Re-enable camera panning
 	if build_button:
 		build_button.text = "Build"
+
+
+func _on_door_added(room: RoomInstance, door: RoomInstance.DoorPlacement) -> void:
+	# Create door visuals
+	var tilemap_layer = room_build_manager.get_tilemap_layer()
+	if tilemap_layer:
+		var door_op = DoorOperation.new()
+		door_op.create_door_visuals(door, tilemap_layer)
+
+	# Update navigation mesh
+	_update_navigation_for_room(room)
+
+	# Refresh highlight
+	_door_edit_highlight.queue_redraw()
+
+	print("Door added at: ", door.position)
+
+
+func _on_door_removed(room: RoomInstance, door: RoomInstance.DoorPlacement) -> void:
+	# Remove door visuals and restore wall
+	var tilemap_layer = room_build_manager.get_tilemap_layer()
+	if tilemap_layer:
+		var door_op = DoorOperation.new()
+		door_op.remove_door_visuals(door, room, tilemap_layer)
+
+	# Update navigation mesh
+	_update_navigation_for_room(room)
+
+	# Refresh highlight
+	_door_edit_highlight.queue_redraw()
+
+	print("Door removed at: ", door.position)
+
+
+func _on_door_add_failed(reason: String) -> void:
+	print("Door add failed: ", reason)
+	# TODO: Show inline error like furniture delete failed
+
+
+func _on_door_remove_failed(reason: String) -> void:
+	print("Door remove failed: ", reason)
+	# TODO: Show inline error
+
+
+func _on_door_edit_mode_exited() -> void:
+	print("Exited door edit mode")
+	camera.enable_pinch_pan = true  # Re-enable camera panning
+	_door_edit_highlight.queue_redraw()
+
+
+func _update_navigation_for_room(room: RoomInstance) -> void:
+	var tilemap_layer = room_build_manager.get_tilemap_layer()
+	if tilemap_layer:
+		var nav_op = NavigationOperation.new()
+		nav_op.update_room_navigation(room, tilemap_layer)
+	# Notify targets of navigation change
+	Targets.notify_navigation_changed()
