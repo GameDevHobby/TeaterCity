@@ -112,6 +112,35 @@ func create_door_visuals(door: RoomInstance.DoorPlacement, tilemap_layer: TileMa
 	_update_neighbor_terrain(tilemap_pos, tilemap_layer)
 
 
+## Remove door visuals and restore wall tile
+## Must be called BEFORE removing door from room.doors array
+func remove_door_visuals(door: RoomInstance.DoorPlacement, room: RoomInstance, tilemap_layer: TileMapLayer) -> void:
+	var tilemap_pos = _ui_to_tilemap_coords(door.position, tilemap_layer)
+
+	# Erase the door tile
+	tilemap_layer.erase_cell(tilemap_pos)
+
+	# Collect all wall positions for this room (excluding other doors and the door being removed)
+	var wall_tilemap_positions: Array[Vector2i] = []
+	for wall_pos in room.walls:
+		var is_other_door = false
+		for d in room.doors:
+			if d != door and d.position == wall_pos:
+				is_other_door = true
+				break
+		if not is_other_door:
+			wall_tilemap_positions.append(_ui_to_tilemap_coords(wall_pos, tilemap_layer))
+
+	# Re-place all walls with terrain connect to restore proper tile transitions
+	# This ensures the restored wall tile connects properly with neighbors
+	if wall_tilemap_positions.size() > 0:
+		# First erase all wall tiles
+		for pos in wall_tilemap_positions:
+			tilemap_layer.erase_cell(pos)
+		# Then re-place with terrain connect
+		tilemap_layer.set_cells_terrain_connect(wall_tilemap_positions, TERRAIN_SET, TERRAIN_INDEX)
+
+
 func _update_neighbor_terrain(center_pos: Vector2i, tilemap_layer: TileMapLayer) -> void:
 	# Use simple orthogonal offsets for tilemap coordinates
 	var neighbor_offsets = [
