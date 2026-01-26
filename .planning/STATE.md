@@ -106,6 +106,8 @@ Phase 10: [ ] Testing & Verification
 | Reuse drag colors for placement | Green valid, red invalid for consistency | 5-05 |
 | Position hash using x*100000+y | Simple unique key for Dictionary lookup of wall areas | 6-01 |
 | DoorEditController follows FurnitureEditController | Consistent pattern for edit mode controllers | 6-01 |
+| Dictionary return for door validation | {can_place: bool, reason: String} for structured error reporting | 6-02 |
+| Adjacent room check for door placement | Outside tile checked via RoomManager.is_tile_in_another_room() | 6-02 |
 | Minimum 1 door even if door_count_min=0 | Rooms need at least one door for patron access | 6-03 |
 | Rebuild all wall terrain on door remove | Ensures proper tile transitions after door removal | 6-03 |
 
@@ -141,6 +143,7 @@ Phase 10: [ ] Testing & Verification
 - Multi-mode highlight: Single FurnitureSelectionHighlight handles selection, drag, and placement rendering
 - Door edit mode: Create Area2D per wall tile, emit wall_tile_tapped with is_door boolean
 - Tile occupancy: RoomManager.is_tile_in_another_room() for adjacent room validation
+- Door add validation: can_place_door_edit() checks wall position, existing door, max count, adjacent room
 - Door removal: Validate with can_remove_door(), emit door_removed, Main.gd calls remove_door_visuals()
 - Wall restoration: remove_door_visuals() rebuilds all wall terrain via set_cells_terrain_connect()
 
@@ -173,6 +176,7 @@ None currently.
 - [ ] Execute 05-06-PLAN.md: Furniture rotation (if exists)
 - [ ] Complete Phase 5: Furniture Editing Operations
 - [x] Execute 06-01-PLAN.md: Door editing infrastructure
+- [x] Execute 06-02-PLAN.md: Door add operation
 - [x] Execute 06-03-PLAN.md: Door removal operation
 - [ ] Execute remaining 06-XX plans for door editing
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
