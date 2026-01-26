@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-01-26 (06-03 complete)
 
 ---
 
@@ -22,9 +22,9 @@
 ## Current Position
 
 **Phase:** 6 of 10 (Door Editing)
-**Plan:** 1 of N complete
+**Plan:** 3 of N complete
 **Status:** In progress
-**Last activity:** 2026-01-26 - Completed 06-01-PLAN.md (Door editing infrastructure)
+**Last activity:** 2026-01-26 - Completed 06-03-PLAN.md (Door removal operation)
 
 **Progress:**
 ```
@@ -33,7 +33,7 @@ Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
 Phase  3: [>] Persistence Infrastructure (3/4 plans)
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [>] Furniture Editing Operations (5/6 plans)
-Phase  6: [>] Door Editing (1/N plans)
+Phase  6: [>] Door Editing (3/N plans)
 Phase  7: [ ] Room Deletion
 Phase  8: [ ] Room Resize (Complex)
 Phase  9: [ ] Admin Menu & Feature Flags
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 14 |
-| Plans Passed | 14 |
+| Plans Executed | 15 |
+| Plans Passed | 15 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -106,6 +106,8 @@ Phase 10: [ ] Testing & Verification
 | Reuse drag colors for placement | Green valid, red invalid for consistency | 5-05 |
 | Position hash using x*100000+y | Simple unique key for Dictionary lookup of wall areas | 6-01 |
 | DoorEditController follows FurnitureEditController | Consistent pattern for edit mode controllers | 6-01 |
+| Minimum 1 door even if door_count_min=0 | Rooms need at least one door for patron access | 6-03 |
+| Rebuild all wall terrain on door remove | Ensures proper tile transitions after door removal | 6-03 |
 
 ### Technical Notes
 
@@ -139,6 +141,8 @@ Phase 10: [ ] Testing & Verification
 - Multi-mode highlight: Single FurnitureSelectionHighlight handles selection, drag, and placement rendering
 - Door edit mode: Create Area2D per wall tile, emit wall_tile_tapped with is_door boolean
 - Tile occupancy: RoomManager.is_tile_in_another_room() for adjacent room validation
+- Door removal: Validate with can_remove_door(), emit door_removed, Main.gd calls remove_door_visuals()
+- Wall restoration: remove_door_visuals() rebuilds all wall terrain via set_cells_terrain_connect()
 
 ### Blockers
 
@@ -169,6 +173,7 @@ None currently.
 - [ ] Execute 05-06-PLAN.md: Furniture rotation (if exists)
 - [ ] Complete Phase 5: Furniture Editing Operations
 - [x] Execute 06-01-PLAN.md: Door editing infrastructure
+- [x] Execute 06-03-PLAN.md: Door removal operation
 - [ ] Execute remaining 06-XX plans for door editing
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
@@ -178,36 +183,35 @@ None currently.
 
 ### What Was Done
 
-- Executed 06-01-PLAN.md: Door editing infrastructure
-- Added is_tile_in_another_room() and _is_tile_in_room() to RoomManager
-- Created DoorEditController with state management and wall tile tap detection
-- Commits: fe31242, 533a9e7
+- Executed 06-03-PLAN.md: Door removal operation
+- Added can_remove_door() and remove_door_visuals() to DoorOperation
+- Added remove_door(), add_door(), handle_wall_tap() to DoorEditController
+- Commits: 2f25ec6, 65b8e16, 65be635
 
 ### What's Next
 
-1. Execute remaining Phase 6 plans (door add/remove operations, visual feedback)
+1. Execute remaining Phase 6 plans (visual feedback, Main.gd integration)
 2. Complete Phase 5 if 05-06 exists (furniture rotation)
 3. Consider completing Phase 3 remaining plans (03-04 auto-save)
 
 ### Context for Next Session
 
-Phase 6 Plan 01 complete. Door editing infrastructure ready:
-- RoomManager can check tile occupancy against all rooms except current
-- DoorEditController can enter/exit edit mode
-- Wall tiles have tap detection areas created when entering edit mode
-- Tapping wall tiles emits wall_tile_tapped(position, is_door) signal
-- Controller follows FurnitureEditController pattern for consistency
+Phase 6 Plan 03 complete. Door add/remove operations ready:
+- DoorOperation validates door removal against room type minimums
+- DoorOperation restores wall terrain when door removed
+- DoorEditController handles wall tap routing to add or remove
+- Signals emitted for Main.gd to handle visual updates
 
-Key files in Phase 6:
-- `scripts/RoomManager.gd` - Added is_tile_in_another_room() method
-- `scripts/room_editing/DoorEditController.gd` - New door edit mode controller
+Key files modified:
+- `scripts/room_building/operations/DoorOperation.gd` - Added can_remove_door(), remove_door_visuals()
+- `scripts/room_editing/DoorEditController.gd` - Added remove_door(), add_door(), handle_wall_tap()
 
 Next steps in Phase 6:
-- Add DoorOperation extension for add/remove validation
+- Connect DoorEditController signals in Main.gd
 - Add door edit visual feedback (highlight colors)
 - Integrate with RoomEditMenu
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-26 (06-01-PLAN.md complete)*
+*Last updated: 2026-01-26 (06-03-PLAN.md complete)*
