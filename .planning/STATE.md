@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-01-24
+**Last Updated:** 2026-01-26
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 5 in progress - Furniture Editing Operations
+**Current Focus:** Phase 6 in progress - Door Editing
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,10 +21,10 @@
 
 ## Current Position
 
-**Phase:** 5 of 10 (Furniture Editing Operations)
-**Plan:** 5 of 6 complete
+**Phase:** 6 of 10 (Door Editing)
+**Plan:** 1 of N complete
 **Status:** In progress
-**Last activity:** 2026-01-24 - Completed 05-05-PLAN.md (Placement preview visual feedback)
+**Last activity:** 2026-01-26 - Completed 06-01-PLAN.md (Door editing infrastructure)
 
 **Progress:**
 ```
@@ -33,7 +33,7 @@ Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
 Phase  3: [>] Persistence Infrastructure (3/4 plans)
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [>] Furniture Editing Operations (5/6 plans)
-Phase  6: [ ] Door Editing
+Phase  6: [>] Door Editing (1/N plans)
 Phase  7: [ ] Room Deletion
 Phase  8: [ ] Room Resize (Complex)
 Phase  9: [ ] Admin Menu & Feature Flags
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 13 |
-| Plans Passed | 13 |
+| Plans Executed | 14 |
+| Plans Passed | 14 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -104,6 +104,8 @@ Phase 10: [ ] Testing & Verification
 | Visual creation delegated via signal | Controller emits furniture_added, Main creates visual node | 5-04 |
 | Placement preview priority rendering | Checked before selection/drag modes in _draw() | 5-05 |
 | Reuse drag colors for placement | Green valid, red invalid for consistency | 5-05 |
+| Position hash using x*100000+y | Simple unique key for Dictionary lookup of wall areas | 6-01 |
+| DoorEditController follows FurnitureEditController | Consistent pattern for edit mode controllers | 6-01 |
 
 ### Technical Notes
 
@@ -129,12 +131,14 @@ Phase 10: [ ] Testing & Verification
 - Furniture cleanup: queue_free() both visual_node and Area2D, recreate all areas with updated indices
 - Delete UI: Button shows when selected, error label shows inline for validation failures
 - Drag preview: Signal-driven rendering via furniture_drag_preview, state-based _draw() branching
-- Preview rendering: Multi-layer (access tiles → footprint → original ghost), color-coded validity
+- Preview rendering: Multi-layer (access tiles -> footprint -> original ghost), color-coded validity
 - Placement mode: Separate state from drag, clears selection on entry, validates with CollisionOperation
 - Furniture picker: Positioned above list panel, populated from room type constraints
-- Add workflow: Add button → picker → select furniture → placement mode → tap to place → auto-save
+- Add workflow: Add button -> picker -> select furniture -> placement mode -> tap to place -> auto-save
 - Placement preview: Green/red highlight follows cursor during placement mode, priority in _draw() branching
 - Multi-mode highlight: Single FurnitureSelectionHighlight handles selection, drag, and placement rendering
+- Door edit mode: Create Area2D per wall tile, emit wall_tile_tapped with is_door boolean
+- Tile occupancy: RoomManager.is_tile_in_another_room() for adjacent room validation
 
 ### Blockers
 
@@ -164,6 +168,8 @@ None currently.
 - [x] Execute 05-05-PLAN.md: Placement preview visual feedback
 - [ ] Execute 05-06-PLAN.md: Furniture rotation (if exists)
 - [ ] Complete Phase 5: Furniture Editing Operations
+- [x] Execute 06-01-PLAN.md: Door editing infrastructure
+- [ ] Execute remaining 06-XX plans for door editing
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -172,46 +178,36 @@ None currently.
 
 ### What Was Done
 
-- Executed 05-05-PLAN.md: Placement preview visual feedback
-- Added placement mode state to FurnitureSelectionHighlight (_in_placement_mode flag)
-- Connected placement_mode_entered/exited/preview_updated signals
-- Implemented _draw_placement_preview with green/red validity colors
-- Verified RoomBuildController accessor methods exist from 05-04
-- Verified Main.gd furniture visual creation wiring
-- Commits: a9aef7b, ca6dbad
+- Executed 06-01-PLAN.md: Door editing infrastructure
+- Added is_tile_in_another_room() and _is_tile_in_room() to RoomManager
+- Created DoorEditController with state management and wall tile tap detection
+- Commits: fe31242, 533a9e7
 
 ### What's Next
 
-1. Check if 05-06-PLAN.md exists (furniture rotation)
-2. Complete Phase 5: Furniture Editing Operations
-3. Execute Phase 6: Door Editing
-4. Consider completing Phase 3 remaining plans (03-04 auto-save if exists)
+1. Execute remaining Phase 6 plans (door add/remove operations, visual feedback)
+2. Complete Phase 5 if 05-06 exists (furniture rotation)
+3. Consider completing Phase 3 remaining plans (03-04 auto-save)
 
 ### Context for Next Session
 
-Phase 5 Plan 05 complete. Furniture add operation has full visual feedback:
-- Placement mode shows ghost preview at cursor position
-- Valid positions show green preview, invalid show red
-- Preview follows cursor via placement_preview_updated signal
-- FurnitureSelectionHighlight handles three rendering modes: selection (cyan), drag (green/red with ghost), placement (green/red)
-- Tapping valid position places furniture with correct visual node
-- New furniture immediately appears in list and is selectable
+Phase 6 Plan 01 complete. Door editing infrastructure ready:
+- RoomManager can check tile occupancy against all rooms except current
+- DoorEditController can enter/exit edit mode
+- Wall tiles have tap detection areas created when entering edit mode
+- Tapping wall tiles emits wall_tile_tapped(position, is_door) signal
+- Controller follows FurnitureEditController pattern for consistency
 
-Complete furniture editing flow:
-1. Select furniture → cyan highlight with access tiles
-2. Drag furniture → green/red preview at drop position, gray ghost at original
-3. Delete furniture → validation against room type, inline error if blocked
-4. Add furniture → picker with room type constraints → placement mode → green/red preview → place and auto-save
+Key files in Phase 6:
+- `scripts/RoomManager.gd` - Added is_tile_in_another_room() method
+- `scripts/room_editing/DoorEditController.gd` - New door edit mode controller
 
-Key files in Phase 5:
-- `Scripts/room_editing/FurnitureEditController.gd` - Selection, drag, placement, delete state management
-- `Scripts/room_editing/FurnitureSelectionHighlight.gd` - Multi-mode visual feedback rendering
-- `Scripts/room_editing/FurnitureListPanel.gd` - List UI with Add/Delete buttons, picker overlay
-- `Scripts/Main.gd` - Signal wiring, visual node creation for placed furniture
-
-Check for 05-06 plan or proceed to Phase 6 (Door Editing).
+Next steps in Phase 6:
+- Add DoorOperation extension for add/remove validation
+- Add door edit visual feedback (highlight colors)
+- Integrate with RoomEditMenu
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-24 (05-05-PLAN.md complete)*
+*Last updated: 2026-01-26 (06-01-PLAN.md complete)*
