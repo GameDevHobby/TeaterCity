@@ -211,7 +211,14 @@ Plans:
 3. Door placement blocked with error when adjacent tile is another room
 4. Navigation mesh updates after door add/remove
 
-**Estimated Tasks:** 8-12
+**Plans:** 5 plans
+
+Plans:
+- [ ] 06-01-PLAN.md - DoorEditController state machine and RoomManager tile occupancy helper
+- [ ] 06-02-PLAN.md - DoorOperation edit validation and door add operation
+- [ ] 06-03-PLAN.md - Door removal with wall restoration and validation
+- [ ] 06-04-PLAN.md - DoorEditHighlight visual and Main.gd integration
+- [ ] 06-05-PLAN.md - Human verification of door editing workflow
 
 **Risk Flags:**
 - MEDIUM: Navigation mesh update after door changes - must call navigation update
@@ -357,7 +364,7 @@ Plans:
 | 3 | Persistence Infrastructure | Complete | PER-01, PER-02, PER-03, PER-04 |
 | 4 | Furniture Selection | Complete | FUR-01, FUR-02 |
 | 5 | Furniture Editing Operations | Complete | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
-| 6 | Door Editing | Pending | DOOR-01, DOOR-02, DOOR-03 |
+| 6 | Door Editing | Planned | DOOR-01, DOOR-02, DOOR-03 |
 | 7 | Room Deletion | Pending | EDIT-04, EDIT-05 |
 | 8 | Room Resize (Complex) | Pending | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
 | 9 | Admin Menu & Feature Flags | Pending | PER-05 |
@@ -427,3 +434,4 @@ Phase 9 (Admin Menu)                                              Phase 8 (Room 
 *Phase 3 planned: 2026-01-22*
 *Phase 4 planned: 2026-01-22*
 *Phase 5 planned: 2026-01-23*
+*Phase 6 planned: 2026-01-25*
