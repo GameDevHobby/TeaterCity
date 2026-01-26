@@ -36,6 +36,72 @@ func determine_door_direction(position: Vector2i, room: RoomInstance) -> int:
 func _ui_to_tilemap_coords(ui_tile: Vector2i, tilemap_layer: TileMapLayer) -> Vector2i:
 	return IsometricMath.ui_to_tilemap_coords(ui_tile, tilemap_layer)
 
+## Validate door removal
+## Returns Dictionary with { can_remove: bool, reason: String }
+func can_remove_door(room: RoomInstance) -> Dictionary:
+	var result = { "can_remove": true, "reason": "" }
+
+	# Check room type minimum door count
+	var room_type = RoomTypeRegistry.get_instance().get_room_type(room.room_type_id)
+	if room_type:
+		var min_doors = room_type.door_count_min if room_type.door_count_min > 0 else 1
+		if room.doors.size() <= min_doors:
+			result.can_remove = false
+			result.reason = "Minimum %d door(s) required" % min_doors
+			return result
+
+	return result
+
+
+## Validate door placement for edit mode (stricter than build mode)
+## Returns Dictionary with { can_place: bool, reason: String }
+func can_place_door_edit(position: Vector2i, room: RoomInstance) -> Dictionary:
+	var result = { "can_place": true, "reason": "" }
+
+	# Check if position is valid wall tile (2-3 neighbors)
+	if not is_valid_door_position(position, room):
+		result.can_place = false
+		result.reason = "Invalid wall position for door"
+		return result
+
+	# Check if door already exists at this position
+	for door in room.doors:
+		if door.position == position:
+			result.can_place = false
+			result.reason = "Door already exists here"
+			return result
+
+	# Check room type maximum door count
+	var room_type = RoomTypeRegistry.get_instance().get_room_type(room.room_type_id)
+	if room_type and room_type.door_count_max > 0:
+		if room.doors.size() >= room_type.door_count_max:
+			result.can_place = false
+			result.reason = "Maximum %d door(s) reached" % room_type.door_count_max
+			return result
+
+	# Check adjacent tile (outside door) for other rooms
+	var direction = determine_door_direction(position, room)
+	var outside_tile = _get_outside_tile(position, direction)
+
+	if RoomManager.is_tile_in_another_room(outside_tile, room):
+		result.can_place = false
+		result.reason = "Cannot place door into adjacent room"
+		return result
+
+	return result
+
+
+## Get the tile position outside the door based on direction
+func _get_outside_tile(door_pos: Vector2i, direction: int) -> Vector2i:
+	# Direction: 0=North, 1=East, 2=South, 3=West
+	match direction:
+		0: return door_pos + Vector2i(0, -1)  # North: outside is y-1
+		1: return door_pos + Vector2i(1, 0)   # East: outside is x+1
+		2: return door_pos + Vector2i(0, 1)   # South: outside is y+1
+		3: return door_pos + Vector2i(-1, 0)  # West: outside is x-1
+	return door_pos
+
+
 func create_door_visuals(door: RoomInstance.DoorPlacement, tilemap_layer: TileMapLayer) -> void:
 	var tilemap_pos = _ui_to_tilemap_coords(door.position, tilemap_layer)
 
