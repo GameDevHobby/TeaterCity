@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-01-26 (06-03 complete)
+**Last Updated:** 2026-01-25 (06-04 complete)
 
 ---
 
@@ -22,9 +22,9 @@
 ## Current Position
 
 **Phase:** 6 of 10 (Door Editing)
-**Plan:** 3 of N complete
+**Plan:** 4 of N complete
 **Status:** In progress
-**Last activity:** 2026-01-26 - Completed 06-03-PLAN.md (Door removal operation)
+**Last activity:** 2026-01-25 - Completed 06-04-PLAN.md (Visual feedback and Main.gd integration)
 
 **Progress:**
 ```
@@ -33,7 +33,7 @@ Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
 Phase  3: [>] Persistence Infrastructure (3/4 plans)
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [>] Furniture Editing Operations (5/6 plans)
-Phase  6: [>] Door Editing (3/N plans)
+Phase  6: [>] Door Editing (4/N plans)
 Phase  7: [ ] Room Deletion
 Phase  8: [ ] Room Resize (Complex)
 Phase  9: [ ] Admin Menu & Feature Flags
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 15 |
-| Plans Passed | 15 |
+| Plans Executed | 16 |
+| Plans Passed | 16 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -110,6 +110,9 @@ Phase 10: [ ] Testing & Verification
 | Adjacent room check for door placement | Outside tile checked via RoomManager.is_tile_in_another_room() | 6-02 |
 | Minimum 1 door even if door_count_min=0 | Rooms need at least one door for patron access | 6-03 |
 | Rebuild all wall terrain on door remove | Ensures proper tile transitions after door removal | 6-03 |
+| Orange walls, purple doors in highlight | Distinct colors for available vs existing door positions | 6-04 |
+| DoorEditLayer at layer 0 | Consistent with furniture edit layer for proper z-order | 6-04 |
+| Navigation update after door change | NavigationOperation + Targets.notify_navigation_changed() | 6-04 |
 
 ### Technical Notes
 
@@ -146,6 +149,8 @@ Phase 10: [ ] Testing & Verification
 - Door add validation: can_place_door_edit() checks wall position, existing door, max count, adjacent room
 - Door removal: Validate with can_remove_door(), emit door_removed, Main.gd calls remove_door_visuals()
 - Wall restoration: remove_door_visuals() rebuilds all wall terrain via set_cells_terrain_connect()
+- Door edit highlight: Orange (0.8,0.6,0.2) for walls, purple (0.6,0.2,0.8) for existing doors
+- Door edit integration: Main.gd creates controller+highlight, connects signals, handles navigation updates
 
 ### Blockers
 
@@ -178,7 +183,8 @@ None currently.
 - [x] Execute 06-01-PLAN.md: Door editing infrastructure
 - [x] Execute 06-02-PLAN.md: Door add operation
 - [x] Execute 06-03-PLAN.md: Door removal operation
-- [ ] Execute remaining 06-XX plans for door editing
+- [x] Execute 06-04-PLAN.md: Visual feedback and Main.gd integration
+- [ ] Execute remaining 06-XX plans for door editing (exit mechanism, error display)
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -187,35 +193,38 @@ None currently.
 
 ### What Was Done
 
-- Executed 06-03-PLAN.md: Door removal operation
-- Added can_remove_door() and remove_door_visuals() to DoorOperation
-- Added remove_door(), add_door(), handle_wall_tap() to DoorEditController
-- Commits: 2f25ec6, 65b8e16, 65be635
+- Executed 06-04-PLAN.md: Visual feedback and Main.gd integration
+- Created DoorEditHighlight with orange/purple color scheme for walls/doors
+- Wired DoorEditController in Main.gd with full signal handling
+- Navigation updates via NavigationOperation and Targets.notify_navigation_changed()
+- Commits: c43ea3a (DoorEditHighlight), ed5cf3e (Main.gd wiring)
 
 ### What's Next
 
-1. Execute remaining Phase 6 plans (visual feedback, Main.gd integration)
-2. Complete Phase 5 if 05-06 exists (furniture rotation)
-3. Consider completing Phase 3 remaining plans (03-04 auto-save)
+1. Add exit mechanism for door edit mode (Done button or ESC key)
+2. Implement inline error display for door_add_failed/door_remove_failed
+3. Complete Phase 5 if 05-06 exists (furniture rotation)
+4. Consider completing Phase 3 remaining plans (03-04 auto-save)
 
 ### Context for Next Session
 
-Phase 6 Plan 03 complete. Door add/remove operations ready:
-- DoorOperation validates door removal against room type minimums
-- DoorOperation restores wall terrain when door removed
-- DoorEditController handles wall tap routing to add or remove
-- Signals emitted for Main.gd to handle visual updates
+Phase 6 Plan 04 complete. Door edit mode fully wired:
+- DoorEditHighlight draws wall tiles in orange, existing doors in purple
+- Main.gd creates controller and highlight on startup
+- Edit Room button enters door edit mode
+- door_added creates visual and updates navigation
+- door_removed restores wall and updates navigation
+- Targets.notify_navigation_changed() called for patron path recalculation
 
-Key files modified:
-- `scripts/room_building/operations/DoorOperation.gd` - Added can_remove_door(), remove_door_visuals()
-- `scripts/room_editing/DoorEditController.gd` - Added remove_door(), add_door(), handle_wall_tap()
+Key files created/modified:
+- `scripts/room_editing/DoorEditHighlight.gd` - New visual highlight for door editing
+- `Scripts/Main.gd` - Full door edit integration with signal wiring
 
-Next steps in Phase 6:
-- Connect DoorEditController signals in Main.gd
-- Add door edit visual feedback (highlight colors)
-- Integrate with RoomEditMenu
+Remaining work in Phase 6:
+- Exit mechanism (currently no way to leave door edit mode)
+- Error display for validation failures (currently just print())
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-26 (06-03-PLAN.md complete)*
+*Last updated: 2026-01-25 (06-04-PLAN.md complete)*
