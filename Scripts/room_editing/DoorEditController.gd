@@ -21,6 +21,7 @@ const TAP_TIME_THRESHOLD := 300  # milliseconds
 var _active: bool = false
 var _current_room: RoomInstance = null
 var _wall_areas: Dictionary = {}  # position (Vector2i hash) -> Area2D
+var _door_operation: DoorOperation = DoorOperation.new()
 
 # Tap detection state
 var _touch_start_pos: Vector2 = Vector2.ZERO
@@ -64,6 +65,82 @@ func is_active() -> bool:
 
 func get_current_room() -> RoomInstance:
 	return _current_room
+
+
+## Handle wall tap - routes to add or remove based on whether tile has door
+func handle_wall_tap(position: Vector2i, is_door: bool) -> void:
+	if is_door:
+		remove_door(position)
+	else:
+		add_door(position)
+
+
+## Add a door at the specified position
+## Returns true if door was added, false if blocked
+func add_door(position: Vector2i) -> bool:
+	if not _active or _current_room == null:
+		return false
+
+	# Validate placement
+	var validation = _door_operation.can_place_door_edit(position, _current_room)
+	if not validation.can_place:
+		door_add_failed.emit(validation.reason)
+		return false
+
+	# Determine direction and create door placement
+	var direction = _door_operation.determine_door_direction(position, _current_room)
+	var new_door = RoomInstance.DoorPlacement.new(position, direction)
+
+	# Add to room data (this triggers placement_changed internally)
+	_current_room.doors.append(new_door)
+
+	# Emit signal for visual creation (Main.gd handles tilemap)
+	door_added.emit(_current_room, new_door)
+
+	# Trigger auto-save
+	_current_room.placement_changed.emit()
+
+	return true
+
+
+## Remove the door at the specified position
+## Returns true if door was removed, false if blocked
+func remove_door(position: Vector2i) -> bool:
+	if not _active or _current_room == null:
+		return false
+
+	# Find the door at this position
+	var door_to_remove: RoomInstance.DoorPlacement = null
+	var door_index: int = -1
+	for i in range(_current_room.doors.size()):
+		if _current_room.doors[i].position == position:
+			door_to_remove = _current_room.doors[i]
+			door_index = i
+			break
+
+	if door_to_remove == null:
+		door_remove_failed.emit("No door at this position")
+		return false
+
+	# Validate removal
+	var validation = _door_operation.can_remove_door(_current_room)
+	if not validation.can_remove:
+		door_remove_failed.emit(validation.reason)
+		return false
+
+	# Store reference before removal
+	var removed_door = door_to_remove
+
+	# Remove from data array
+	_current_room.doors.remove_at(door_index)
+
+	# Emit signal for visual removal (Main.gd handles tilemap)
+	door_removed.emit(_current_room, removed_door)
+
+	# Trigger auto-save
+	_current_room.placement_changed.emit()
+
+	return true
 
 
 # --- Private Methods ---
@@ -157,4 +234,8 @@ func _handle_wall_tap(wall_pos: Vector2i) -> void:
 			is_door = true
 			break
 
+	# Emit signal for external listeners (e.g., visual feedback)
 	wall_tile_tapped.emit(wall_pos, is_door)
+
+	# Route to appropriate handler
+	handle_wall_tap(wall_pos, is_door)
