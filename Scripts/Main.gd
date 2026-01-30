@@ -15,6 +15,7 @@ var _door_edit_controller: DoorEditController = null
 var _door_edit_highlight: DoorEditHighlight = null
 var _room_edit_menu: RoomEditMenu = null
 var _door_edit_done_button: Button = null
+var _deletion_op: DeletionOperation = null
 
 func _ready() -> void:
 	room_build_manager.room_completed.connect(_on_room_completed)
@@ -46,10 +47,14 @@ func _ready() -> void:
 	_room_edit_menu.name = "RoomEditMenu"
 	edit_menu_layer.add_child(_room_edit_menu)
 
+	# Create DeletionOperation
+	_deletion_op = DeletionOperation.new()
+
 	# Connect edit menu signals to handlers
 	_room_edit_menu.edit_furniture_pressed.connect(_on_edit_furniture_requested)
 	_room_edit_menu.edit_room_pressed.connect(_on_edit_room_requested)
 	_room_edit_menu.room_type_action_pressed.connect(_on_room_type_action_requested)
+	_room_edit_menu.delete_room_pressed.connect(_on_delete_room_requested)
 
 	# Create furniture editing CanvasLayer (same layer as room selection for correct z-order)
 	var furniture_edit_layer = CanvasLayer.new()
@@ -201,6 +206,45 @@ func _on_edit_room_requested(room: RoomInstance) -> void:
 
 func _on_room_type_action_requested(room: RoomInstance) -> void:
 	print("Room type action requested: ", room.id, " type: ", room.room_type_id)
+
+
+func _on_delete_room_requested(room: RoomInstance) -> void:
+	print("Deleting room: ", room.id)
+
+	# Get tilemap references
+	var wall_layer = room_build_manager.get_wall_tilemap_layer()
+	var ground_layer = room_build_manager.get_tilemap_layer()
+
+	# CRITICAL: Cleanup sequence order matters for navigation safety
+	# 1. Clear navigation FIRST (make area non-walkable immediately)
+	var nav_op = NavigationOperation.new()
+	nav_op.clear_room_navigation(room, wall_layer)
+
+	# 2. Notify patrons to stop targeting this room
+	Targets.notify_navigation_changed()
+
+	# 3. Delete furniture visuals (calls cleanup_visual -> queue_free)
+	_deletion_op.delete_furniture_visuals(room)
+
+	# 4. Restore ground tiles where furniture was (for adjacent room access)
+	if ground_layer:
+		_deletion_op.restore_furniture_ground_tiles(room, ground_layer)
+
+	# 5. Delete door visuals (erase door tiles)
+	if wall_layer:
+		_deletion_op.delete_door_visuals(room, wall_layer)
+
+	# 6. Delete wall visuals (ONLY non-shared tiles)
+	if wall_layer:
+		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager)
+
+	# 7. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
+	_room_manager.unregister_room(room)
+
+	# 8. Clear selection (menu already hidden by RoomEditMenu)
+	_room_manager.clear_selection()
+
+	print("Room deleted: ", room.id)
 
 
 func _on_furniture_edit_exited() -> void:
