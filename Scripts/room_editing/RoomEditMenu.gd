@@ -8,15 +8,19 @@ extends Control
 signal edit_furniture_pressed(room: RoomInstance)
 signal edit_room_pressed(room: RoomInstance)
 signal room_type_action_pressed(room: RoomInstance)
+signal delete_room_pressed(room: RoomInstance)
 
 # UI elements
 var _panel: PanelContainer
 var _edit_furniture_btn: Button
 var _edit_room_btn: Button
 var _room_type_btn: Button
+var _delete_room_btn: Button
+var _delete_dialog: ConfirmationDialog = null
 
 # State
 var _current_room: RoomInstance = null
+var _room_to_delete: RoomInstance = null
 
 # Autoload reference (avoids static analysis issues in Godot 4.5)
 @onready var _room_manager: Node = get_node("/root/RoomManager")
@@ -29,6 +33,13 @@ func _ready() -> void:
 
 	_create_panel()
 	hide()  # Start hidden until a room is selected
+
+	# Create confirmation dialog for delete action
+	_delete_dialog = ConfirmationDialog.new()
+	_delete_dialog.title = "Confirm Deletion"
+	_delete_dialog.dialog_text = "Delete this room?\n\nAll furniture will be removed.\nThis cannot be undone."
+	_delete_dialog.confirmed.connect(_on_delete_confirmed)
+	add_child(_delete_dialog)
 
 	# Connect to RoomManager selection signals
 	_room_manager.room_selected.connect(_on_room_selected)
@@ -68,6 +79,14 @@ func _create_panel() -> void:
 	_room_type_btn = UIStyleHelper.create_styled_button("", Vector2(160, 40))  # Text set dynamically
 	_room_type_btn.pressed.connect(_on_room_type_action)
 	vbox.add_child(_room_type_btn)
+
+	# Add separator before destructive action
+	var separator = HSeparator.new()
+	vbox.add_child(separator)
+
+	_delete_room_btn = UIStyleHelper.create_styled_button("Delete Room", Vector2(160, 40))
+	_delete_room_btn.pressed.connect(_on_delete_room_pressed)
+	vbox.add_child(_delete_room_btn)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -175,3 +194,18 @@ func _on_edit_room() -> void:
 func _on_room_type_action() -> void:
 	if _current_room:
 		room_type_action_pressed.emit(_current_room)
+
+
+func _on_delete_room_pressed() -> void:
+	if _current_room == null:
+		return
+	_room_to_delete = _current_room
+	_delete_dialog.popup_centered()
+
+
+func _on_delete_confirmed() -> void:
+	if _room_to_delete:
+		delete_room_pressed.emit(_room_to_delete)
+		_room_to_delete = null
+		# Hide menu (selection will be cleared by Main.gd after deletion)
+		hide()
