@@ -247,7 +247,12 @@ Plans:
 4. Deleted room unregistered from navigation targets
 5. Patrons do not attempt to navigate to deleted room
 
-**Estimated Tasks:** 10-14
+**Plans:** 3 plans
+
+Plans:
+- [ ] 07-01-PLAN.md - RoomManager unregister_room() and DeletionOperation infrastructure
+- [ ] 07-02-PLAN.md - RoomEditMenu delete button with ConfirmationDialog and Main.gd wiring
+- [ ] 07-03-PLAN.md - Human verification of room deletion workflow
 
 **Risk Flags:**
 - HIGH: Navigation targets not unregistered - must call Targets.unregister_room()
@@ -257,7 +262,7 @@ Plans:
 **Research Notes:**
 - Create DeletionOperation for cleanup logic
 - Wall healing: replace door tiles with wall tiles
-- Sequence: delete furniture nodes -> delete tilemap cells -> update navigation -> unregister from Targets
+- Sequence: clear navigation FIRST -> unregister from Targets -> delete furniture -> delete visuals -> unregister from RoomManager
 
 ---
 
@@ -365,7 +370,7 @@ Plans:
 | 4 | Furniture Selection | Complete | FUR-01, FUR-02 |
 | 5 | Furniture Editing Operations | Complete | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
 | 6 | Door Editing | Complete | DOOR-01, DOOR-02, DOOR-03 |
-| 7 | Room Deletion | Pending | EDIT-04, EDIT-05 |
+| 7 | Room Deletion | Planned | EDIT-04, EDIT-05 |
 | 8 | Room Resize (Complex) | Pending | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
 | 9 | Admin Menu & Feature Flags | Pending | PER-05 |
 | 10 | Testing & Verification | Pending | TEST-01, TEST-02, TEST-03, TEST-04 |
@@ -435,3 +440,4 @@ Phase 9 (Admin Menu)                                              Phase 8 (Room 
 *Phase 4 planned: 2026-01-22*
 *Phase 5 planned: 2026-01-23*
 *Phase 6 planned: 2026-01-25*
+*Phase 7 planned: 2026-01-30*
