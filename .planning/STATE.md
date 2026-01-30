@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 7 - Room Deletion (plan 1 of 3 complete)
+**Current Focus:** Phase 7 - Room Deletion (plan 2 of 3 complete)
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -22,9 +22,9 @@
 ## Current Position
 
 **Phase:** 7 of 10 (Room Deletion)
-**Plan:** 1 of 3 complete
+**Plan:** 2 of 3 complete
 **Status:** In progress
-**Last activity:** 2026-01-30 - Completed 07-01-PLAN.md (room deletion infrastructure)
+**Last activity:** 2026-01-30 - Completed 07-02-PLAN.md (deletion UI and orchestration)
 
 **Progress:**
 ```
@@ -34,13 +34,13 @@ Phase  3: [X] Persistence Infrastructure (4/4 plans) COMPLETE
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
 Phase  6: [X] Door Editing (5/5 plans) COMPLETE
-Phase  7: [~] Room Deletion (1/3 plans) IN PROGRESS
+Phase  7: [~] Room Deletion (2/3 plans) IN PROGRESS
 Phase  8: [ ] Room Resize (Complex)
 Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 6/10 phases complete (60%), Phase 7 at 33%
+**Milestone Progress:** 6/10 phases complete (60%), Phase 7 at 67%
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 22 |
-| Plans Passed | 22 |
+| Plans Executed | 23 |
+| Plans Passed | 23 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -117,6 +117,10 @@ Phase 10: [ ] Testing & Verification
 | Separate methods for each visual cleanup | Allows Main.gd to control deletion sequence | 7-01 |
 | Terrain reconnection in delete_wall_visuals | Prevents orphaned wall rendering artifacts | 7-01 |
 | Restore ground tiles for furniture | Maintains navigability after room deletion | 7-01 |
+| Confirmation dialog for room deletion | Prevents accidental deletion with clear warning about consequences | 7-02 |
+| HSeparator before delete button | Visually distinguishes destructive action from other menu options | 7-02 |
+| Navigation cleared FIRST in deletion | Ensures patron safety before visual cleanup begins | 7-02 |
+| 8-step deletion sequence | Correct order: navigation → targets → furniture → ground → doors → walls → unregister | 7-02 |
 
 ### Technical Notes
 
@@ -192,8 +196,8 @@ None currently.
 - [x] Execute 06-04-PLAN.md: Visual feedback and Main.gd integration
 - [x] Execute 06-05-PLAN.md: Human verification of door editing (passed with bug fixes)
 - [x] Execute 07-01-PLAN.md: Room deletion infrastructure
-- [ ] Execute 07-02-PLAN.md: Main.gd deletion orchestration
-- [ ] Execute 07-03-PLAN.md: RoomEditMenu delete button and confirmation
+- [x] Execute 07-02-PLAN.md: Deletion UI and orchestration
+- [ ] Execute 07-03-PLAN.md: Human verification of room deletion
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -202,39 +206,35 @@ None currently.
 
 ### What Was Done
 
-- Completed 07-01-PLAN.md: Room deletion infrastructure
-- Added RoomManager.unregister_room() with full cleanup:
-  - Removes from _rooms array
-  - Cleans up selection Area2D
-  - Disconnects placement_changed signal
-  - Emits room_removed signal
-  - Triggers auto-save
-- Created DeletionOperation class with stateless helpers:
-  - get_non_shared_walls() for shared wall detection
-  - delete_wall_visuals() with terrain reconnection
-  - delete_furniture_visuals() using cleanup_visual()
-  - delete_door_visuals() to prevent artifacts
-  - restore_furniture_ground_tiles() for navigation
-- Commits: 8394a59 (unregister_room), 3afff85 (DeletionOperation)
+- Completed 07-02-PLAN.md: Room deletion UI and orchestration
+- Added Delete Room button to RoomEditMenu:
+  - Fourth button with HSeparator for visual distinction
+  - ConfirmationDialog with warning about furniture removal
+  - delete_room_pressed signal emitted on confirmation
+- Wired deletion sequence in Main.gd:
+  - DeletionOperation instance created
+  - _on_delete_room_requested handler with 8-step sequence
+  - Navigation cleared FIRST for patron safety
+  - Complete cleanup: navigation → targets → furniture → ground → doors → walls → unregister
+- Commits: ec1c9de (RoomEditMenu), 0790e55 (Main.gd)
 
 ### What's Next
 
-1. Execute 07-02-PLAN.md: Main.gd deletion orchestration
-2. Execute 07-03-PLAN.md: RoomEditMenu delete button and confirmation
-3. Phase 8: Room Resize (HIGH complexity flag)
-4. Phase 9 and 10 can be done in parallel
+1. Execute 07-03-PLAN.md: Human verification of room deletion
+2. Phase 8: Room Resize (HIGH complexity flag)
+3. Phase 9 and 10 can be done in parallel
 
 ### Context for Next Session
 
-Phase 7 in progress (1/3 complete). Room deletion infrastructure established:
-- RoomManager can unregister rooms with proper cleanup
-- DeletionOperation provides stateless helpers for visual cleanup
-- Shared wall detection preserves adjacent rooms' walls
-- Terrain reconnection prevents rendering artifacts
+Phase 7 in progress (2/3 complete). Room deletion feature complete:
+- UI: Delete Room button in menu with confirmation dialog
+- Orchestration: Main.gd handles 8-step deletion sequence
+- Safety: Navigation cleared before visual cleanup
+- Integration: Leverages 07-01 infrastructure (RoomManager.unregister_room, DeletionOperation)
 
-Next: Orchestrate deletion sequence in Main.gd and add UI for delete button
+Next: Human verification testing (07-03)
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-30 (Phase 7 plan 1 complete)*
+*Last updated: 2026-01-30 (Phase 7 plan 2 complete)*
