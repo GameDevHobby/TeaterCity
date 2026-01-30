@@ -11,23 +11,20 @@ const TERRAIN_INDEX := 0
 
 ## Get wall tiles that are NOT shared with other rooms.
 ## Only these tiles should be erased from the tilemap.
+## A wall is shared if it exists in BOTH this room's walls array AND another room's walls array.
 func get_non_shared_walls(room: RoomInstance, room_manager: Node) -> Array[Vector2i]:
 	var non_shared: Array[Vector2i] = []
 
 	for wall_pos in room.walls:
 		var is_shared := false
 
-		# Check if this wall tile is inside any OTHER room's bounding box
+		# Check if this wall tile is also in any OTHER room's walls array
 		for other_room in room_manager.get_all_rooms():
 			if other_room == room:
 				continue
 
-			# Use same boundary check pattern as RoomManager._is_tile_in_room()
-			var bbox = other_room.bounding_box
-			var in_bounds = wall_pos.x >= bbox.position.x and wall_pos.x < bbox.position.x + bbox.size.x
-			in_bounds = in_bounds and wall_pos.y >= bbox.position.y and wall_pos.y < bbox.position.y + bbox.size.y
-
-			if in_bounds:
+			# Check if this exact wall position is in the other room's walls
+			if wall_pos in other_room.walls:
 				is_shared = true
 				break
 
@@ -83,6 +80,32 @@ func restore_furniture_ground_tiles(room: RoomInstance, ground_tilemap: TileMapL
 	for tile in tiles_to_restore:
 		var tilemap_pos = IsometricMath.ui_to_tilemap_coords(tile, ground_tilemap)
 		ground_tilemap.set_cell(tilemap_pos, SOURCE_ID, WALKABLE_TILE)
+
+
+## Restore walkable floor tiles for the entire room area after deletion.
+## This makes the deleted room area navigable again.
+## Only restores tiles that were actually deleted (non-shared walls and interior).
+func restore_room_floor_tiles(room: RoomInstance, wall_tilemap: TileMapLayer, room_manager: Node) -> void:
+	const SOURCE_ID := 1
+	const WALKABLE_TILE := Vector2i(0, 1)
+
+	var bbox = room.bounding_box
+	var non_shared_walls = get_non_shared_walls(room, room_manager)
+
+	# Restore floor tiles for:
+	# 1. Interior tiles (not in walls array)
+	# 2. Non-shared wall tiles that were deleted
+	for x in range(bbox.position.x, bbox.position.x + bbox.size.x):
+		for y in range(bbox.position.y, bbox.position.y + bbox.size.y):
+			var pos = Vector2i(x, y)
+
+			# Check if this was an interior tile or a deleted wall tile
+			var was_interior = pos not in room.walls
+			var was_deleted_wall = pos in non_shared_walls
+
+			if was_interior or was_deleted_wall:
+				var tilemap_pos = IsometricMath.ui_to_tilemap_coords(pos, wall_tilemap)
+				wall_tilemap.set_cell(tilemap_pos, SOURCE_ID, WALKABLE_TILE)
 
 
 func _update_neighbor_terrain(deleted_positions: Array[Vector2i], tilemap_layer: TileMapLayer) -> void:

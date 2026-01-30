@@ -216,33 +216,33 @@ func _on_delete_room_requested(room: RoomInstance) -> void:
 	var ground_layer = room_build_manager.get_tilemap_layer()
 
 	# CRITICAL: Cleanup sequence order matters for navigation safety
-	# 1. Clear navigation FIRST (make area non-walkable immediately)
-	var nav_op = NavigationOperation.new()
-	nav_op.clear_room_navigation(room, wall_layer)
-
-	# 2. Notify patrons to stop targeting this room
-	Targets.notify_navigation_changed()
-
-	# 3. Delete furniture visuals (calls cleanup_visual -> queue_free)
+	# 1. Delete furniture visuals FIRST (calls cleanup_visual -> queue_free)
 	_deletion_op.delete_furniture_visuals(room)
 
-	# 4. Restore ground tiles where furniture was (for adjacent room access)
+	# 2. Restore ground tiles where furniture was (for adjacent room access)
 	if ground_layer:
 		_deletion_op.restore_furniture_ground_tiles(room, ground_layer)
 
-	# 5. Delete door visuals (erase door tiles)
+	# 3. Delete door visuals (erase door tiles)
 	if wall_layer:
 		_deletion_op.delete_door_visuals(room, wall_layer)
 
-	# 6. Delete wall visuals (ONLY non-shared tiles)
+	# 4. Delete wall visuals (ONLY non-shared tiles)
 	if wall_layer:
 		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager)
 
-	# 7. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
+	# 5. Restore walkable floor tiles where room was (makes area navigable again)
+	if wall_layer:
+		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager)
+
+	# 6. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
 	_room_manager.unregister_room(room)
 
-	# 8. Clear selection (menu already hidden by RoomEditMenu)
+	# 7. Clear selection (menu already hidden by RoomEditMenu)
 	_room_manager.clear_selection()
+
+	# 8. Notify patrons to recalculate paths (AFTER all changes complete)
+	Targets.notify_navigation_changed()
 
 	print("Room deleted: ", room.id)
 
