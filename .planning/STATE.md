@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-01-25 (06-04 complete)
+**Last Updated:** 2026-01-30 (Phase 6 complete)
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 6 in progress - Door Editing
+**Current Focus:** Phase 6 complete - Door Editing verified
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -22,25 +22,25 @@
 ## Current Position
 
 **Phase:** 6 of 10 (Door Editing)
-**Plan:** 4 of N complete
-**Status:** In progress
-**Last activity:** 2026-01-25 - Completed 06-04-PLAN.md (Visual feedback and Main.gd integration)
+**Plan:** 5 of 5 complete
+**Status:** Complete
+**Last activity:** 2026-01-30 - Phase 6 complete (human verification passed)
 
 **Progress:**
 ```
 Phase  1: [X] Room Manager Foundation (4/4 plans) COMPLETE
 Phase  2: [X] Room Menu & Edit Mode Entry (1/1 plans) COMPLETE
-Phase  3: [>] Persistence Infrastructure (3/4 plans)
+Phase  3: [X] Persistence Infrastructure (4/4 plans) COMPLETE
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
-Phase  5: [>] Furniture Editing Operations (5/6 plans)
-Phase  6: [>] Door Editing (4/N plans)
+Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
+Phase  6: [X] Door Editing (5/5 plans) COMPLETE
 Phase  7: [ ] Room Deletion
 Phase  8: [ ] Room Resize (Complex)
 Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 4/10 phases complete (40%)
+**Milestone Progress:** 6/10 phases complete (60%)
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 16 |
-| Plans Passed | 16 |
+| Plans Executed | 21 |
+| Plans Passed | 21 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -184,7 +184,7 @@ None currently.
 - [x] Execute 06-02-PLAN.md: Door add operation
 - [x] Execute 06-03-PLAN.md: Door removal operation
 - [x] Execute 06-04-PLAN.md: Visual feedback and Main.gd integration
-- [ ] Execute remaining 06-XX plans for door editing (exit mechanism, error display)
+- [x] Execute 06-05-PLAN.md: Human verification of door editing (passed with bug fixes)
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -193,38 +193,36 @@ None currently.
 
 ### What Was Done
 
-- Executed 06-04-PLAN.md: Visual feedback and Main.gd integration
-- Created DoorEditHighlight with orange/purple color scheme for walls/doors
-- Wired DoorEditController in Main.gd with full signal handling
-- Navigation updates via NavigationOperation and Targets.notify_navigation_changed()
-- Commits: c43ea3a (DoorEditHighlight), ed5cf3e (Main.gd wiring)
+- Completed Phase 6: Door Editing (all 5 plans)
+- User testing passed with bug fixes:
+  - Godot 4.5 autoload pattern (@onready var _room_manager)
+  - Wall tap detection (world-space Area2D)
+  - Floor tile preservation (wall layer separation)
+  - Double-tap debounce (100ms)
+  - Done button for mobile exit
+- Commits: c3ae3d7 (bug fixes), 63cacf4 (uid files)
 
 ### What's Next
 
-1. Add exit mechanism for door edit mode (Done button or ESC key)
-2. Implement inline error display for door_add_failed/door_remove_failed
-3. Complete Phase 5 if 05-06 exists (furniture rotation)
-4. Consider completing Phase 3 remaining plans (03-04 auto-save)
+1. Begin Phase 7: Room Deletion
+2. Or continue with Phase 8: Room Resize (HIGH complexity flag)
+3. Phase 9 and 10 can be done in parallel
 
 ### Context for Next Session
 
-Phase 6 Plan 04 complete. Door edit mode fully wired:
-- DoorEditHighlight draws wall tiles in orange, existing doors in purple
-- Main.gd creates controller and highlight on startup
-- Edit Room button enters door edit mode
-- door_added creates visual and updates navigation
-- door_removed restores wall and updates navigation
-- Targets.notify_navigation_changed() called for patron path recalculation
+Phase 6 complete. Door editing fully functional:
+- Add doors by tapping orange wall tiles
+- Remove doors by tapping purple door tiles
+- Done button near room for mobile exit
+- Navigation updates after changes
+- All changes persist via auto-save
 
-Key files created/modified:
-- `scripts/room_editing/DoorEditHighlight.gd` - New visual highlight for door editing
-- `Scripts/Main.gd` - Full door edit integration with signal wiring
-
-Remaining work in Phase 6:
-- Exit mechanism (currently no way to leave door edit mode)
-- Error display for validation failures (currently just print())
+Key patterns established:
+- `@onready var _room_manager: Node = get_node("/root/RoomManager")` for autoload access
+- World-space Area2D for tile hit detection (not CanvasLayer children)
+- Tap debounce for touch/mouse event deduplication
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-25 (06-04-PLAN.md complete)*
+*Last updated: 2026-01-30 (Phase 6 complete)*
