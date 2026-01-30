@@ -6,6 +6,7 @@ extends Node
 # Signals
 signal room_added(room: RoomInstance)
 signal room_restored(room: RoomInstance)
+signal room_removed(room: RoomInstance)
 signal room_selected(room: RoomInstance)
 signal selection_cleared
 
@@ -136,6 +137,39 @@ func clear_selection() -> void:
 
 func get_selected_room() -> RoomInstance:
 	return _selected_room
+
+
+## Remove a room from tracking and clean up associated resources
+func unregister_room(room: RoomInstance) -> void:
+	if room == null:
+		return
+
+	# Remove from _rooms array
+	var index = _rooms.find(room)
+	if index >= 0:
+		_rooms.remove_at(index)
+
+	# Clean up selection Area2D if it exists
+	if room.id in _selection_areas:
+		var area = _selection_areas[room.id]
+		if is_instance_valid(area):
+			area.queue_free()
+		_selection_areas.erase(room.id)
+
+	# Clear selection if this was the selected room
+	if _selected_room == room:
+		_selected_room = null
+		selection_cleared.emit()
+
+	# Disconnect placement_changed signal to prevent memory leaks
+	if room.placement_changed.is_connected(_on_room_changed):
+		room.placement_changed.disconnect(_on_room_changed)
+
+	# Emit signal to notify listeners
+	room_removed.emit(room)
+
+	# Trigger auto-save
+	_schedule_save()
 
 
 ## Disable room selection input (for edit modes that need to capture input)
