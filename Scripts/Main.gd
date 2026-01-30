@@ -1,9 +1,12 @@
-class_name Main 
+class_name Main
 extends Node2D
 
 @export var room_build_manager: RoomBuildController
 @export var camera: PinchPanCamera
 @export var build_button: Button
+
+# Autoload reference (avoids static analysis issues in Godot 4.5)
+@onready var _room_manager: Node = get_node("/root/RoomManager")
 
 var _build_mode_active = false
 var _furniture_controller: FurnitureEditController = null
@@ -11,12 +14,13 @@ var _furniture_list_panel: FurnitureListPanel = null
 var _door_edit_controller: DoorEditController = null
 var _door_edit_highlight: DoorEditHighlight = null
 var _room_edit_menu: RoomEditMenu = null
+var _door_edit_done_button: Button = null
 
 func _ready() -> void:
 	room_build_manager.room_completed.connect(_on_room_completed)
 
 	# Connect to RoomManager selection signals for future menu handling
-	RoomManager.room_selected.connect(_on_room_selected)
+	_room_manager.room_selected.connect(_on_room_selected)
 
 	# Create selection highlight overlay in its own CanvasLayer for screen-space rendering
 	# CanvasLayer ensures the Control draws in screen space (matching tile_to_screen coords)
@@ -116,6 +120,16 @@ func _ready() -> void:
 	_door_edit_controller.door_remove_failed.connect(_on_door_remove_failed)
 	_door_edit_controller.mode_exited.connect(_on_door_edit_mode_exited)
 
+	# Create Done button for door edit mode (in EditMenuLayer for screen-space UI)
+	_door_edit_done_button = Button.new()
+	_door_edit_done_button.name = "DoorEditDoneButton"
+	_door_edit_done_button.text = "Done"
+	_door_edit_done_button.custom_minimum_size = Vector2(70, 40)
+	UIStyleHelper.apply_button_style(_door_edit_done_button)
+	_door_edit_done_button.pressed.connect(_on_door_edit_done_pressed)
+	edit_menu_layer.add_child(_door_edit_done_button)
+	_door_edit_done_button.hide()  # Hidden until door edit mode
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_build"):
@@ -125,8 +139,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and not event.pressed:
 		# If we get here, no room area consumed the event
 		# Area2D.input_event fires BEFORE _unhandled_input
-		if RoomManager.get_selected_room():
-			RoomManager.clear_selection()
+		if _room_manager.get_selected_room():
+			_room_manager.clear_selection()
 
 func _on_build_button_pressed() -> void:
 	_build_mode_active = !_build_mode_active
@@ -151,7 +165,7 @@ func _on_edit_furniture_requested(room: RoomInstance) -> void:
 	print("Entering furniture edit mode: ", room.id)
 	# Hide room edit menu while in furniture edit mode
 	# (RoomEditMenu hides itself when selection_cleared fires)
-	RoomManager.clear_selection()
+	_room_manager.clear_selection()
 	camera.enable_pinch_pan = false  # Disable camera panning during furniture edit
 	_furniture_controller.enter_edit_mode(room)
 	_furniture_list_panel.show_for_room(room)  # Show list panel
@@ -168,7 +182,10 @@ func _on_edit_room_requested(room: RoomInstance) -> void:
 	_room_edit_menu.hide()
 
 	# Clear room selection (menu already hidden)
-	RoomManager.clear_selection()
+	_room_manager.clear_selection()
+
+	# Disable room selection input so wall tiles can receive taps
+	_room_manager.disable_selection()
 
 	# Disable camera panning during door edit
 	camera.enable_pinch_pan = false
@@ -176,6 +193,10 @@ func _on_edit_room_requested(room: RoomInstance) -> void:
 	# Enter door edit mode
 	_door_edit_controller.enter_edit_mode(room)
 	_door_edit_highlight.queue_redraw()
+
+	# Show Done button positioned near room
+	_door_edit_done_button.show()
+	_position_door_edit_button(room)
 
 
 func _on_room_type_action_requested(room: RoomInstance) -> void:
@@ -234,14 +255,15 @@ func _exit_build_mode() -> void:
 
 
 func _on_door_added(room: RoomInstance, door: RoomInstance.DoorPlacement) -> void:
-	# Create door visuals
-	var tilemap_layer = room_build_manager.get_tilemap_layer()
-	if tilemap_layer:
+	# Create door visuals on the WALL tilemap layer
+	var wall_layer = room_build_manager.get_wall_tilemap_layer()
+	if wall_layer:
 		var door_op = DoorOperation.new()
-		door_op.create_door_visuals(door, tilemap_layer)
+		door_op.create_door_visuals(door, wall_layer)
 
-	# Update navigation mesh
-	_update_navigation_for_room(room)
+	# Note: Door tiles are already walkable, no need to update floor navigation
+	# Notify targets of navigation change (paths may need recalculation)
+	Targets.notify_navigation_changed()
 
 	# Refresh highlight
 	_door_edit_highlight.queue_redraw()
@@ -250,14 +272,15 @@ func _on_door_added(room: RoomInstance, door: RoomInstance.DoorPlacement) -> voi
 
 
 func _on_door_removed(room: RoomInstance, door: RoomInstance.DoorPlacement) -> void:
-	# Remove door visuals and restore wall
-	var tilemap_layer = room_build_manager.get_tilemap_layer()
-	if tilemap_layer:
+	# Remove door visuals and restore wall on the WALL tilemap layer
+	var wall_layer = room_build_manager.get_wall_tilemap_layer()
+	if wall_layer:
 		var door_op = DoorOperation.new()
-		door_op.remove_door_visuals(door, room, tilemap_layer)
+		door_op.remove_door_visuals(door, room, wall_layer)
 
-	# Update navigation mesh
-	_update_navigation_for_room(room)
+	# Note: Wall tiles are already non-walkable, no need to update floor navigation
+	# Notify targets of navigation change (paths may need recalculation)
+	Targets.notify_navigation_changed()
 
 	# Refresh highlight
 	_door_edit_highlight.queue_redraw()
@@ -278,7 +301,37 @@ func _on_door_remove_failed(reason: String) -> void:
 func _on_door_edit_mode_exited() -> void:
 	print("Exited door edit mode")
 	camera.enable_pinch_pan = true  # Re-enable camera panning
+	_room_manager.enable_selection()  # Re-enable room selection input
 	_door_edit_highlight.queue_redraw()
+	_door_edit_done_button.hide()  # Hide Done button
+
+
+func _on_door_edit_done_pressed() -> void:
+	_door_edit_controller.exit_edit_mode()
+
+
+func _position_door_edit_button(room: RoomInstance) -> void:
+	# Calculate room center tile from bounding box
+	var bbox := room.bounding_box
+	var center_x := bbox.position.x + bbox.size.x / 2
+	var center_y := bbox.position.y + bbox.size.y / 2
+	var center_tile := Vector2i(center_x, center_y)
+
+	# Convert to screen position
+	var screen_pos := IsometricMath.tile_to_screen(center_tile, get_viewport())
+
+	# Position button below room center
+	var button_size := _door_edit_done_button.size
+	var offset := Vector2(-button_size.x / 2, 60)  # Centered, below room
+	var target_pos := screen_pos + offset
+
+	# Clamp to viewport bounds with margin
+	var viewport_size := get_viewport_rect().size
+	var margin := 8.0
+	target_pos.x = clampf(target_pos.x, margin, viewport_size.x - button_size.x - margin)
+	target_pos.y = clampf(target_pos.y, margin, viewport_size.y - button_size.y - margin)
+
+	_door_edit_done_button.position = target_pos
 
 
 func _update_navigation_for_room(room: RoomInstance) -> void:

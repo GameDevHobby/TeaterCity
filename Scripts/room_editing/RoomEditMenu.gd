@@ -18,6 +18,9 @@ var _room_type_btn: Button
 # State
 var _current_room: RoomInstance = null
 
+# Autoload reference (avoids static analysis issues in Godot 4.5)
+@onready var _room_manager: Node = get_node("/root/RoomManager")
+
 
 func _ready() -> void:
 	# Don't block clicks to rooms below (this Control covers full screen)
@@ -28,8 +31,8 @@ func _ready() -> void:
 	hide()  # Start hidden until a room is selected
 
 	# Connect to RoomManager selection signals
-	RoomManager.room_selected.connect(_on_room_selected)
-	RoomManager.selection_cleared.connect(_on_selection_cleared)
+	_room_manager.room_selected.connect(_on_room_selected)
+	_room_manager.selection_cleared.connect(_on_selection_cleared)
 
 
 func _create_panel() -> void:
@@ -88,7 +91,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		# Check if click is outside the menu panel
 		var panel_rect := Rect2(_panel.global_position, _panel.size)
 		if not panel_rect.has_point(click_pos):
-			RoomManager.clear_selection()
+			_room_manager.clear_selection()
 			get_viewport().set_input_as_handled()
 
 

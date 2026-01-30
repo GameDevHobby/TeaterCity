@@ -20,6 +20,9 @@ var _collision_op = CollisionOperation.new()
 var _furniture_op: FurnitureOperation
 var _navigation_op = NavigationOperation.new()
 
+# Autoload reference (avoids static analysis issues in Godot 4.5)
+@onready var _room_manager: Node = get_node("/root/RoomManager")
+
 var _room_counter: int = 0
 var _counter_initialized: bool = false
 
@@ -43,10 +46,14 @@ func _ready() -> void:
 		push_warning("RoomBuildController: UI not found!")
 
 	# Connect to RoomManager for visual restoration of loaded rooms
-	RoomManager.room_restored.connect(_on_room_restored)
+	_room_manager.room_restored.connect(_on_room_restored)
 
 func get_tilemap_layer() -> TileMapLayer:
 	return ground_tilemap_layer
+
+
+func get_wall_tilemap_layer() -> TileMapLayer:
+	return tilemap_layer
 
 
 func get_furniture_parent() -> Node2D:
@@ -86,7 +93,7 @@ func _on_room_type_selected(room_type_id: String) -> void:
 func _initialize_room_counter() -> void:
 	# Find the highest room counter from existing rooms to avoid ID collisions
 	var max_counter := 0
-	for room in RoomManager.get_all_rooms():
+	for room in _room_manager.get_all_rooms():
 		# Parse room ID format "room_N" to extract the counter
 		if room.id.begins_with("room_"):
 			var num_str = room.id.substr(5)  # Skip "room_"
@@ -192,7 +199,7 @@ func _on_complete_pressed() -> void:
 
 	# Register with RoomManager BEFORE emitting signal
 	# (signal handler calls end_build_mode which clears current_room)
-	RoomManager.register_room(current_room)
+	_room_manager.register_room(current_room)
 
 	room_completed.emit(current_room)
 

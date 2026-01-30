@@ -23,9 +23,14 @@ var _current_room: RoomInstance = null
 var _wall_areas: Dictionary = {}  # position (Vector2i hash) -> Area2D
 var _door_operation: DoorOperation = DoorOperation.new()
 
+# Autoload reference (avoids static analysis issues in Godot 4.5)
+@onready var _room_manager: Node = get_node("/root/RoomManager")
+
 # Tap detection state
 var _touch_start_pos: Vector2 = Vector2.ZERO
 var _touch_start_time: int = 0
+var _last_tap_time: int = 0  # Prevent double-tap from both ScreenTouch and MouseButton
+const TAP_DEBOUNCE_MS := 100  # Ignore taps within this window
 
 
 # --- Lifecycle ---
@@ -33,6 +38,16 @@ var _touch_start_time: int = 0
 func _ready() -> void:
 	# Prevent blocking input to Area2D below
 	mouse_filter = MOUSE_FILTER_IGNORE
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _active:
+		return
+
+	# Exit door edit mode with Escape key or ui_cancel action
+	if event.is_action_pressed("ui_cancel"):
+		exit_edit_mode()
+		get_viewport().set_input_as_handled()
 
 
 # --- Public Methods ---
@@ -81,14 +96,20 @@ func add_door(position: Vector2i) -> bool:
 	if not _active or _current_room == null:
 		return false
 
-	# Validate placement
-	var validation = _door_operation.can_place_door_edit(position, _current_room)
+	# Determine direction first (needed for outside tile check)
+	var direction = _door_operation.determine_door_direction(position, _current_room)
+
+	# Check if outside tile is in another room (for adjacency validation)
+	var outside_tile = _door_operation.get_outside_tile(position, direction)
+	var is_adjacent_blocked = _room_manager.is_tile_in_another_room(outside_tile, _current_room)
+
+	# Validate placement with adjacency check
+	var validation = _door_operation.can_place_door_edit(position, _current_room, is_adjacent_blocked)
 	if not validation.can_place:
 		door_add_failed.emit(validation.reason)
 		return false
 
-	# Determine direction and create door placement
-	var direction = _door_operation.determine_door_direction(position, _current_room)
+	# Create door placement (direction already determined above)
 	var new_door = RoomInstance.DoorPlacement.new(position, direction)
 
 	# Add to room data (this triggers placement_changed internally)
@@ -148,6 +169,10 @@ func remove_door(position: Vector2i) -> bool:
 func _create_wall_areas(room: RoomInstance) -> void:
 	_clear_wall_areas()
 
+	# Get world-space parent (scene root) - Area2Ds need world coordinates
+	# CanvasLayer children don't work with world-space collision shapes
+	var world_parent = get_tree().current_scene
+
 	for wall_pos in room.walls:
 		var area := Area2D.new()
 		var pos_hash := _position_to_hash(wall_pos)
@@ -160,7 +185,7 @@ func _create_wall_areas(room: RoomInstance) -> void:
 
 		area.input_event.connect(_on_wall_input.bind(wall_pos))
 
-		add_child(area)
+		world_parent.add_child(area)
 		_wall_areas[pos_hash] = area
 
 
@@ -180,7 +205,7 @@ func _position_to_hash(pos: Vector2i) -> int:
 func _tile_to_polygon(tile_pos: Vector2i) -> PackedVector2Array:
 	var polygon := PackedVector2Array()
 
-	# Calculate isometric diamond corners for single tile
+	# Calculate isometric diamond corners for single tile in WORLD space
 	var top := IsometricMath.tile_to_world(tile_pos)
 	var right := IsometricMath.tile_to_world(Vector2i(tile_pos.x + 1, tile_pos.y))
 	var bottom := IsometricMath.tile_to_world(Vector2i(tile_pos.x + 1, tile_pos.y + 1))
@@ -226,6 +251,12 @@ func _on_wall_input(_viewport: Node, event: InputEvent, _shape_idx: int, wall_po
 func _handle_wall_tap(wall_pos: Vector2i) -> void:
 	if _current_room == null:
 		return
+
+	# Debounce to prevent double-tap from both ScreenTouch and MouseButton events
+	var current_time := Time.get_ticks_msec()
+	if current_time - _last_tap_time < TAP_DEBOUNCE_MS:
+		return
+	_last_tap_time = current_time
 
 	# Check if this position is an existing door
 	var is_door := false

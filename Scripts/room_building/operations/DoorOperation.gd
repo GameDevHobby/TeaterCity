@@ -54,8 +54,9 @@ func can_remove_door(room: RoomInstance) -> Dictionary:
 
 
 ## Validate door placement for edit mode (stricter than build mode)
+## is_adjacent_in_another_room: caller must check if outside tile is in another room
 ## Returns Dictionary with { can_place: bool, reason: String }
-func can_place_door_edit(position: Vector2i, room: RoomInstance) -> Dictionary:
+func can_place_door_edit(position: Vector2i, room: RoomInstance, is_adjacent_in_another_room: bool) -> Dictionary:
 	var result = { "can_place": true, "reason": "" }
 
 	# Check if position is valid wall tile (2-3 neighbors)
@@ -80,10 +81,7 @@ func can_place_door_edit(position: Vector2i, room: RoomInstance) -> Dictionary:
 			return result
 
 	# Check adjacent tile (outside door) for other rooms
-	var direction = determine_door_direction(position, room)
-	var outside_tile = _get_outside_tile(position, direction)
-
-	if RoomManager.is_tile_in_another_room(outside_tile, room):
+	if is_adjacent_in_another_room:
 		result.can_place = false
 		result.reason = "Cannot place door into adjacent room"
 		return result
@@ -91,8 +89,8 @@ func can_place_door_edit(position: Vector2i, room: RoomInstance) -> Dictionary:
 	return result
 
 
-## Get the tile position outside the door based on direction
-func _get_outside_tile(door_pos: Vector2i, direction: int) -> Vector2i:
+## Get the tile position outside the door based on direction (public for callers to check adjacency)
+func get_outside_tile(door_pos: Vector2i, direction: int) -> Vector2i:
 	# Direction: 0=North, 1=East, 2=South, 3=West
 	match direction:
 		0: return door_pos + Vector2i(0, -1)  # North: outside is y-1

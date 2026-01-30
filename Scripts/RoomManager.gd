@@ -138,6 +138,18 @@ func get_selected_room() -> RoomInstance:
 	return _selected_room
 
 
+## Disable room selection input (for edit modes that need to capture input)
+func disable_selection() -> void:
+	for area in _selection_areas.values():
+		area.input_pickable = false
+
+
+## Re-enable room selection input
+func enable_selection() -> void:
+	for area in _selection_areas.values():
+		area.input_pickable = true
+
+
 ## Check if a tile position is inside any room other than the excluded one
 func is_tile_in_another_room(tile: Vector2i, exclude_room: RoomInstance) -> bool:
 	for room in _rooms:

@@ -7,11 +7,14 @@ extends Control
 
 const SELECTION_COLOR := Color(1.0, 0.9, 0.2, 0.3)  # Semi-transparent yellow
 
+# Autoload reference (avoids static analysis issues in Godot 4.5)
+@onready var _room_manager: Node = get_node("/root/RoomManager")
+
 
 func _ready() -> void:
 	# Connect to RoomManager signals for selection state changes
-	RoomManager.room_selected.connect(_on_room_selected)
-	RoomManager.selection_cleared.connect(_on_selection_cleared)
+	_room_manager.room_selected.connect(_on_room_selected)
+	_room_manager.selection_cleared.connect(_on_selection_cleared)
 
 
 func _on_room_selected(_room: RoomInstance) -> void:
@@ -23,7 +26,7 @@ func _on_selection_cleared() -> void:
 
 
 func _draw() -> void:
-	var room = RoomManager.get_selected_room()
+	var room = _room_manager.get_selected_room()
 	if room == null:
 		return
 
