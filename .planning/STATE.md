@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-01-30 (Phase 6 complete)
+**Last Updated:** 2026-01-30 (Phase 7 in progress)
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 6 complete - Door Editing verified
+**Current Focus:** Phase 7 - Room Deletion (plan 1 of 3 complete)
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,10 +21,10 @@
 
 ## Current Position
 
-**Phase:** 6 of 10 (Door Editing)
-**Plan:** 5 of 5 complete
-**Status:** Complete
-**Last activity:** 2026-01-30 - Phase 6 complete (human verification passed)
+**Phase:** 7 of 10 (Room Deletion)
+**Plan:** 1 of 3 complete
+**Status:** In progress
+**Last activity:** 2026-01-30 - Completed 07-01-PLAN.md (room deletion infrastructure)
 
 **Progress:**
 ```
@@ -34,13 +34,13 @@ Phase  3: [X] Persistence Infrastructure (4/4 plans) COMPLETE
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
 Phase  6: [X] Door Editing (5/5 plans) COMPLETE
-Phase  7: [ ] Room Deletion
+Phase  7: [~] Room Deletion (1/3 plans) IN PROGRESS
 Phase  8: [ ] Room Resize (Complex)
 Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 6/10 phases complete (60%)
+**Milestone Progress:** 6/10 phases complete (60%), Phase 7 at 33%
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 21 |
-| Plans Passed | 21 |
+| Plans Executed | 22 |
+| Plans Passed | 22 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -113,6 +113,10 @@ Phase 10: [ ] Testing & Verification
 | Orange walls, purple doors in highlight | Distinct colors for available vs existing door positions | 6-04 |
 | DoorEditLayer at layer 0 | Consistent with furniture edit layer for proper z-order | 6-04 |
 | Navigation update after door change | NavigationOperation + Targets.notify_navigation_changed() | 6-04 |
+| Shared wall detection via bounding box | Matches RoomManager._is_tile_in_room() logic for consistency | 7-01 |
+| Separate methods for each visual cleanup | Allows Main.gd to control deletion sequence | 7-01 |
+| Terrain reconnection in delete_wall_visuals | Prevents orphaned wall rendering artifacts | 7-01 |
+| Restore ground tiles for furniture | Maintains navigability after room deletion | 7-01 |
 
 ### Technical Notes
 
@@ -151,6 +155,8 @@ Phase 10: [ ] Testing & Verification
 - Wall restoration: remove_door_visuals() rebuilds all wall terrain via set_cells_terrain_connect()
 - Door edit highlight: Orange (0.8,0.6,0.2) for walls, purple (0.6,0.2,0.8) for existing doors
 - Door edit integration: Main.gd creates controller+highlight, connects signals, handles navigation updates
+- Room unregistration: RoomManager.unregister_room() removes from _rooms, cleans Area2D, disconnects signals
+- Deletion operations: DeletionOperation provides stateless helpers for shared wall detection and visual cleanup
 
 ### Blockers
 
@@ -185,6 +191,9 @@ None currently.
 - [x] Execute 06-03-PLAN.md: Door removal operation
 - [x] Execute 06-04-PLAN.md: Visual feedback and Main.gd integration
 - [x] Execute 06-05-PLAN.md: Human verification of door editing (passed with bug fixes)
+- [x] Execute 07-01-PLAN.md: Room deletion infrastructure
+- [ ] Execute 07-02-PLAN.md: Main.gd deletion orchestration
+- [ ] Execute 07-03-PLAN.md: RoomEditMenu delete button and confirmation
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -193,36 +202,39 @@ None currently.
 
 ### What Was Done
 
-- Completed Phase 6: Door Editing (all 5 plans)
-- User testing passed with bug fixes:
-  - Godot 4.5 autoload pattern (@onready var _room_manager)
-  - Wall tap detection (world-space Area2D)
-  - Floor tile preservation (wall layer separation)
-  - Double-tap debounce (100ms)
-  - Done button for mobile exit
-- Commits: c3ae3d7 (bug fixes), 63cacf4 (uid files)
+- Completed 07-01-PLAN.md: Room deletion infrastructure
+- Added RoomManager.unregister_room() with full cleanup:
+  - Removes from _rooms array
+  - Cleans up selection Area2D
+  - Disconnects placement_changed signal
+  - Emits room_removed signal
+  - Triggers auto-save
+- Created DeletionOperation class with stateless helpers:
+  - get_non_shared_walls() for shared wall detection
+  - delete_wall_visuals() with terrain reconnection
+  - delete_furniture_visuals() using cleanup_visual()
+  - delete_door_visuals() to prevent artifacts
+  - restore_furniture_ground_tiles() for navigation
+- Commits: 8394a59 (unregister_room), 3afff85 (DeletionOperation)
 
 ### What's Next
 
-1. Begin Phase 7: Room Deletion
-2. Or continue with Phase 8: Room Resize (HIGH complexity flag)
-3. Phase 9 and 10 can be done in parallel
+1. Execute 07-02-PLAN.md: Main.gd deletion orchestration
+2. Execute 07-03-PLAN.md: RoomEditMenu delete button and confirmation
+3. Phase 8: Room Resize (HIGH complexity flag)
+4. Phase 9 and 10 can be done in parallel
 
 ### Context for Next Session
 
-Phase 6 complete. Door editing fully functional:
-- Add doors by tapping orange wall tiles
-- Remove doors by tapping purple door tiles
-- Done button near room for mobile exit
-- Navigation updates after changes
-- All changes persist via auto-save
+Phase 7 in progress (1/3 complete). Room deletion infrastructure established:
+- RoomManager can unregister rooms with proper cleanup
+- DeletionOperation provides stateless helpers for visual cleanup
+- Shared wall detection preserves adjacent rooms' walls
+- Terrain reconnection prevents rendering artifacts
 
-Key patterns established:
-- `@onready var _room_manager: Node = get_node("/root/RoomManager")` for autoload access
-- World-space Area2D for tile hit detection (not CanvasLayer children)
-- Tap debounce for touch/mouse event deduplication
+Next: Orchestrate deletion sequence in Main.gd and add UI for delete button
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-30 (Phase 6 complete)*
+*Last updated: 2026-01-30 (Phase 7 plan 1 complete)*
