@@ -12,16 +12,9 @@ const TERRAIN_INDEX := 0
 ## Get wall tiles that can be safely deleted.
 ## A wall is deletable if:
 ## 1. It's not shared with another room (not in any other room's walls array)
-## 2. It's not connected to exterior walls (wall tiles that aren't part of any room)
+## 2. It's not connected to exterior walls (walls outside the room that exist in tilemap)
 func get_deletable_walls(room: RoomInstance, room_manager: Node, wall_tilemap: TileMapLayer) -> Array[Vector2i]:
 	var deletable: Array[Vector2i] = []
-
-	# Build a set of ALL wall positions from ALL rooms for quick lookup
-	var all_room_walls: Array[Vector2i] = []
-	for r in room_manager.get_all_rooms():
-		for w in r.walls:
-			if w not in all_room_walls:
-				all_room_walls.append(w)
 
 	for wall_pos in room.walls:
 		# Check 1: Is this wall shared with another room?
@@ -37,8 +30,8 @@ func get_deletable_walls(room: RoomInstance, room_manager: Node, wall_tilemap: T
 			continue  # Don't delete shared walls
 
 		# Check 2: Is this wall connected to an exterior wall?
-		# Exterior walls are tiles that exist in tilemap but aren't in any room's walls
-		var is_connected_to_exterior := _is_connected_to_exterior(wall_pos, all_room_walls, wall_tilemap)
+		# (a wall tile OUTSIDE the room's bounding box)
+		var is_connected_to_exterior := _is_connected_to_exterior(wall_pos, room, wall_tilemap)
 
 		if is_connected_to_exterior:
 			continue  # Don't delete walls connected to exterior
@@ -48,26 +41,27 @@ func get_deletable_walls(room: RoomInstance, room_manager: Node, wall_tilemap: T
 	return deletable
 
 
-## Check if a wall position is connected to exterior walls (walls not in any room)
-func _is_connected_to_exterior(wall_pos: Vector2i, all_room_walls: Array[Vector2i], tilemap: TileMapLayer) -> bool:
+## Check if a wall position is connected to walls outside the room's bounding box.
+## If there's a wall tile adjacent to this position that's outside the room, it's exterior.
+func _is_connected_to_exterior(wall_pos: Vector2i, room: RoomInstance, tilemap: TileMapLayer) -> bool:
+	var bbox = room.bounding_box
 	var neighbor_offsets = [
 		Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1)
 	]
 
-	var tilemap_pos = IsometricMath.ui_to_tilemap_coords(wall_pos, tilemap)
-
 	for offset in neighbor_offsets:
-		var neighbor_tilemap_pos = tilemap_pos + offset
+		var neighbor_pos = wall_pos + offset
 
-		# Check if neighbor has a wall tile in the tilemap
-		var tile_data = tilemap.get_cell_tile_data(neighbor_tilemap_pos)
-		if tile_data and tile_data.get_terrain_set() == TERRAIN_SET:
-			# There's a wall here - check if it's part of any room
-			# Convert back to UI coords to check against room walls
-			var neighbor_ui_pos = IsometricMath.tilemap_to_ui_coords(neighbor_tilemap_pos, tilemap)
+		# Check if neighbor is OUTSIDE the room's bounding box
+		var outside_x = neighbor_pos.x < bbox.position.x or neighbor_pos.x >= bbox.position.x + bbox.size.x
+		var outside_y = neighbor_pos.y < bbox.position.y or neighbor_pos.y >= bbox.position.y + bbox.size.y
 
-			if neighbor_ui_pos not in all_room_walls:
-				# This neighboring wall isn't part of any room - it's exterior
+		if outside_x or outside_y:
+			# Neighbor is outside room - check if it has a wall tile in the tilemap
+			var tilemap_pos = IsometricMath.ui_to_tilemap_coords(neighbor_pos, tilemap)
+			var tile_data = tilemap.get_cell_tile_data(tilemap_pos)
+			if tile_data and tile_data.get_terrain_set() == TERRAIN_SET:
+				# There's a wall outside the room boundary - this is exterior
 				return true
 
 	return false
