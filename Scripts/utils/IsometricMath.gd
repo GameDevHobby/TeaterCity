@@ -53,6 +53,21 @@ static func ui_to_tilemap_coords(ui_tile: Vector2i, tilemap_layer: TileMapLayer)
 	var local_pos = tilemap_layer.to_local(world_pos)
 	return tilemap_layer.local_to_map(local_pos)
 
+
+## Convert tilemap tile coordinates back to UI tile coordinates
+## Inverse of ui_to_tilemap_coords
+static func tilemap_to_ui_coords(tilemap_pos: Vector2i, tilemap_layer: TileMapLayer) -> Vector2i:
+	# Convert tilemap position to local position (center of tile)
+	var local_pos = tilemap_layer.map_to_local(tilemap_pos)
+	# Convert to world position
+	var world_pos = tilemap_layer.to_global(local_pos)
+	# Reverse the offset we applied in ui_to_tilemap_coords
+	world_pos.y -= 2 * HALF_HEIGHT
+	# Convert from isometric world to UI tile coords
+	var tile_x = (world_pos.x / HALF_WIDTH + world_pos.y / HALF_HEIGHT) / 2.0
+	var tile_y = (world_pos.y / HALF_HEIGHT - world_pos.x / HALF_WIDTH) / 2.0
+	return Vector2i(round(tile_x), round(tile_y))
+
 ## Calculate isometric image dimensions for a given tile size
 static func get_isometric_image_size(tile_size: Vector2i) -> Vector2i:
 	return Vector2i(

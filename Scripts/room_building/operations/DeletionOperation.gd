@@ -9,42 +9,81 @@ const TERRAIN_SET := 0
 const TERRAIN_INDEX := 0
 
 
-## Get wall tiles that are NOT shared with other rooms.
-## Only these tiles should be erased from the tilemap.
-## A wall is shared if it exists in BOTH this room's walls array AND another room's walls array.
-func get_non_shared_walls(room: RoomInstance, room_manager: Node) -> Array[Vector2i]:
-	var non_shared: Array[Vector2i] = []
+## Get wall tiles that can be safely deleted.
+## A wall is deletable if:
+## 1. It's not shared with another room (not in any other room's walls array)
+## 2. It's not connected to exterior walls (wall tiles that aren't part of any room)
+func get_deletable_walls(room: RoomInstance, room_manager: Node, wall_tilemap: TileMapLayer) -> Array[Vector2i]:
+	var deletable: Array[Vector2i] = []
+
+	# Build a set of ALL wall positions from ALL rooms for quick lookup
+	var all_room_walls: Array[Vector2i] = []
+	for r in room_manager.get_all_rooms():
+		for w in r.walls:
+			if w not in all_room_walls:
+				all_room_walls.append(w)
 
 	for wall_pos in room.walls:
+		# Check 1: Is this wall shared with another room?
 		var is_shared := false
-
-		# Check if this wall tile is also in any OTHER room's walls array
 		for other_room in room_manager.get_all_rooms():
 			if other_room == room:
 				continue
-
-			# Check if this exact wall position is in the other room's walls
 			if wall_pos in other_room.walls:
 				is_shared = true
 				break
 
-		if not is_shared:
-			non_shared.append(wall_pos)
+		if is_shared:
+			continue  # Don't delete shared walls
 
-	return non_shared
+		# Check 2: Is this wall connected to an exterior wall?
+		# Exterior walls are tiles that exist in tilemap but aren't in any room's walls
+		var is_connected_to_exterior := _is_connected_to_exterior(wall_pos, all_room_walls, wall_tilemap)
+
+		if is_connected_to_exterior:
+			continue  # Don't delete walls connected to exterior
+
+		deletable.append(wall_pos)
+
+	return deletable
 
 
-## Delete all wall tiles for a room (only non-shared tiles).
-## Call AFTER navigation and furniture cleanup.
+## Check if a wall position is connected to exterior walls (walls not in any room)
+func _is_connected_to_exterior(wall_pos: Vector2i, all_room_walls: Array[Vector2i], tilemap: TileMapLayer) -> bool:
+	var neighbor_offsets = [
+		Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1)
+	]
+
+	var tilemap_pos = IsometricMath.ui_to_tilemap_coords(wall_pos, tilemap)
+
+	for offset in neighbor_offsets:
+		var neighbor_tilemap_pos = tilemap_pos + offset
+
+		# Check if neighbor has a wall tile in the tilemap
+		var tile_data = tilemap.get_cell_tile_data(neighbor_tilemap_pos)
+		if tile_data and tile_data.get_terrain_set() == TERRAIN_SET:
+			# There's a wall here - check if it's part of any room
+			# Convert back to UI coords to check against room walls
+			var neighbor_ui_pos = IsometricMath.tilemap_to_ui_coords(neighbor_tilemap_pos, tilemap)
+
+			if neighbor_ui_pos not in all_room_walls:
+				# This neighboring wall isn't part of any room - it's exterior
+				return true
+
+	return false
+
+
+## Delete all wall tiles for a room (only safely deletable tiles).
+## Call AFTER furniture cleanup.
 func delete_wall_visuals(room: RoomInstance, wall_tilemap: TileMapLayer, room_manager: Node) -> void:
-	var non_shared_walls = get_non_shared_walls(room, room_manager)
+	var deletable_walls = get_deletable_walls(room, room_manager, wall_tilemap)
 
-	for wall_pos in non_shared_walls:
+	for wall_pos in deletable_walls:
 		var tilemap_pos = IsometricMath.ui_to_tilemap_coords(wall_pos, wall_tilemap)
 		wall_tilemap.erase_cell(tilemap_pos)
 
 	# Update neighboring terrain tiles so they reconnect properly
-	_update_neighbor_terrain(non_shared_walls, wall_tilemap)
+	_update_neighbor_terrain(deletable_walls, wall_tilemap)
 
 
 ## Delete all furniture visuals for a room.
@@ -84,27 +123,33 @@ func restore_furniture_ground_tiles(room: RoomInstance, ground_tilemap: TileMapL
 
 ## Restore walkable floor tiles for the entire room area after deletion.
 ## This makes the deleted room area navigable again.
-## Only restores tiles that were actually deleted (non-shared walls and interior).
+## Only restores tiles that were actually deleted (deletable walls and interior).
+## Does NOT restore floor tiles where walls still exist (shared or exterior walls).
 func restore_room_floor_tiles(room: RoomInstance, wall_tilemap: TileMapLayer, room_manager: Node) -> void:
 	const SOURCE_ID := 1
 	const WALKABLE_TILE := Vector2i(0, 1)
 
 	var bbox = room.bounding_box
-	var non_shared_walls = get_non_shared_walls(room, room_manager)
+	var deletable_walls = get_deletable_walls(room, room_manager, wall_tilemap)
 
 	# Restore floor tiles for:
 	# 1. Interior tiles (not in walls array)
-	# 2. Non-shared wall tiles that were deleted
+	# 2. Wall tiles that were actually deleted
 	for x in range(bbox.position.x, bbox.position.x + bbox.size.x):
 		for y in range(bbox.position.y, bbox.position.y + bbox.size.y):
 			var pos = Vector2i(x, y)
+			var tilemap_pos = IsometricMath.ui_to_tilemap_coords(pos, wall_tilemap)
+
+			# Skip if there's still a wall tile here (shared or exterior)
+			var tile_data = wall_tilemap.get_cell_tile_data(tilemap_pos)
+			if tile_data and tile_data.get_terrain_set() == TERRAIN_SET:
+				continue  # Don't overwrite existing walls
 
 			# Check if this was an interior tile or a deleted wall tile
 			var was_interior = pos not in room.walls
-			var was_deleted_wall = pos in non_shared_walls
+			var was_deleted_wall = pos in deletable_walls
 
 			if was_interior or was_deleted_wall:
-				var tilemap_pos = IsometricMath.ui_to_tilemap_coords(pos, wall_tilemap)
 				wall_tilemap.set_cell(tilemap_pos, SOURCE_ID, WALKABLE_TILE)
 
 
