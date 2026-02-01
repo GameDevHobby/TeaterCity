@@ -250,9 +250,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 07-01-PLAN.md - RoomManager unregister_room() and DeletionOperation infrastructure
-- [ ] 07-02-PLAN.md - RoomEditMenu delete button with ConfirmationDialog and Main.gd wiring
-- [ ] 07-03-PLAN.md - Human verification of room deletion workflow
+- [x] 07-01-PLAN.md - RoomManager unregister_room() and DeletionOperation infrastructure
+- [x] 07-02-PLAN.md - RoomEditMenu delete button with ConfirmationDialog and Main.gd wiring
+- [x] 07-03-PLAN.md - Human verification of room deletion workflow
 
 **Risk Flags:**
 - HIGH: Navigation targets not unregistered - must call Targets.unregister_room()
@@ -370,7 +370,7 @@ Plans:
 | 4 | Furniture Selection | Complete | FUR-01, FUR-02 |
 | 5 | Furniture Editing Operations | Complete | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
 | 6 | Door Editing | Complete | DOOR-01, DOOR-02, DOOR-03 |
-| 7 | Room Deletion | Planned | EDIT-04, EDIT-05 |
+| 7 | Room Deletion | Complete | EDIT-04, EDIT-05 |
 | 8 | Room Resize (Complex) | Pending | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
 | 9 | Admin Menu & Feature Flags | Pending | PER-05 |
 | 10 | Testing & Verification | Pending | TEST-01, TEST-02, TEST-03, TEST-04 |

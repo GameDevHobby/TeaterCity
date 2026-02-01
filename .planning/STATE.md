@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-01-30 (Phase 7 in progress)
+**Last Updated:** 2026-02-01 (Phase 7 complete)
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 7 - Room Deletion (plan 2 of 3 complete)
+**Current Focus:** Phase 7 complete - Room Deletion fully working
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,10 +21,10 @@
 
 ## Current Position
 
-**Phase:** 7 of 10 (Room Deletion)
-**Plan:** 2 of 3 complete
-**Status:** In progress
-**Last activity:** 2026-01-30 - Completed 07-02-PLAN.md (deletion UI and orchestration)
+**Phase:** 7 of 10 (Room Deletion) - COMPLETE
+**Plan:** 3 of 3 complete
+**Status:** Complete
+**Last activity:** 2026-02-01 - Human verification passed after bug fixes
 
 **Progress:**
 ```
@@ -34,13 +34,13 @@ Phase  3: [X] Persistence Infrastructure (4/4 plans) COMPLETE
 Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
 Phase  6: [X] Door Editing (5/5 plans) COMPLETE
-Phase  7: [~] Room Deletion (2/3 plans) IN PROGRESS
+Phase  7: [X] Room Deletion (3/3 plans) COMPLETE
 Phase  8: [ ] Room Resize (Complex)
 Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 6/10 phases complete (60%), Phase 7 at 67%
+**Milestone Progress:** 7/10 phases complete (70%)
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 23 |
-| Plans Passed | 23 |
+| Plans Executed | 26 |
+| Plans Passed | 26 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -113,14 +113,15 @@ Phase 10: [ ] Testing & Verification
 | Orange walls, purple doors in highlight | Distinct colors for available vs existing door positions | 6-04 |
 | DoorEditLayer at layer 0 | Consistent with furniture edit layer for proper z-order | 6-04 |
 | Navigation update after door change | NavigationOperation + Targets.notify_navigation_changed() | 6-04 |
-| Shared wall detection via bounding box | Matches RoomManager._is_tile_in_room() logic for consistency | 7-01 |
+| Shared wall detection via walls array | Check each wall position against all other rooms' walls arrays | 7-01 |
 | Separate methods for each visual cleanup | Allows Main.gd to control deletion sequence | 7-01 |
 | Terrain reconnection in delete_wall_visuals | Prevents orphaned wall rendering artifacts | 7-01 |
-| Restore ground tiles for furniture | Maintains navigability after room deletion | 7-01 |
-| Confirmation dialog for room deletion | Prevents accidental deletion with clear warning about consequences | 7-02 |
+| Restore ground tiles for deleted walls | Maintains navigability through deleted room area | 7-01 |
+| Confirmation dialog for room deletion | Prevents accidental deletion with clear warning | 7-02 |
 | HSeparator before delete button | Visually distinguishes destructive action from other menu options | 7-02 |
-| Navigation cleared FIRST in deletion | Ensures patron safety before visual cleanup begins | 7-02 |
-| 8-step deletion sequence | Correct order: navigation → targets → furniture → ground → doors → walls → unregister | 7-02 |
+| Tilemap scanning for exterior walls | Scan wall tilemap at startup to detect pre-existing scene walls | 7-03 |
+| Exterior wall preservation | Exclude scene walls from deletion and door placement | 7-03 |
+| Stop modifying floor tiles | Floor tiles should never be modified by furniture or deletion | 7-03 |
 
 ### Technical Notes
 
@@ -161,6 +162,9 @@ Phase 10: [ ] Testing & Verification
 - Door edit integration: Main.gd creates controller+highlight, connects signals, handles navigation updates
 - Room unregistration: RoomManager.unregister_room() removes from _rooms, cleans Area2D, disconnects signals
 - Deletion operations: DeletionOperation provides stateless helpers for shared wall detection and visual cleanup
+- Exterior walls: Scanned from tilemap at startup using get_used_cells() and terrain set detection
+- Coordinate conversion: IsometricMath.tilemap_to_ui_coords() for reverse coordinate conversion
+- Door placement validation: Check exterior walls in both build mode and edit mode
 
 ### Blockers
 
@@ -180,7 +184,7 @@ None currently.
 - [x] Execute 03-01-PLAN.md: RoomInstance serialization
 - [x] Execute 03-02-PLAN.md: RoomSerializer atomic file I/O
 - [x] Execute 03-03-PLAN.md: SaveLoad integration
-- [ ] Execute 03-04-PLAN.md: Auto-save on room changes
+- [x] Execute 03-04-PLAN.md: Visual restoration and verification
 - [x] Execute 04-01-PLAN.md: FurnitureEditController
 - [x] Execute 04-02-PLAN.md: List Selection UI
 - [x] Execute 05-01-PLAN.md: Drag-to-move functionality
@@ -188,16 +192,15 @@ None currently.
 - [x] Execute 05-03-PLAN.md: Furniture deletion
 - [x] Execute 05-04-PLAN.md: Furniture add operation
 - [x] Execute 05-05-PLAN.md: Placement preview visual feedback
-- [ ] Execute 05-06-PLAN.md: Furniture rotation (if exists)
-- [ ] Complete Phase 5: Furniture Editing Operations
+- [x] Execute 05-06-PLAN.md: Human verification of furniture operations
 - [x] Execute 06-01-PLAN.md: Door editing infrastructure
 - [x] Execute 06-02-PLAN.md: Door add operation
 - [x] Execute 06-03-PLAN.md: Door removal operation
 - [x] Execute 06-04-PLAN.md: Visual feedback and Main.gd integration
-- [x] Execute 06-05-PLAN.md: Human verification of door editing (passed with bug fixes)
+- [x] Execute 06-05-PLAN.md: Human verification of door editing
 - [x] Execute 07-01-PLAN.md: Room deletion infrastructure
 - [x] Execute 07-02-PLAN.md: Deletion UI and orchestration
-- [ ] Execute 07-03-PLAN.md: Human verification of room deletion
+- [x] Execute 07-03-PLAN.md: Human verification of room deletion
 - [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
 
 ---
@@ -206,35 +209,38 @@ None currently.
 
 ### What Was Done
 
-- Completed 07-02-PLAN.md: Room deletion UI and orchestration
-- Added Delete Room button to RoomEditMenu:
-  - Fourth button with HSeparator for visual distinction
-  - ConfirmationDialog with warning about furniture removal
-  - delete_room_pressed signal emitted on confirmation
-- Wired deletion sequence in Main.gd:
-  - DeletionOperation instance created
-  - _on_delete_room_requested handler with 8-step sequence
-  - Navigation cleared FIRST for patron safety
-  - Complete cleanup: navigation → targets → furniture → ground → doors → walls → unregister
-- Commits: ec1c9de (RoomEditMenu), 0790e55 (Main.gd)
+- Completed Phase 7: Room Deletion (all 3 plans)
+- Human verification (07-03) passed after multiple bug fix iterations:
+  - Fixed shared wall preservation (check walls array, not bounding box)
+  - Fixed exterior wall detection (tilemap scanning at startup)
+  - Fixed floor tile handling (stop modifying floor tiles)
+  - Fixed door placement on exterior walls (both build and edit modes)
+- Key commits:
+  - 6271841: Shared wall detection fix
+  - 28e31e7: Tilemap scanning for exterior walls
+  - e6e0d36: Stop modifying floor tiles
+  - 26bd775: Door placement prevention on exterior walls (build mode)
 
 ### What's Next
 
-1. Execute 07-03-PLAN.md: Human verification of room deletion
-2. Phase 8: Room Resize (HIGH complexity flag)
-3. Phase 9 and 10 can be done in parallel
+1. Phase 8: Room Resize (HIGH complexity flag - consider spike planning)
+2. Phase 9: Admin Menu & Feature Flags
+3. Phase 10: Testing & Verification
 
 ### Context for Next Session
 
-Phase 7 in progress (2/3 complete). Room deletion feature complete:
-- UI: Delete Room button in menu with confirmation dialog
-- Orchestration: Main.gd handles 8-step deletion sequence
-- Safety: Navigation cleared before visual cleanup
-- Integration: Leverages 07-01 infrastructure (RoomManager.unregister_room, DeletionOperation)
+Phase 7 complete. Room deletion feature fully working:
+- Delete button in menu with confirmation dialog
+- Proper cleanup of walls, doors, furniture
+- Shared walls preserved between adjacent rooms
+- Exterior (scene) walls preserved
+- Navigation updates correctly
+- Door placement blocked on exterior walls
+- Changes persist after restart
 
-Next: Human verification testing (07-03)
+Next: Phase 8 (Room Resize) is flagged as HIGH complexity. Consider spike planning or simplified approach before starting.
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-01-30 (Phase 7 plan 2 complete)*
+*Last updated: 2026-02-01 (Phase 7 complete)*
