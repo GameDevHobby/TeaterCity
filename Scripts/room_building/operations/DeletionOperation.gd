@@ -11,14 +11,14 @@ const TERRAIN_INDEX := 0
 
 ## Get wall tiles that can be safely deleted.
 ## A wall is deletable if:
-## 1. It's not on the exterior boundary
+## 1. It's not an exterior wall (existed at game start)
 ## 2. It's not shared with another room (not in any other room's walls array)
-func get_deletable_walls(room: RoomInstance, room_manager: Node, exterior_boundary: Rect2i) -> Array[Vector2i]:
+func get_deletable_walls(room: RoomInstance, room_manager: Node, exterior_walls: Array[Vector2i]) -> Array[Vector2i]:
 	var deletable: Array[Vector2i] = []
 
 	for wall_pos in room.walls:
-		# Check 1: Is this wall on the exterior boundary?
-		if _is_on_exterior_boundary(wall_pos, exterior_boundary):
+		# Check 1: Is this an exterior wall?
+		if wall_pos in exterior_walls:
 			continue  # Don't delete exterior walls
 
 		# Check 2: Is this wall shared with another room?
@@ -38,36 +38,10 @@ func get_deletable_walls(room: RoomInstance, room_manager: Node, exterior_bounda
 	return deletable
 
 
-## Check if a wall position is on the exterior boundary.
-## The exterior boundary is the perimeter of the playable area.
-func _is_on_exterior_boundary(wall_pos: Vector2i, boundary: Rect2i) -> bool:
-	# If boundary is not set (size is 0), no exterior protection
-	if boundary.size.x == 0 or boundary.size.y == 0:
-		return false
-
-	# Check if position is on any edge of the boundary
-	var on_left = wall_pos.x == boundary.position.x
-	var on_right = wall_pos.x == boundary.position.x + boundary.size.x - 1
-	var on_top = wall_pos.y == boundary.position.y
-	var on_bottom = wall_pos.y == boundary.position.y + boundary.size.y - 1
-
-	# Must be within the boundary range to be on the edge
-	var in_x_range = wall_pos.x >= boundary.position.x and wall_pos.x < boundary.position.x + boundary.size.x
-	var in_y_range = wall_pos.y >= boundary.position.y and wall_pos.y < boundary.position.y + boundary.size.y
-
-	# On boundary if on any edge AND within the perpendicular range
-	if (on_left or on_right) and in_y_range:
-		return true
-	if (on_top or on_bottom) and in_x_range:
-		return true
-
-	return false
-
-
 ## Delete all wall tiles for a room (only safely deletable tiles).
 ## Call AFTER furniture cleanup.
-func delete_wall_visuals(room: RoomInstance, wall_tilemap: TileMapLayer, room_manager: Node, exterior_boundary: Rect2i) -> void:
-	var deletable_walls = get_deletable_walls(room, room_manager, exterior_boundary)
+func delete_wall_visuals(room: RoomInstance, wall_tilemap: TileMapLayer, room_manager: Node, exterior_walls: Array[Vector2i]) -> void:
+	var deletable_walls = get_deletable_walls(room, room_manager, exterior_walls)
 
 	for wall_pos in deletable_walls:
 		var tilemap_pos = IsometricMath.ui_to_tilemap_coords(wall_pos, wall_tilemap)
@@ -116,12 +90,12 @@ func restore_furniture_ground_tiles(room: RoomInstance, ground_tilemap: TileMapL
 ## This makes the deleted room area navigable again.
 ## Only restores tiles that were actually deleted (deletable walls and interior).
 ## Does NOT restore floor tiles where walls still exist (shared or exterior walls).
-func restore_room_floor_tiles(room: RoomInstance, wall_tilemap: TileMapLayer, room_manager: Node, exterior_boundary: Rect2i) -> void:
+func restore_room_floor_tiles(room: RoomInstance, wall_tilemap: TileMapLayer, room_manager: Node, exterior_walls: Array[Vector2i]) -> void:
 	const SOURCE_ID := 1
 	const WALKABLE_TILE := Vector2i(0, 1)
 
 	var bbox = room.bounding_box
-	var deletable_walls = get_deletable_walls(room, room_manager, exterior_boundary)
+	var deletable_walls = get_deletable_walls(room, room_manager, exterior_walls)
 
 	# Restore floor tiles for:
 	# 1. Interior tiles (not in walls array)
@@ -130,8 +104,8 @@ func restore_room_floor_tiles(room: RoomInstance, wall_tilemap: TileMapLayer, ro
 		for y in range(bbox.position.y, bbox.position.y + bbox.size.y):
 			var pos = Vector2i(x, y)
 
-			# Skip exterior boundary positions - never restore floor there
-			if _is_on_exterior_boundary(pos, exterior_boundary):
+			# Skip exterior wall positions - never restore floor there
+			if pos in exterior_walls:
 				continue
 
 			var tilemap_pos = IsometricMath.ui_to_tilemap_coords(pos, wall_tilemap)

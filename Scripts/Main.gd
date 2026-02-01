@@ -5,10 +5,9 @@ extends Node2D
 @export var camera: PinchPanCamera
 @export var build_button: Button
 
-## Exterior boundary defines the playable area. Walls ON this boundary are exterior walls
-## and should not be deleted when rooms are removed. Set this in the editor.
-## Format: position = top-left tile, size = dimensions in tiles
-@export var exterior_boundary: Rect2i = Rect2i(0, 0, 0, 0)
+## Exterior wall positions scanned from tilemap at startup.
+## These walls exist in the scene and should never be deleted.
+var _exterior_walls: Array[Vector2i] = []
 
 # Autoload reference (avoids static analysis issues in Godot 4.5)
 @onready var _room_manager: Node = get_node("/root/RoomManager")
@@ -23,6 +22,9 @@ var _door_edit_done_button: Button = null
 var _deletion_op: DeletionOperation = null
 
 func _ready() -> void:
+	# Scan exterior walls FIRST, before any rooms are loaded/restored
+	_scan_exterior_walls()
+
 	room_build_manager.room_completed.connect(_on_room_completed)
 
 	# Connect to RoomManager selection signals for future menu handling
@@ -234,11 +236,11 @@ func _on_delete_room_requested(room: RoomInstance) -> void:
 
 	# 4. Delete wall visuals (ONLY non-shared tiles, preserve exterior)
 	if wall_layer:
-		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager, exterior_boundary)
+		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager, _exterior_walls)
 
 	# 5. Restore walkable floor tiles where room was (makes area navigable again)
 	if wall_layer:
-		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager, exterior_boundary)
+		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager, _exterior_walls)
 
 	# 6. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
 	_room_manager.unregister_room(room)
@@ -390,3 +392,25 @@ func _update_navigation_for_room(room: RoomInstance) -> void:
 		nav_op.update_room_navigation(room, tilemap_layer)
 	# Notify targets of navigation change
 	Targets.notify_navigation_changed()
+
+
+## Scan the wall tilemap for all existing wall tiles at game start.
+## These are exterior walls that should never be deleted.
+func _scan_exterior_walls() -> void:
+	var wall_layer = room_build_manager.get_wall_tilemap_layer()
+	if not wall_layer:
+		push_warning("Main: Could not scan exterior walls - no wall tilemap")
+		return
+
+	# Get all used cells in the wall tilemap
+	var used_cells = wall_layer.get_used_cells()
+
+	# For each cell, check if it's a wall tile (has terrain set 0)
+	for tilemap_pos in used_cells:
+		var tile_data = wall_layer.get_cell_tile_data(tilemap_pos)
+		if tile_data and tile_data.get_terrain_set() == 0:
+			# Convert tilemap position to UI coordinates
+			var ui_pos = IsometricMath.tilemap_to_ui_coords(tilemap_pos, wall_layer)
+			_exterior_walls.append(ui_pos)
+
+	print("Main: Scanned %d exterior wall tiles" % _exterior_walls.size())
