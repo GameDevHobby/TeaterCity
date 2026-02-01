@@ -5,6 +5,11 @@ extends Node2D
 @export var camera: PinchPanCamera
 @export var build_button: Button
 
+## Exterior boundary defines the playable area. Walls ON this boundary are exterior walls
+## and should not be deleted when rooms are removed. Set this in the editor.
+## Format: position = top-left tile, size = dimensions in tiles
+@export var exterior_boundary: Rect2i = Rect2i(0, 0, 0, 0)
+
 # Autoload reference (avoids static analysis issues in Godot 4.5)
 @onready var _room_manager: Node = get_node("/root/RoomManager")
 
@@ -227,13 +232,13 @@ func _on_delete_room_requested(room: RoomInstance) -> void:
 	if wall_layer:
 		_deletion_op.delete_door_visuals(room, wall_layer)
 
-	# 4. Delete wall visuals (ONLY non-shared tiles)
+	# 4. Delete wall visuals (ONLY non-shared tiles, preserve exterior)
 	if wall_layer:
-		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager)
+		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager, exterior_boundary)
 
 	# 5. Restore walkable floor tiles where room was (makes area navigable again)
 	if wall_layer:
-		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager)
+		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager, exterior_boundary)
 
 	# 6. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
 	_room_manager.unregister_room(room)
