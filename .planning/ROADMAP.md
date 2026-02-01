@@ -268,7 +268,7 @@ Plans:
 
 ### Phase 8: Room Resize (Complex)
 
-**Goal:** Players can resize existing rooms by adjusting walls.
+**Goal:** Players can resize existing rooms by adjusting walls using delete-and-rebuild approach.
 
 **Dependencies:** Phase 7 (room deletion for wall handling), Phase 5 (furniture validation)
 
@@ -279,26 +279,33 @@ Plans:
 - OVR-01: Adjacent rooms can share wall boundaries
 
 **Success Criteria:**
-1. Drag handles appear on room corners/edges when in resize mode
-2. Dragging handle shows preview of new room size
-3. Resize blocked with error message when furniture would be outside new bounds
-4. After successful resize, all doors are removed and player enters door placement mode
-5. Shared walls with adjacent rooms are preserved correctly
+1. User drags to define new bounding box in resize mode
+2. Preview shows valid (green) or invalid (red) feedback during drag
+3. Blocked furniture highlighted in orange when resize would invalidate
+4. Resize blocked when new bounds overlap another room
+5. After successful resize, doors are cleared and user enters door placement
+6. Shared walls with adjacent rooms are preserved correctly
 
-**Estimated Tasks:** 16-24
+**Plans:** 5 plans
+
+Plans:
+- [ ] 08-01-PLAN.md - ResizeOperation validation (furniture bounds, room overlap, size constraints)
+- [ ] 08-02-PLAN.md - RoomResizeController state machine and box drawing input
+- [ ] 08-03-PLAN.md - RoomResizeHighlight preview rendering
+- [ ] 08-04-PLAN.md - RoomEditMenu resize button and Main.gd integration
+- [ ] 08-05-PLAN.md - Human verification of resize workflow
 
 **Risk Flags:**
-- HIGH: Research flags as HIGH complexity - consider additional spike planning
-- HIGH: Furniture invalidation logic - must check all furniture fits in new bounds
-- HIGH: Shared wall handling during resize - complex edge cases
-- MEDIUM: UI/UX for drag handles on mobile touch
+- HIGH: Research flags as HIGH complexity - mitigated by delete+rebuild approach
+- HIGH: Furniture invalidation logic - ResizeOperation validates footprint AND access tiles
+- HIGH: Shared wall handling during resize - reuses DeletionOperation.get_deletable_walls()
+- MEDIUM: UI/UX for resize - uses proven box drawing pattern instead of corner handles
 
 **Research Notes:**
-- Research recommends deferring resize to post-MVP due to complexity
-- PROJECT.md lists as core requirement - included but flagged
-- Consider: resize = delete + rebuild with preserved furniture positions?
-- Must validate new size against RoomTypeResource min/max constraints
-- Door reset simplifies the problem significantly
+- Delete+rebuild approach reuses 80%+ of existing code
+- Box drawing input (drag corner to corner) better for mobile than drag handles
+- Furniture stays in absolute positions, validation confirms it fits
+- Door reset per EDIT-03 simplifies implementation significantly
 
 ---
 
@@ -371,7 +378,7 @@ Plans:
 | 5 | Furniture Editing Operations | Complete | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
 | 6 | Door Editing | Complete | DOOR-01, DOOR-02, DOOR-03 |
 | 7 | Room Deletion | Complete | EDIT-04, EDIT-05 |
-| 8 | Room Resize (Complex) | Pending | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
+| 8 | Room Resize (Complex) | Planned | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
 | 9 | Admin Menu & Feature Flags | Pending | PER-05 |
 | 10 | Testing & Verification | Pending | TEST-01, TEST-02, TEST-03, TEST-04 |
 
@@ -408,7 +415,7 @@ Phase 9 (Admin Menu)                                              Phase 8 (Room 
 
 | Risk Level | Phase | Risk | Mitigation |
 |------------|-------|------|------------|
-| HIGH | 8 | Room resize complexity | Consider spike planning or simplified approach |
+| HIGH | 8 | Room resize complexity | Delete+rebuild approach reuses existing operations |
 | HIGH | 7 | Navigation targets not unregistered | Explicit Targets.unregister_room() call |
 | HIGH | 7 | Navigation mesh not updated | Call navigation update after deletion |
 | HIGH | 3 | Save file corruption | Atomic writes with temp file + rename |
@@ -441,3 +448,4 @@ Phase 9 (Admin Menu)                                              Phase 8 (Room 
 *Phase 5 planned: 2026-01-23*
 *Phase 6 planned: 2026-01-25*
 *Phase 7 planned: 2026-01-30*
+*Phase 8 planned: 2026-02-01*
