@@ -22,6 +22,7 @@ var _active: bool = false
 var _current_room: RoomInstance = null
 var _wall_areas: Dictionary = {}  # position (Vector2i hash) -> Area2D
 var _door_operation: DoorOperation = DoorOperation.new()
+var _exterior_walls: Array[Vector2i] = []  # Exterior walls that cannot have doors
 
 # Autoload reference (avoids static analysis issues in Godot 4.5)
 @onready var _room_manager: Node = get_node("/root/RoomManager")
@@ -82,6 +83,11 @@ func get_current_room() -> RoomInstance:
 	return _current_room
 
 
+## Set exterior walls that cannot have doors placed on them
+func set_exterior_walls(walls: Array[Vector2i]) -> void:
+	_exterior_walls = walls
+
+
 ## Handle wall tap - routes to add or remove based on whether tile has door
 func handle_wall_tap(position: Vector2i, is_door: bool) -> void:
 	if is_door:
@@ -103,8 +109,11 @@ func add_door(position: Vector2i) -> bool:
 	var outside_tile = _door_operation.get_outside_tile(position, direction)
 	var is_adjacent_blocked = _room_manager.is_tile_in_another_room(outside_tile, _current_room)
 
-	# Validate placement with adjacency check
-	var validation = _door_operation.can_place_door_edit(position, _current_room, is_adjacent_blocked)
+	# Check if this is an exterior wall
+	var is_exterior = position in _exterior_walls
+
+	# Validate placement with adjacency and exterior check
+	var validation = _door_operation.can_place_door_edit(position, _current_room, is_adjacent_blocked, is_exterior)
 	if not validation.can_place:
 		door_add_failed.emit(validation.reason)
 		return false

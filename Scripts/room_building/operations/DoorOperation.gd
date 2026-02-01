@@ -55,9 +55,16 @@ func can_remove_door(room: RoomInstance) -> Dictionary:
 
 ## Validate door placement for edit mode (stricter than build mode)
 ## is_adjacent_in_another_room: caller must check if outside tile is in another room
+## is_exterior_wall: caller must check if wall position is an exterior wall
 ## Returns Dictionary with { can_place: bool, reason: String }
-func can_place_door_edit(position: Vector2i, room: RoomInstance, is_adjacent_in_another_room: bool) -> Dictionary:
+func can_place_door_edit(position: Vector2i, room: RoomInstance, is_adjacent_in_another_room: bool, is_exterior_wall: bool = false) -> Dictionary:
 	var result = { "can_place": true, "reason": "" }
+
+	# Check if this is an exterior wall (cannot place doors on exterior)
+	if is_exterior_wall:
+		result.can_place = false
+		result.reason = "Cannot place door on exterior wall"
+		return result
 
 	# Check if position is valid wall tile (2-3 neighbors)
 	if not is_valid_door_position(position, room):

@@ -202,6 +202,9 @@ func _on_edit_room_requested(room: RoomInstance) -> void:
 	# Disable camera panning during door edit
 	camera.enable_pinch_pan = false
 
+	# Pass exterior walls to controller (cannot place doors on exterior)
+	_door_edit_controller.set_exterior_walls(_exterior_walls)
+
 	# Enter door edit mode
 	_door_edit_controller.enter_edit_mode(room)
 	_door_edit_highlight.queue_redraw()
@@ -232,13 +235,17 @@ func _on_delete_room_requested(room: RoomInstance) -> void:
 	if wall_layer:
 		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager, _exterior_walls)
 
-	# 4. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
+	# 4. Restore floor tiles where walls were deleted (for navigation)
+	if wall_layer:
+		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager, _exterior_walls)
+
+	# 5. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
 	_room_manager.unregister_room(room)
 
-	# 5. Clear selection (menu already hidden by RoomEditMenu)
+	# 6. Clear selection (menu already hidden by RoomEditMenu)
 	_room_manager.clear_selection()
 
-	# 6. Notify patrons to recalculate paths (AFTER all changes complete)
+	# 7. Notify patrons to recalculate paths (AFTER all changes complete)
 	Targets.notify_navigation_changed()
 
 	print("Room deleted: ", room.id)
