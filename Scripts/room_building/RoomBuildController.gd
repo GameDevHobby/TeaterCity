@@ -182,9 +182,9 @@ func _on_complete_pressed() -> void:
 		for door in current_room.doors:
 			_door_op.create_door_visuals(door, tilemap_layer)
 
-	# Create furniture visuals (clear ground tiles for navigation)
+	# Create furniture visuals (don't modify floor tiles)
 	for furn in current_room.furniture:
-		_furniture_op.create_furniture_visual(furn, furniture_visuals, ground_tilemap_layer)
+		_furniture_op.create_furniture_visual(furn, furniture_visuals, null)
 
 	# Update navigation
 	_navigation_op.update_room_navigation(current_room, tilemap_layer)
@@ -223,9 +223,9 @@ func _on_room_restored(room: RoomInstance) -> void:
 		for door in room.doors:
 			_door_op.create_door_visuals(door, tilemap_layer)
 
-	# Restore furniture visuals
+	# Restore furniture visuals (don't modify floor tiles)
 	for furn in room.furniture:
-		_furniture_op.create_furniture_visual(furn, furniture_visuals, ground_tilemap_layer)
+		_furniture_op.create_furniture_visual(furn, furniture_visuals, null)
 
 	# Update navigation for this room
 	_navigation_op.update_room_navigation(room, tilemap_layer)

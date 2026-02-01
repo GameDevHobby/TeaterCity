@@ -220,35 +220,25 @@ func _on_delete_room_requested(room: RoomInstance) -> void:
 
 	# Get tilemap references
 	var wall_layer = room_build_manager.get_wall_tilemap_layer()
-	var ground_layer = room_build_manager.get_tilemap_layer()
 
-	# CRITICAL: Cleanup sequence order matters for navigation safety
-	# 1. Delete furniture visuals FIRST (calls cleanup_visual -> queue_free)
+	# 1. Delete furniture visuals (calls cleanup_visual -> queue_free)
 	_deletion_op.delete_furniture_visuals(room)
 
-	# 2. Restore ground tiles where furniture was (for adjacent room access)
-	if ground_layer:
-		_deletion_op.restore_furniture_ground_tiles(room, ground_layer)
-
-	# 3. Delete door visuals (erase door tiles)
+	# 2. Delete door visuals (erase door tiles)
 	if wall_layer:
 		_deletion_op.delete_door_visuals(room, wall_layer)
 
-	# 4. Delete wall visuals (ONLY non-shared tiles, preserve exterior)
+	# 3. Delete wall visuals (ONLY non-shared tiles, preserve exterior)
 	if wall_layer:
 		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager, _exterior_walls)
 
-	# 5. Restore walkable floor tiles where room was (makes area navigable again)
-	if wall_layer:
-		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager, _exterior_walls)
-
-	# 6. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
+	# 4. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
 	_room_manager.unregister_room(room)
 
-	# 7. Clear selection (menu already hidden by RoomEditMenu)
+	# 5. Clear selection (menu already hidden by RoomEditMenu)
 	_room_manager.clear_selection()
 
-	# 8. Notify patrons to recalculate paths (AFTER all changes complete)
+	# 6. Notify patrons to recalculate paths (AFTER all changes complete)
 	Targets.notify_navigation_changed()
 
 	print("Room deleted: ", room.id)
@@ -277,13 +267,12 @@ func _on_placement_cancelled() -> void:
 
 
 func _on_furniture_added(room: RoomInstance, placement: RoomInstance.FurniturePlacement) -> void:
-	# Get tilemap layer from room build manager
-	var tilemap_layer = room_build_manager.get_tilemap_layer()
+	# Get furniture parent node (don't pass tilemap - floor tiles shouldn't be modified)
 	var furniture_parent = room_build_manager.get_furniture_parent()
 
-	if tilemap_layer and furniture_parent:
+	if furniture_parent:
 		var furniture_op = FurnitureOperation.new()
-		furniture_op.create_furniture_visual(placement, furniture_parent, tilemap_layer)
+		furniture_op.create_furniture_visual(placement, furniture_parent, null)
 
 	print("Furniture added: ", placement.furniture.name if placement.furniture else "unknown")
 
