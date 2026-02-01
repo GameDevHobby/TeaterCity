@@ -25,6 +25,9 @@ func _ready() -> void:
 	# Scan exterior walls FIRST, before any rooms are loaded/restored
 	_scan_exterior_walls()
 
+	# Pass exterior walls to room build controller (prevents doors on exterior)
+	room_build_manager.set_exterior_walls(_exterior_walls)
+
 	room_build_manager.room_completed.connect(_on_room_completed)
 
 	# Connect to RoomManager selection signals for future menu handling

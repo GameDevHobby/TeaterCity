@@ -25,6 +25,7 @@ var _navigation_op = NavigationOperation.new()
 
 var _room_counter: int = 0
 var _counter_initialized: bool = false
+var _exterior_walls: Array[Vector2i] = []  # Exterior walls that cannot have doors
 
 func _ready() -> void:
 	# Initialize registries
@@ -58,6 +59,11 @@ func get_wall_tilemap_layer() -> TileMapLayer:
 
 func get_furniture_parent() -> Node2D:
 	return furniture_visuals
+
+
+## Set exterior walls that cannot have doors placed on them
+func set_exterior_walls(walls: Array[Vector2i]) -> void:
+	_exterior_walls = walls
 
 
 func start_build_mode() -> void:
@@ -139,6 +145,12 @@ func finish_box_draw(start: Vector2i, end: Vector2i) -> void:
 		_transition_to_furniture_placement()
 
 func _on_door_placed(position: Vector2i) -> void:
+	# Check if this is an exterior wall (cannot place doors on exterior)
+	if position in _exterior_walls:
+		if ui:
+			ui.show_validation_errors(["Cannot place door on exterior wall"])
+		return
+
 	if _door_op.is_valid_door_position(position, current_room):
 		var direction = _door_op.determine_door_direction(position, current_room)
 		current_room.add_door(position, direction)
