@@ -20,6 +20,8 @@ var _door_edit_highlight: DoorEditHighlight = null
 var _room_edit_menu: RoomEditMenu = null
 var _door_edit_done_button: Button = null
 var _deletion_op: DeletionOperation = null
+var _resize_controller: RoomResizeController = null
+var _resize_highlight: RoomResizeHighlight = null
 
 func _ready() -> void:
 	# Scan exterior walls FIRST, before any rooms are loaded/restored
@@ -65,6 +67,7 @@ func _ready() -> void:
 	_room_edit_menu.edit_room_pressed.connect(_on_edit_room_requested)
 	_room_edit_menu.room_type_action_pressed.connect(_on_room_type_action_requested)
 	_room_edit_menu.delete_room_pressed.connect(_on_delete_room_requested)
+	_room_edit_menu.resize_room_pressed.connect(_on_resize_room_requested)
 
 	# Create furniture editing CanvasLayer (same layer as room selection for correct z-order)
 	var furniture_edit_layer = CanvasLayer.new()
@@ -144,6 +147,32 @@ func _ready() -> void:
 	_door_edit_done_button.pressed.connect(_on_door_edit_done_pressed)
 	edit_menu_layer.add_child(_door_edit_done_button)
 	_door_edit_done_button.hide()  # Hidden until door edit mode
+
+	# Create resize editing CanvasLayer (same layer as room selection)
+	var resize_edit_layer = CanvasLayer.new()
+	resize_edit_layer.name = "ResizeEditLayer"
+	resize_edit_layer.layer = 0  # Same layer as SelectionHighlightLayer
+	add_child(resize_edit_layer)
+
+	# Create RoomResizeController
+	_resize_controller = RoomResizeController.new()
+	_resize_controller.name = "RoomResizeController"
+	_resize_controller.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_resize_controller.set_anchors_preset(Control.PRESET_FULL_RECT)
+	resize_edit_layer.add_child(_resize_controller)
+
+	# Create RoomResizeHighlight
+	_resize_highlight = RoomResizeHighlight.new()
+	_resize_highlight.name = "RoomResizeHighlight"
+	_resize_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_resize_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
+	resize_edit_layer.add_child(_resize_highlight)
+	_resize_highlight.set_controller(_resize_controller)
+
+	# Connect resize controller signals
+	_resize_controller.resize_completed.connect(_on_resize_completed)
+	_resize_controller.door_placement_needed.connect(_on_resize_door_placement_needed)
+	_resize_controller.mode_exited.connect(_on_resize_mode_exited)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -252,6 +281,62 @@ func _on_delete_room_requested(room: RoomInstance) -> void:
 	Targets.notify_navigation_changed()
 
 	print("Room deleted: ", room.id)
+
+
+func _on_resize_room_requested(room: RoomInstance) -> void:
+	print("Entering resize mode: ", room.id)
+
+	# Hide room menu
+	_room_edit_menu.hide()
+
+	# Clear room selection
+	_room_manager.clear_selection()
+
+	# Disable room selection input during resize
+	_room_manager.disable_selection()
+
+	# Disable camera panning during resize
+	camera.enable_pinch_pan = false
+
+	# Pass exterior walls and tilemap to controller
+	_resize_controller.set_exterior_walls(_exterior_walls)
+	_resize_controller.set_wall_tilemap(room_build_manager.get_wall_tilemap_layer())
+
+	# Enter resize mode
+	_resize_controller.enter_resize_mode(room)
+
+
+func _on_resize_completed(room: RoomInstance) -> void:
+	print("Resize completed: ", room.id)
+
+	# Update RoomManager's Area2D to match new bounding box
+	# Unregister and re-register to recreate the selection polygon
+	_room_manager.unregister_room(room)
+	_room_manager.register_room(room)
+
+	# Notify navigation system of change
+	Targets.notify_navigation_changed()
+
+
+func _on_resize_door_placement_needed(room: RoomInstance) -> void:
+	print("Resize requires door re-placement: ", room.id)
+
+	# Pass exterior walls to door controller
+	_door_edit_controller.set_exterior_walls(_exterior_walls)
+
+	# Enter door edit mode (doors were cleared during resize)
+	_door_edit_controller.enter_edit_mode(room)
+	_door_edit_highlight.queue_redraw()
+
+	# Show Done button
+	_door_edit_done_button.show()
+	_position_door_edit_button(room)
+
+
+func _on_resize_mode_exited() -> void:
+	print("Exited resize mode")
+	camera.enable_pinch_pan = true
+	_room_manager.enable_selection()
 
 
 func _on_furniture_edit_exited() -> void:
