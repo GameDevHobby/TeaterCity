@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-02-02 (Phase 8 plan 01 complete)
+**Last Updated:** 2026-02-02 (Phase 8 plan 02 complete)
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 8 in progress - Room Resize (plan 01 complete)
+**Current Focus:** Phase 8 in progress - Room Resize (plan 02 complete)
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -22,9 +22,9 @@
 ## Current Position
 
 **Phase:** 8 of 10 (Room Resize) - IN PROGRESS
-**Plan:** 1 of 5 complete
+**Plan:** 2 of 5 complete
 **Status:** In progress
-**Last activity:** 2026-02-02 - Completed 08-01-PLAN.md (ResizeOperation validation)
+**Last activity:** 2026-02-02 - Completed 08-02-PLAN.md (RoomResizeController)
 
 **Progress:**
 ```
@@ -35,7 +35,7 @@ Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
 Phase  6: [X] Door Editing (5/5 plans) COMPLETE
 Phase  7: [X] Room Deletion (3/3 plans) COMPLETE
-Phase  8: [>] Room Resize (1/5 plans) IN PROGRESS
+Phase  8: [>] Room Resize (2/5 plans) IN PROGRESS
 Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 27 |
-| Plans Passed | 27 |
+| Plans Executed | 28 |
+| Plans Passed | 28 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -125,6 +125,8 @@ Phase 10: [ ] Testing & Verification
 | Three-stage resize validation | Size constraints -> overlap -> furniture bounds (fast-fail order) | 8-01 |
 | Both orientations for size validation | Allow swapped width/height for room type constraints | 8-01 |
 | Furniture access tiles in resize validation | Check both footprint and access tiles against new walls | 8-01 |
+| RoomResizeController signals-only pattern | Controller does not handle visual drawing, emits signals for highlight | 8-02 |
+| door_placement_needed signal after resize | Triggers door re-placement workflow after successful resize | 8-02 |
 
 ### Technical Notes
 
@@ -170,6 +172,8 @@ Phase 10: [ ] Testing & Verification
 - Door placement validation: Check exterior walls in both build mode and edit mode
 - Resize validation: ResizeOperation.validate_resize() returns detailed result with blocked furniture list
 - Resize execution: ResizeOperation.execute_resize() uses delete+rebuild pattern via DeletionOperation and WallOperation
+- Resize controller: RoomResizeController follows box drawing input pattern from RoomBuildUI
+- Resize state machine: IDLE and DRAWING states, live validation during drag via preview_updated signal
 
 ### Blockers
 
@@ -207,7 +211,7 @@ None currently.
 - [x] Execute 07-02-PLAN.md: Deletion UI and orchestration
 - [x] Execute 07-03-PLAN.md: Human verification of room deletion
 - [x] Execute 08-01-PLAN.md: ResizeOperation with validation logic
-- [ ] Execute 08-02-PLAN.md: RoomResizeController UI
+- [x] Execute 08-02-PLAN.md: RoomResizeController UI
 - [ ] Execute 08-03-PLAN.md: Edge anchoring and resize visuals
 - [ ] Execute 08-04-PLAN.md: Main.gd integration
 - [ ] Execute 08-05-PLAN.md: Human verification
@@ -218,31 +222,32 @@ None currently.
 
 ### What Was Done
 
-- Completed Phase 8 Plan 01: ResizeOperation with validation logic
-- Created Scripts/room_building/operations/ResizeOperation.gd
-- ResizeValidationResult inner class for detailed error reporting
-- Three-stage validation: size constraints, overlap, furniture bounds
-- execute_resize() uses delete+rebuild pattern
-- Key commit: d304957
+- Completed Phase 8 Plan 02: RoomResizeController
+- Created Scripts/room_editing/RoomResizeController.gd
+- State machine with IDLE and DRAWING states
+- Box drawing input pattern matching RoomBuildUI
+- Live validation during drag via ResizeOperation.validate_resize()
+- door_placement_needed signal for post-resize door workflow
+- Key commit: 31484bd
 
 ### What's Next
 
-1. Execute 08-02-PLAN.md: RoomResizeController UI
-2. Execute 08-03-PLAN.md: Edge anchoring and resize visuals
-3. Execute 08-04-PLAN.md: Main.gd integration
-4. Execute 08-05-PLAN.md: Human verification
+1. Execute 08-03-PLAN.md: Edge anchoring and resize visuals
+2. Execute 08-04-PLAN.md: Main.gd integration
+3. Execute 08-05-PLAN.md: Human verification
 
 ### Context for Next Session
 
-Phase 8 Plan 01 complete. ResizeOperation ready for use:
-- validate_resize() checks size constraints, room overlap, furniture bounds
-- execute_resize() deletes old walls/doors, updates room data, creates new walls
-- Doors reset on resize (per EDIT-03 requirement)
-- blocked_furniture array enables visual feedback in UI
+Phase 8 Plan 02 complete. RoomResizeController ready for integration:
+- enter_resize_mode(room) starts DRAWING state
+- Box drawing input with live validation via preview_updated signal
+- Commit on valid mouse release, else user can retry or cancel
+- door_placement_needed signal emitted after successful resize
+- set_exterior_walls() and set_wall_tilemap() for initialization
 
-Next: Plan 08-02 creates RoomResizeController with edge-drag resize UI.
+Next: Plan 08-03 creates RoomResizeHighlight for visual feedback.
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-02-02 (Phase 8 plan 01 complete)*
+*Last updated: 2026-02-02 (Phase 8 plan 02 complete)*
