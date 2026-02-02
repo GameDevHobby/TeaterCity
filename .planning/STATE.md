@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-02-02 (Phase 8 plan 03 complete)
+**Last Updated:** 2026-02-02 (Phase 8 plan 04 complete)
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 8 in progress - Room Resize (plan 03 complete)
+**Current Focus:** Phase 8 in progress - Room Resize (plan 04 complete)
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -22,9 +22,9 @@
 ## Current Position
 
 **Phase:** 8 of 10 (Room Resize) - IN PROGRESS
-**Plan:** 3 of 5 complete
+**Plan:** 4 of 5 complete
 **Status:** In progress
-**Last activity:** 2026-02-02 - Completed 08-03-PLAN.md (RoomResizeHighlight)
+**Last activity:** 2026-02-02 - Completed 08-04-PLAN.md (Main.gd integration)
 
 **Progress:**
 ```
@@ -35,7 +35,7 @@ Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
 Phase  6: [X] Door Editing (5/5 plans) COMPLETE
 Phase  7: [X] Room Deletion (3/3 plans) COMPLETE
-Phase  8: [>] Room Resize (3/5 plans) IN PROGRESS
+Phase  8: [>] Room Resize (4/5 plans) IN PROGRESS
 Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 29 |
-| Plans Passed | 29 |
+| Plans Executed | 30 |
+| Plans Passed | 30 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -129,6 +129,7 @@ Phase 10: [ ] Testing & Verification
 | door_placement_needed signal after resize | Triggers door re-placement workflow after successful resize | 8-02 |
 | Separate BLOCKED_ACCESS color | Lighter orange for access tiles vs darker for furniture footprint | 8-03 |
 | Access tiles drawn before footprint | Proper layering with footprint tiles on top | 8-03 |
+| Area2D update via unregister/register | Reuses existing RoomManager code rather than adding update method | 8-04 |
 
 ### Technical Notes
 
@@ -177,6 +178,9 @@ Phase 10: [ ] Testing & Verification
 - Resize controller: RoomResizeController follows box drawing input pattern from RoomBuildUI
 - Resize state machine: IDLE and DRAWING states, live validation during drag via preview_updated signal
 - Resize highlight: RoomResizeHighlight connects to controller signals, renders preview box and blocked furniture
+- Resize menu: Resize Room button in RoomEditMenu between Edit Room and room type action
+- Resize workflow: Main.gd enters resize mode, updates Area2D after, transitions to door edit mode
+- Area2D update: Unregister/register pattern recreates selection polygon with new bounding box
 
 ### Blockers
 
@@ -216,7 +220,7 @@ None currently.
 - [x] Execute 08-01-PLAN.md: ResizeOperation with validation logic
 - [x] Execute 08-02-PLAN.md: RoomResizeController UI
 - [x] Execute 08-03-PLAN.md: RoomResizeHighlight preview rendering
-- [ ] Execute 08-04-PLAN.md: Main.gd integration
+- [x] Execute 08-04-PLAN.md: Main.gd integration
 - [ ] Execute 08-05-PLAN.md: Human verification
 
 ---
@@ -225,29 +229,28 @@ None currently.
 
 ### What Was Done
 
-- Completed Phase 8 Plan 03: RoomResizeHighlight
-- Created scripts/room_editing/RoomResizeHighlight.gd
-- Valid/invalid color scheme (green/red) matching RoomBuildUI pattern
-- Blocked furniture highlighting with orange (BLOCKED_FURNITURE) and lighter orange (BLOCKED_ACCESS)
-- Signal-driven updates from RoomResizeController (preview_updated, resize_cancelled, resize_completed)
-- Key commit: 063724d
+- Completed Phase 8 Plan 04: Main.gd integration
+- Added Resize Room button to RoomEditMenu
+- Wired RoomResizeController and RoomResizeHighlight in Main.gd
+- Added resize mode entry, completion, door placement, and exit handlers
+- Area2D update uses unregister/register pattern
+- Key commits: eb8c499, 354eb86
 
 ### What's Next
 
-1. Execute 08-04-PLAN.md: Main.gd integration
-2. Execute 08-05-PLAN.md: Human verification
+1. Execute 08-05-PLAN.md: Human verification
 
 ### Context for Next Session
 
-Phase 8 Plan 03 complete. RoomResizeHighlight ready for integration:
-- set_controller() connects to RoomResizeController signals
-- _on_preview_updated() stores box and validation state, triggers redraw
-- _draw_preview_box() renders interior, walls, and border in valid/invalid colors
-- _draw_blocked_furniture() highlights furniture tiles in orange when invalid
+Phase 8 Plan 04 complete. Full resize workflow now wired:
+- Resize Room button in menu emits resize_room_pressed signal
+- Main.gd enters resize mode (disables camera, selection)
+- After successful resize, Area2D updated and door edit mode entered
+- Cancel exits cleanly with camera/selection re-enabled
 
-Next: Plan 08-04 wires controller and highlight into Main.gd.
+Next: Plan 08-05 human verification of resize functionality.
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-02-02 (Phase 8 plan 03 complete)*
+*Last updated: 2026-02-02 (Phase 8 plan 04 complete)*
