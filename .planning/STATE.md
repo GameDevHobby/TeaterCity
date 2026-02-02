@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-02-01 (Phase 7 complete)
+**Last Updated:** 2026-02-02 (Phase 8 plan 01 complete)
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 7 complete - Room Deletion fully working
+**Current Focus:** Phase 8 in progress - Room Resize (plan 01 complete)
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,10 +21,10 @@
 
 ## Current Position
 
-**Phase:** 7 of 10 (Room Deletion) - COMPLETE
-**Plan:** 3 of 3 complete
-**Status:** Complete
-**Last activity:** 2026-02-01 - Human verification passed after bug fixes
+**Phase:** 8 of 10 (Room Resize) - IN PROGRESS
+**Plan:** 1 of 5 complete
+**Status:** In progress
+**Last activity:** 2026-02-02 - Completed 08-01-PLAN.md (ResizeOperation validation)
 
 **Progress:**
 ```
@@ -35,7 +35,7 @@ Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
 Phase  6: [X] Door Editing (5/5 plans) COMPLETE
 Phase  7: [X] Room Deletion (3/3 plans) COMPLETE
-Phase  8: [ ] Room Resize (Complex)
+Phase  8: [>] Room Resize (1/5 plans) IN PROGRESS
 Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 26 |
-| Plans Passed | 26 |
+| Plans Executed | 27 |
+| Plans Passed | 27 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -122,6 +122,9 @@ Phase 10: [ ] Testing & Verification
 | Tilemap scanning for exterior walls | Scan wall tilemap at startup to detect pre-existing scene walls | 7-03 |
 | Exterior wall preservation | Exclude scene walls from deletion and door placement | 7-03 |
 | Stop modifying floor tiles | Floor tiles should never be modified by furniture or deletion | 7-03 |
+| Three-stage resize validation | Size constraints -> overlap -> furniture bounds (fast-fail order) | 8-01 |
+| Both orientations for size validation | Allow swapped width/height for room type constraints | 8-01 |
+| Furniture access tiles in resize validation | Check both footprint and access tiles against new walls | 8-01 |
 
 ### Technical Notes
 
@@ -165,6 +168,8 @@ Phase 10: [ ] Testing & Verification
 - Exterior walls: Scanned from tilemap at startup using get_used_cells() and terrain set detection
 - Coordinate conversion: IsometricMath.tilemap_to_ui_coords() for reverse coordinate conversion
 - Door placement validation: Check exterior walls in both build mode and edit mode
+- Resize validation: ResizeOperation.validate_resize() returns detailed result with blocked furniture list
+- Resize execution: ResizeOperation.execute_resize() uses delete+rebuild pattern via DeletionOperation and WallOperation
 
 ### Blockers
 
@@ -201,7 +206,11 @@ None currently.
 - [x] Execute 07-01-PLAN.md: Room deletion infrastructure
 - [x] Execute 07-02-PLAN.md: Deletion UI and orchestration
 - [x] Execute 07-03-PLAN.md: Human verification of room deletion
-- [ ] Consider spike planning for Phase 8 (Room Resize) due to HIGH complexity flag
+- [x] Execute 08-01-PLAN.md: ResizeOperation with validation logic
+- [ ] Execute 08-02-PLAN.md: RoomResizeController UI
+- [ ] Execute 08-03-PLAN.md: Edge anchoring and resize visuals
+- [ ] Execute 08-04-PLAN.md: Main.gd integration
+- [ ] Execute 08-05-PLAN.md: Human verification
 
 ---
 
@@ -209,38 +218,31 @@ None currently.
 
 ### What Was Done
 
-- Completed Phase 7: Room Deletion (all 3 plans)
-- Human verification (07-03) passed after multiple bug fix iterations:
-  - Fixed shared wall preservation (check walls array, not bounding box)
-  - Fixed exterior wall detection (tilemap scanning at startup)
-  - Fixed floor tile handling (stop modifying floor tiles)
-  - Fixed door placement on exterior walls (both build and edit modes)
-- Key commits:
-  - 6271841: Shared wall detection fix
-  - 28e31e7: Tilemap scanning for exterior walls
-  - e6e0d36: Stop modifying floor tiles
-  - 26bd775: Door placement prevention on exterior walls (build mode)
+- Completed Phase 8 Plan 01: ResizeOperation with validation logic
+- Created Scripts/room_building/operations/ResizeOperation.gd
+- ResizeValidationResult inner class for detailed error reporting
+- Three-stage validation: size constraints, overlap, furniture bounds
+- execute_resize() uses delete+rebuild pattern
+- Key commit: d304957
 
 ### What's Next
 
-1. Phase 8: Room Resize (HIGH complexity flag - consider spike planning)
-2. Phase 9: Admin Menu & Feature Flags
-3. Phase 10: Testing & Verification
+1. Execute 08-02-PLAN.md: RoomResizeController UI
+2. Execute 08-03-PLAN.md: Edge anchoring and resize visuals
+3. Execute 08-04-PLAN.md: Main.gd integration
+4. Execute 08-05-PLAN.md: Human verification
 
 ### Context for Next Session
 
-Phase 7 complete. Room deletion feature fully working:
-- Delete button in menu with confirmation dialog
-- Proper cleanup of walls, doors, furniture
-- Shared walls preserved between adjacent rooms
-- Exterior (scene) walls preserved
-- Navigation updates correctly
-- Door placement blocked on exterior walls
-- Changes persist after restart
+Phase 8 Plan 01 complete. ResizeOperation ready for use:
+- validate_resize() checks size constraints, room overlap, furniture bounds
+- execute_resize() deletes old walls/doors, updates room data, creates new walls
+- Doors reset on resize (per EDIT-03 requirement)
+- blocked_furniture array enables visual feedback in UI
 
-Next: Phase 8 (Room Resize) is flagged as HIGH complexity. Consider spike planning or simplified approach before starting.
+Next: Plan 08-02 creates RoomResizeController with edge-drag resize UI.
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-02-01 (Phase 7 complete)*
+*Last updated: 2026-02-02 (Phase 8 plan 01 complete)*
