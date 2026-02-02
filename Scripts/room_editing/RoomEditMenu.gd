@@ -7,6 +7,7 @@ extends Control
 # Signals
 signal edit_furniture_pressed(room: RoomInstance)
 signal edit_room_pressed(room: RoomInstance)
+signal resize_room_pressed(room: RoomInstance)
 signal room_type_action_pressed(room: RoomInstance)
 signal delete_room_pressed(room: RoomInstance)
 
@@ -14,6 +15,7 @@ signal delete_room_pressed(room: RoomInstance)
 var _panel: PanelContainer
 var _edit_furniture_btn: Button
 var _edit_room_btn: Button
+var _resize_room_btn: Button
 var _room_type_btn: Button
 var _delete_room_btn: Button
 var _delete_dialog: ConfirmationDialog = null
@@ -75,6 +77,10 @@ func _create_panel() -> void:
 	_edit_room_btn = UIStyleHelper.create_styled_button("Edit Room", Vector2(160, 40))
 	_edit_room_btn.pressed.connect(_on_edit_room)
 	vbox.add_child(_edit_room_btn)
+
+	_resize_room_btn = UIStyleHelper.create_styled_button("Resize Room", Vector2(160, 40))
+	_resize_room_btn.pressed.connect(_on_resize_room)
+	vbox.add_child(_resize_room_btn)
 
 	_room_type_btn = UIStyleHelper.create_styled_button("", Vector2(160, 40))  # Text set dynamically
 	_room_type_btn.pressed.connect(_on_room_type_action)
@@ -189,6 +195,11 @@ func _on_edit_furniture() -> void:
 func _on_edit_room() -> void:
 	if _current_room:
 		edit_room_pressed.emit(_current_room)
+
+
+func _on_resize_room() -> void:
+	if _current_room:
+		resize_room_pressed.emit(_current_room)
 
 
 func _on_room_type_action() -> void:
