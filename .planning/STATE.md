@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-02-07 (Phase 8 complete)
+**Last Updated:** 2026-02-07 (Phase 9 Plan 01 complete)
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 8 complete - Room Resize. Ready for Phase 9.
+**Current Focus:** Phase 9 in progress - Admin Menu & Feature Flags.
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,10 +21,10 @@
 
 ## Current Position
 
-**Phase:** 8 of 10 (Room Resize) - COMPLETE
-**Plan:** 5 of 5 complete
-**Status:** Complete
-**Last activity:** 2026-02-07 - Phase 8 verified and complete
+**Phase:** 9 of 10 (Admin Menu & Feature Flags)
+**Plan:** 1 of 3 complete
+**Status:** In progress
+**Last activity:** 2026-02-07 - Completed 09-01-PLAN.md (AdminMenu autoload singleton)
 
 **Progress:**
 ```
@@ -36,11 +36,11 @@ Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
 Phase  6: [X] Door Editing (5/5 plans) COMPLETE
 Phase  7: [X] Room Deletion (3/3 plans) COMPLETE
 Phase  8: [X] Room Resize (5/5 plans) COMPLETE
-Phase  9: [ ] Admin Menu & Feature Flags
+Phase  9: [-] Admin Menu & Feature Flags (1/3 plans)
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 8/10 phases complete (80%)
+**Milestone Progress:** 8/10 phases complete (80%) - Phase 9 in progress
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 35 |
-| Plans Passed | 35 |
+| Plans Executed | 36 |
+| Plans Passed | 36 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -133,6 +133,9 @@ Phase 10: [ ] Testing & Verification
 | Floor tiles on wall_tilemap | Matches RoomBuildController pattern for navigation tiles | 8-05 |
 | Restore exterior walls after resize | clear_room_navigation erases ALL tiles, including exterior walls | 8-05 |
 | Door count validation after resize | Enforce same min doors requirement as room building | 8-05 |
+| Debug builds enable admin features | OS.has_feature("debug") for editor + debug exports | 9-01 |
+| ProjectSettings admin override | application/admin/enabled for release build opt-in | 9-01 |
+| AdminMenu loads after RoomManager | Autoload order ensures dependency availability | 9-01 |
 
 ### Technical Notes
 
@@ -186,6 +189,8 @@ Phase 10: [ ] Testing & Verification
 - Area2D update: Unregister/register pattern recreates selection polygon with new bounding box
 - Floor tile restoration: After resize, restore floor tiles for old area outside new bounds
 - Exterior wall restoration: After resize, restore exterior walls that were cleared by clear_room_navigation
+- Feature flag pattern: _is_admin_enabled() checks debug feature OR ProjectSettings override
+- Save management: Unregister all rooms first, then register loaded/empty state
 
 ### Blockers
 
@@ -227,6 +232,7 @@ None currently.
 - [x] Execute 08-03-PLAN.md: RoomResizeHighlight preview rendering
 - [x] Execute 08-04-PLAN.md: Main.gd integration
 - [x] Execute 08-05-PLAN.md: Human verification
+- [x] Execute 09-01-PLAN.md: AdminMenu autoload singleton
 
 ---
 
@@ -234,30 +240,26 @@ None currently.
 
 ### What Was Done
 
-- Completed Phase 8: Room Resize
-- Fixed floor tile restoration after resize (use wall_tilemap, not nav_tilemap)
-- Added exterior wall restoration after resize
-- Added door count validation after resize
-- Added yellow outline showing current room position
-- Key commits: 6a5921f (fix resize tile and door validation issues)
+- Completed Plan 09-01: AdminMenu autoload singleton
+- Created AdminMenu.gd with feature flag detection
+- Implemented revert_to_save() and reset_all_data() operations
+- Registered AdminMenu in project.godot after RoomManager
+- Key commits: 14dab44 (AdminMenu.gd), b635dda (autoload registration)
 
 ### What's Next
 
-1. Begin Phase 9: Admin Menu & Feature Flags
+1. Execute Plan 09-02: Admin Menu UI
+2. Execute Plan 09-03: Human verification of admin features
 
 ### Context for Next Session
 
-Phase 8 complete with all 6 success criteria verified:
-1. User drags to define new bounding box - box drawing in RoomResizeController
-2. Preview shows valid/invalid feedback - green/red coloring in RoomResizeHighlight
-3. Blocked furniture highlighted - orange highlighting for blocked furniture
-4. Resize blocked when overlapping - ResizeOperation.validate_resize() overlap check
-5. Doors cleared and user enters door placement - door_placement_needed signal
-6. Shared walls preserved - DeletionOperation.get_deletable_walls() excludes shared walls
-
-Next: Phase 9 Admin Menu & Feature Flags (optional) or Phase 10 Testing & Verification.
+Plan 09-01 complete - AdminMenu singleton foundation ready:
+- AdminMenu.is_admin_enabled() returns true in debug builds
+- revert_to_save() clears session and reloads from disk
+- reset_all_data() deletes save file and clears all rooms
+- Ready for UI integration in Plan 09-02
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-02-07 (Phase 8 complete)*
+*Last updated: 2026-02-07 (Phase 9 Plan 01 complete)*
