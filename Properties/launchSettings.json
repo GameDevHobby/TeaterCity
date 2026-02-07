@@ -8,10 +8,10 @@
 	  "workingDirectory": ".",
 	  "nativeDebugging": true
 	},
-	"Godot Debug Main": {
+	"Godot Debug SeatingBench": {
 	  "commandName": "Executable",
 	  "executablePath": "C:/Users/chris/OneDrive/Documents/Godot_v4.5.1/Godot_v4.5.1-stable_win64.exe",
-	  "commandLineArgs": "--upwards ./Main.tscn --verbose",
+	  "commandLineArgs": "--upwards ./objects/furniture/seating_bench.tscn --verbose",
 	  "workingDirectory": ".",
 	  "nativeDebugging": true
 	}

@@ -19,8 +19,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 Targets="*res://scripts/Targets.gd"
-RoomManager="*res://scripts/RoomManager.gd"
 GDAIMCPRuntime="*res://addons/gdai-mcp-plugin-godot/gdai_mcp_runtime.gd"
+RoomManager="*res://scripts/RoomManager.gd"
 
 [display]
 
@@ -33,7 +33,7 @@ window/handheld/orientation=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdai-mcp-plugin-godot/plugin.cfg", "res://addons/godot_visualstudio_debugger/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/ppc/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdai-mcp-plugin-godot/plugin.cfg", "res://addons/godot_visualstudio_debugger/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/ppc/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [input]
 
