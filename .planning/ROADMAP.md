@@ -289,11 +289,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 08-01-PLAN.md - ResizeOperation validation (furniture bounds, room overlap, size constraints)
-- [ ] 08-02-PLAN.md - RoomResizeController state machine and box drawing input
-- [ ] 08-03-PLAN.md - RoomResizeHighlight preview rendering
-- [ ] 08-04-PLAN.md - RoomEditMenu resize button and Main.gd integration
-- [ ] 08-05-PLAN.md - Human verification of resize workflow
+- [x] 08-01-PLAN.md - ResizeOperation validation (furniture bounds, room overlap, size constraints)
+- [x] 08-02-PLAN.md - RoomResizeController state machine and box drawing input
+- [x] 08-03-PLAN.md - RoomResizeHighlight preview rendering
+- [x] 08-04-PLAN.md - RoomEditMenu resize button and Main.gd integration
+- [x] 08-05-PLAN.md - Human verification of resize workflow
 
 **Risk Flags:**
 - HIGH: Research flags as HIGH complexity - mitigated by delete+rebuild approach
