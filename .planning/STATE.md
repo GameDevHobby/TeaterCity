@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-02-02 (Phase 8 plan 04 complete)
+**Last Updated:** 2026-02-07 (Phase 8 complete)
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Core Value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
 
-**Current Focus:** Phase 8 in progress - Room Resize (plan 04 complete)
+**Current Focus:** Phase 8 complete - Room Resize. Ready for Phase 9.
 
 **Key Files:**
 - `.planning/PROJECT.md` - Requirements and constraints
@@ -21,10 +21,10 @@
 
 ## Current Position
 
-**Phase:** 8 of 10 (Room Resize) - IN PROGRESS
-**Plan:** 4 of 5 complete
-**Status:** In progress
-**Last activity:** 2026-02-02 - Completed 08-04-PLAN.md (Main.gd integration)
+**Phase:** 8 of 10 (Room Resize) - COMPLETE
+**Plan:** 5 of 5 complete
+**Status:** Complete
+**Last activity:** 2026-02-07 - Phase 8 verified and complete
 
 **Progress:**
 ```
@@ -35,12 +35,12 @@ Phase  4: [X] Furniture Selection (2/2 plans) COMPLETE
 Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
 Phase  6: [X] Door Editing (5/5 plans) COMPLETE
 Phase  7: [X] Room Deletion (3/3 plans) COMPLETE
-Phase  8: [>] Room Resize (4/5 plans) IN PROGRESS
+Phase  8: [X] Room Resize (5/5 plans) COMPLETE
 Phase  9: [ ] Admin Menu & Feature Flags
 Phase 10: [ ] Testing & Verification
 ```
 
-**Milestone Progress:** 7/10 phases complete (70%)
+**Milestone Progress:** 8/10 phases complete (80%)
 
 ---
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 30 |
-| Plans Passed | 30 |
+| Plans Executed | 35 |
+| Plans Passed | 35 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -130,6 +130,9 @@ Phase 10: [ ] Testing & Verification
 | Separate BLOCKED_ACCESS color | Lighter orange for access tiles vs darker for furniture footprint | 8-03 |
 | Access tiles drawn before footprint | Proper layering with footprint tiles on top | 8-03 |
 | Area2D update via unregister/register | Reuses existing RoomManager code rather than adding update method | 8-04 |
+| Floor tiles on wall_tilemap | Matches RoomBuildController pattern for navigation tiles | 8-05 |
+| Restore exterior walls after resize | clear_room_navigation erases ALL tiles, including exterior walls | 8-05 |
+| Door count validation after resize | Enforce same min doors requirement as room building | 8-05 |
 
 ### Technical Notes
 
@@ -181,6 +184,8 @@ Phase 10: [ ] Testing & Verification
 - Resize menu: Resize Room button in RoomEditMenu between Edit Room and room type action
 - Resize workflow: Main.gd enters resize mode, updates Area2D after, transitions to door edit mode
 - Area2D update: Unregister/register pattern recreates selection polygon with new bounding box
+- Floor tile restoration: After resize, restore floor tiles for old area outside new bounds
+- Exterior wall restoration: After resize, restore exterior walls that were cleared by clear_room_navigation
 
 ### Blockers
 
@@ -221,7 +226,7 @@ None currently.
 - [x] Execute 08-02-PLAN.md: RoomResizeController UI
 - [x] Execute 08-03-PLAN.md: RoomResizeHighlight preview rendering
 - [x] Execute 08-04-PLAN.md: Main.gd integration
-- [ ] Execute 08-05-PLAN.md: Human verification
+- [x] Execute 08-05-PLAN.md: Human verification
 
 ---
 
@@ -229,28 +234,30 @@ None currently.
 
 ### What Was Done
 
-- Completed Phase 8 Plan 04: Main.gd integration
-- Added Resize Room button to RoomEditMenu
-- Wired RoomResizeController and RoomResizeHighlight in Main.gd
-- Added resize mode entry, completion, door placement, and exit handlers
-- Area2D update uses unregister/register pattern
-- Key commits: eb8c499, 354eb86
+- Completed Phase 8: Room Resize
+- Fixed floor tile restoration after resize (use wall_tilemap, not nav_tilemap)
+- Added exterior wall restoration after resize
+- Added door count validation after resize
+- Added yellow outline showing current room position
+- Key commits: 6a5921f (fix resize tile and door validation issues)
 
 ### What's Next
 
-1. Execute 08-05-PLAN.md: Human verification
+1. Begin Phase 9: Admin Menu & Feature Flags
 
 ### Context for Next Session
 
-Phase 8 Plan 04 complete. Full resize workflow now wired:
-- Resize Room button in menu emits resize_room_pressed signal
-- Main.gd enters resize mode (disables camera, selection)
-- After successful resize, Area2D updated and door edit mode entered
-- Cancel exits cleanly with camera/selection re-enabled
+Phase 8 complete with all 6 success criteria verified:
+1. User drags to define new bounding box - box drawing in RoomResizeController
+2. Preview shows valid/invalid feedback - green/red coloring in RoomResizeHighlight
+3. Blocked furniture highlighted - orange highlighting for blocked furniture
+4. Resize blocked when overlapping - ResizeOperation.validate_resize() overlap check
+5. Doors cleared and user enters door placement - door_placement_needed signal
+6. Shared walls preserved - DeletionOperation.get_deletable_walls() excludes shared walls
 
-Next: Plan 08-05 human verification of resize functionality.
+Next: Phase 9 Admin Menu & Feature Flags (optional) or Phase 10 Testing & Verification.
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-02-02 (Phase 8 plan 04 complete)*
+*Last updated: 2026-02-07 (Phase 8 complete)*

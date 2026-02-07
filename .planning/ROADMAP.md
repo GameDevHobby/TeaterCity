@@ -378,7 +378,7 @@ Plans:
 | 5 | Furniture Editing Operations | Complete | FUR-03, FUR-04, FUR-05, OVR-02, OVR-03 |
 | 6 | Door Editing | Complete | DOOR-01, DOOR-02, DOOR-03 |
 | 7 | Room Deletion | Complete | EDIT-04, EDIT-05 |
-| 8 | Room Resize (Complex) | Planned | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
+| 8 | Room Resize (Complex) | Complete | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
 | 9 | Admin Menu & Feature Flags | Pending | PER-05 |
 | 10 | Testing & Verification | Pending | TEST-01, TEST-02, TEST-03, TEST-04 |
 
