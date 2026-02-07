@@ -15,6 +15,7 @@ const INVALID_BORDER := Color(0.9, 0.2, 0.2, 1.0)    # Red border
 const INVALID_WALL := Color(0.9, 0.2, 0.2, 0.6)      # Red walls
 const BLOCKED_FURNITURE := Color(1.0, 0.5, 0.0, 0.6) # Orange for blocked furniture
 const BLOCKED_ACCESS := Color(1.0, 0.5, 0.0, 0.3)    # Lighter orange for blocked access tiles
+const CURRENT_ROOM_BORDER := Color(0.8, 0.8, 0.2, 0.8)  # Yellow for current room outline
 
 # Controller reference (set by Main.gd)
 var _controller: RoomResizeController = null
@@ -33,6 +34,8 @@ func _ready() -> void:
 func set_controller(controller: RoomResizeController) -> void:
 	if _controller != null:
 		# Disconnect from previous controller
+		if _controller.resize_started.is_connected(_on_resize_started):
+			_controller.resize_started.disconnect(_on_resize_started)
 		if _controller.preview_updated.is_connected(_on_preview_updated):
 			_controller.preview_updated.disconnect(_on_preview_updated)
 		if _controller.resize_cancelled.is_connected(_on_resize_cancelled):
@@ -43,9 +46,15 @@ func set_controller(controller: RoomResizeController) -> void:
 	_controller = controller
 
 	if _controller != null:
+		_controller.resize_started.connect(_on_resize_started)
 		_controller.preview_updated.connect(_on_preview_updated)
 		_controller.resize_cancelled.connect(_on_resize_cancelled)
 		_controller.resize_completed.connect(_on_resize_completed)
+
+
+func _on_resize_started(_room: RoomInstance) -> void:
+	# Redraw to show current room outline
+	queue_redraw()
 
 
 func _on_preview_updated(new_box: Rect2i, validation: RefCounted) -> void:
@@ -74,6 +83,9 @@ func _on_resize_completed(_room: RoomInstance) -> void:
 func _draw() -> void:
 	if _controller == null or not _controller.is_active():
 		return
+
+	# Always draw current room bounds as reference
+	_draw_current_room_outline()
 
 	if _current_box.size == Vector2i.ZERO:
 		return
@@ -124,6 +136,24 @@ func _draw_preview_box() -> void:
 	var bottom = IsometricMath.tile_to_screen(Vector2i(max_tile.x + 1, max_tile.y + 1), viewport)
 	var left = IsometricMath.tile_to_screen(Vector2i(min_tile.x, max_tile.y + 1), viewport)
 	draw_polyline(PackedVector2Array([top, right, bottom, left, top]), border_color, 2.0)
+
+
+func _draw_current_room_outline() -> void:
+	var room = _controller.get_current_room()
+	if room == null:
+		return
+
+	var bbox = room.bounding_box
+	var min_tile = bbox.position
+	var max_tile = bbox.position + bbox.size - Vector2i.ONE
+	var viewport := get_viewport()
+
+	# Draw yellow dashed border showing current room position
+	var top = IsometricMath.tile_to_screen(min_tile, viewport)
+	var right = IsometricMath.tile_to_screen(Vector2i(max_tile.x + 1, min_tile.y), viewport)
+	var bottom = IsometricMath.tile_to_screen(Vector2i(max_tile.x + 1, max_tile.y + 1), viewport)
+	var left = IsometricMath.tile_to_screen(Vector2i(min_tile.x, max_tile.y + 1), viewport)
+	draw_polyline(PackedVector2Array([top, right, bottom, left, top]), CURRENT_ROOM_BORDER, 3.0)
 
 
 func _draw_blocked_furniture() -> void:

@@ -47,6 +47,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	# Exit door edit mode with Escape key or ui_cancel action
 	if event.is_action_pressed("ui_cancel"):
+		print("DoorEditController: ui_cancel triggered exit")
 		exit_edit_mode()
 		get_viewport().set_input_as_handled()
 
@@ -54,21 +55,28 @@ func _unhandled_input(event: InputEvent) -> void:
 # --- Public Methods ---
 
 func enter_edit_mode(room: RoomInstance) -> void:
+	print("DoorEditController.enter_edit_mode called for room: ", room.id if room else "null")
 	if room == null:
+		print("  -> Exiting early: room is null")
 		return
 
 	# Check if room type has walls
 	var room_type = RoomTypeRegistry.get_instance().get_room_type(room.room_type_id)
 	if room_type and not room_type.has_walls:
+		print("  -> Exiting early: room type has no walls")
 		return  # Cannot edit doors on wall-less rooms
 
 	_active = true
 	_current_room = room
+	print("  -> Creating wall areas for ", room.walls.size(), " walls")
 
 	_create_wall_areas(room)
+	print("  -> Door edit mode active")
 
 
 func exit_edit_mode() -> void:
+	print("DoorEditController.exit_edit_mode called")
+	print("  Stack: ", get_stack())
 	_clear_wall_areas()
 	_current_room = null
 	_active = false

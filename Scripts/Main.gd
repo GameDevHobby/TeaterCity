@@ -22,6 +22,7 @@ var _door_edit_done_button: Button = null
 var _deletion_op: DeletionOperation = null
 var _resize_controller: RoomResizeController = null
 var _resize_highlight: RoomResizeHighlight = null
+var _resize_cancel_button: Button = null
 
 func _ready() -> void:
 	# Scan exterior walls FIRST, before any rooms are loaded/restored
@@ -174,6 +175,16 @@ func _ready() -> void:
 	_resize_controller.door_placement_needed.connect(_on_resize_door_placement_needed)
 	_resize_controller.mode_exited.connect(_on_resize_mode_exited)
 
+	# Create Cancel button for resize mode (in EditMenuLayer for screen-space UI)
+	_resize_cancel_button = Button.new()
+	_resize_cancel_button.name = "ResizeCancelButton"
+	_resize_cancel_button.text = "Cancel"
+	_resize_cancel_button.custom_minimum_size = Vector2(80, 40)
+	UIStyleHelper.apply_button_style(_resize_cancel_button)
+	_resize_cancel_button.pressed.connect(_on_resize_cancel_pressed)
+	edit_menu_layer.add_child(_resize_cancel_button)
+	_resize_cancel_button.hide()  # Hidden until resize mode
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_build"):
@@ -298,37 +309,59 @@ func _on_resize_room_requested(room: RoomInstance) -> void:
 	# Disable camera panning during resize
 	camera.enable_pinch_pan = false
 
-	# Pass exterior walls and tilemap to controller
+	# Pass exterior walls and tilemaps to controller
 	_resize_controller.set_exterior_walls(_exterior_walls)
 	_resize_controller.set_wall_tilemap(room_build_manager.get_wall_tilemap_layer())
+	_resize_controller.set_nav_tilemap(room_build_manager.get_tilemap_layer())
 
 	# Enter resize mode
 	_resize_controller.enter_resize_mode(room)
 
+	# Show cancel button
+	_resize_cancel_button.show()
+	_position_resize_cancel_button(room)
+
 
 func _on_resize_completed(room: RoomInstance) -> void:
-	print("Resize completed: ", room.id)
+	print("Main._on_resize_completed: ", room.id)
+
+	# Hide cancel button (successful resize transitions to door placement)
+	_resize_cancel_button.hide()
 
 	# Update RoomManager's Area2D to match new bounding box
 	# Unregister and re-register to recreate the selection polygon
+	print("  Unregistering room...")
 	_room_manager.unregister_room(room)
+	print("  Re-registering room...")
 	_room_manager.register_room(room)
 
-	# Notify navigation system of change
-	Targets.notify_navigation_changed()
+	# Update navigation tiles for new room bounds
+	print("  Updating navigation tiles...")
+	_update_navigation_for_room(room)
+
+	print("  _on_resize_completed done")
 
 
 func _on_resize_door_placement_needed(room: RoomInstance) -> void:
-	print("Resize requires door re-placement: ", room.id)
+	print("Main._on_resize_door_placement_needed: ", room.id)
+
+	# Disable room selection (the re-registered room's Area2D would capture clicks otherwise)
+	_room_manager.disable_selection()
 
 	# Pass exterior walls to door controller
 	_door_edit_controller.set_exterior_walls(_exterior_walls)
 
 	# Enter door edit mode (doors were cleared during resize)
+	print("  Calling door edit controller enter_edit_mode...")
 	_door_edit_controller.enter_edit_mode(room)
+	print("  Door edit controller is_active: ", _door_edit_controller.is_active())
 	_door_edit_highlight.queue_redraw()
 
-	# Show Done button
+	# Show Done button after a frame delay to prevent click-through
+	# (the mouse release that committed resize would otherwise hit the button)
+	print("  Awaiting frame...")
+	await get_tree().process_frame
+	print("  Frame passed, showing Done button, is_active: ", _door_edit_controller.is_active())
 	_door_edit_done_button.show()
 	_position_door_edit_button(room)
 
@@ -337,6 +370,22 @@ func _on_resize_mode_exited() -> void:
 	print("Exited resize mode")
 	camera.enable_pinch_pan = true
 	_room_manager.enable_selection()
+	_resize_cancel_button.hide()
+
+
+func _on_resize_cancel_pressed() -> void:
+	_resize_controller.exit_resize_mode()
+
+
+func _position_resize_cancel_button(_room: RoomInstance) -> void:
+	# Position at top-right corner of viewport
+	var viewport_size := get_viewport_rect().size
+	var button_size := _resize_cancel_button.custom_minimum_size  # Use min size (layout may not have run)
+	var margin := 16.0
+	_resize_cancel_button.position = Vector2(
+		viewport_size.x - button_size.x - margin,
+		margin
+	)
 
 
 func _on_furniture_edit_exited() -> void:
@@ -442,6 +491,21 @@ func _on_door_edit_mode_exited() -> void:
 
 
 func _on_door_edit_done_pressed() -> void:
+	# Validate minimum door count before allowing exit
+	var room = _door_edit_controller.get_current_room()
+	if room:
+		var room_type = RoomTypeRegistry.get_instance().get_room_type(room.room_type_id)
+		if room_type:
+			var min_doors = room_type.door_count_min
+			if room.doors.size() < min_doors:
+				# Show feedback - flash button text temporarily
+				var original_text = _door_edit_done_button.text
+				_door_edit_done_button.text = "Need %d+ doors" % min_doors
+				await get_tree().create_timer(1.5).timeout
+				if is_instance_valid(_door_edit_done_button):
+					_door_edit_done_button.text = original_text
+				return
+
 	_door_edit_controller.exit_edit_mode()
 
 
@@ -470,7 +534,8 @@ func _position_door_edit_button(room: RoomInstance) -> void:
 
 
 func _update_navigation_for_room(room: RoomInstance) -> void:
-	var tilemap_layer = room_build_manager.get_tilemap_layer()
+	# NOTE: Floor tiles are on wall_tilemap (matches RoomBuildController pattern)
+	var tilemap_layer = room_build_manager.get_wall_tilemap_layer()
 	if tilemap_layer:
 		var nav_op = NavigationOperation.new()
 		nav_op.update_room_navigation(room, tilemap_layer)

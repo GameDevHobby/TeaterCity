@@ -30,6 +30,7 @@ var _last_validation: ResizeOperation.ResizeValidationResult = null
 var _room_manager: Node = null
 var _exterior_walls: Array[Vector2i] = []
 var _wall_tilemap: TileMapLayer = null
+var _nav_tilemap: TileMapLayer = null
 
 
 # --- Lifecycle ---
@@ -125,7 +126,7 @@ func _try_commit_resize() -> void:
 	var new_box = _get_preview_box()
 
 	# Execute the resize
-	_resize_op.execute_resize(_current_room, new_box, _wall_tilemap, _room_manager, _exterior_walls)
+	_resize_op.execute_resize(_current_room, new_box, _wall_tilemap, _nav_tilemap, _room_manager, _exterior_walls)
 
 	# Emit completion
 	resize_completed.emit(_current_room)
@@ -188,3 +189,7 @@ func set_exterior_walls(walls: Array[Vector2i]) -> void:
 
 func set_wall_tilemap(tilemap: TileMapLayer) -> void:
 	_wall_tilemap = tilemap
+
+
+func set_nav_tilemap(tilemap: TileMapLayer) -> void:
+	_nav_tilemap = tilemap
