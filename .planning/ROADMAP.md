@@ -324,15 +324,22 @@ Plans:
 3. Reset option clears all room data (with confirmation)
 4. Feature flag can be toggled without code changes (config file or build flag)
 
-**Estimated Tasks:** 6-10
+**Plans:** 3 plans
+
+Plans:
+- [ ] 09-01-PLAN.md - AdminMenu autoload singleton with feature flag detection
+- [ ] 09-02-PLAN.md - AdminMenuUI with hotkey toggle and confirmation dialogs
+- [ ] 09-03-PLAN.md - Visual cleanup integration and human verification
 
 **Risk Flags:**
 - LOW: Standard feature flag pattern
 - LOW: Simple UI with destructive action confirmations
 
 **Research Notes:**
-- Keep admin tools out of production builds easily
-- Useful during development and for QA testing
+- Use OS.has_feature("debug") for automatic debug build detection
+- Use ProjectSettings custom property for explicit control
+- ConfirmationDialog for destructive actions
+- Hotkey toggle (tilde key) for accessing admin menu
 
 ---
 
@@ -379,7 +386,7 @@ Plans:
 | 6 | Door Editing | Complete | DOOR-01, DOOR-02, DOOR-03 |
 | 7 | Room Deletion | Complete | EDIT-04, EDIT-05 |
 | 8 | Room Resize (Complex) | Complete | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
-| 9 | Admin Menu & Feature Flags | Pending | PER-05 |
+| 9 | Admin Menu & Feature Flags | Planned | PER-05 |
 | 10 | Testing & Verification | Pending | TEST-01, TEST-02, TEST-03, TEST-04 |
 
 ---
@@ -449,3 +456,4 @@ Phase 9 (Admin Menu)                                              Phase 8 (Room 
 *Phase 6 planned: 2026-01-25*
 *Phase 7 planned: 2026-01-30*
 *Phase 8 planned: 2026-02-01*
+*Phase 9 planned: 2026-02-07*
