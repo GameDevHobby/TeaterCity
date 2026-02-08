@@ -48,6 +48,12 @@ Plans:
 
 **Goal**: Create movie data model and pool generation so players have movies available to schedule.
 **Depends on**: None (can run parallel to Phase 11 data work, but typically sequential)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — MovieResource data class with JSON serialization
+- [ ] 12-02-PLAN.md — MovieGenerator and MoviePool with persistence
+- [ ] 12-03-PLAN.md — Unit tests for movie data system
 
 **Requirements:**
 - THTR-03: Movie data model with title, genre, rating, duration
@@ -56,7 +62,7 @@ Plans:
 **Success Criteria:**
 1. MovieResource exists with title, genre, rating, and duration fields
 2. MovieResource can serialize to/from JSON correctly
-3. MovieRegistry generates a pool of varied movies on demand
+3. MovieGenerator produces a pool of varied movies on demand
 4. Player can see a list of available movies with different properties
 
 **Technical Notes:**
@@ -142,7 +148,7 @@ Plans:
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
 | 11 | Timer & State Foundation | ✓ Complete | 5/5 |
-| 12 | Movie Data System | Pending | TBD |
+| 12 | Movie Data System | Planned | 0/3 |
 | 13 | Theater State Machine | Pending | TBD |
 | 14 | Movie Scheduling UI | Pending | TBD |
 | 15 | Patron Theater Behavior | Pending | TBD |
