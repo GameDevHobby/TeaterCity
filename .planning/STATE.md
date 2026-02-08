@@ -1,7 +1,7 @@
 # Project State: TheaterCity Room Editor
 
 **Milestone:** Room Editor
-**Last Updated:** 2026-02-07 (Phase 9 Plan 01 complete)
+**Last Updated:** 2026-02-07 (Phase 9 Plan 02 complete)
 
 ---
 
@@ -22,9 +22,9 @@
 ## Current Position
 
 **Phase:** 9 of 10 (Admin Menu & Feature Flags)
-**Plan:** 1 of 3 complete
+**Plan:** 2 of 3 complete
 **Status:** In progress
-**Last activity:** 2026-02-07 - Completed 09-01-PLAN.md (AdminMenu autoload singleton)
+**Last activity:** 2026-02-07 - Completed 09-02-PLAN.md (Admin Menu UI)
 
 **Progress:**
 ```
@@ -36,7 +36,7 @@ Phase  5: [X] Furniture Editing Operations (6/6 plans) COMPLETE
 Phase  6: [X] Door Editing (5/5 plans) COMPLETE
 Phase  7: [X] Room Deletion (3/3 plans) COMPLETE
 Phase  8: [X] Room Resize (5/5 plans) COMPLETE
-Phase  9: [-] Admin Menu & Feature Flags (1/3 plans)
+Phase  9: [-] Admin Menu & Feature Flags (2/3 plans)
 Phase 10: [ ] Testing & Verification
 ```
 
@@ -48,8 +48,8 @@ Phase 10: [ ] Testing & Verification
 
 | Metric | Value |
 |--------|-------|
-| Plans Executed | 36 |
-| Plans Passed | 36 |
+| Plans Executed | 37 |
+| Plans Passed | 37 |
 | Plans Failed | 0 |
 | Revision Rounds | 0 |
 | Tests Written | 0 |
@@ -136,6 +136,10 @@ Phase 10: [ ] Testing & Verification
 | Debug builds enable admin features | OS.has_feature("debug") for editor + debug exports | 9-01 |
 | ProjectSettings admin override | application/admin/enabled for release build opt-in | 9-01 |
 | AdminMenu loads after RoomManager | Autoload order ensures dependency availability | 9-01 |
+| CanvasLayer layer 10 for admin modal | Ensures admin menu renders above all other UI | 9-02 |
+| Dangerous red for Reset button | Color(0.7, 0.2, 0.2) indicates destructive action | 9-02 |
+| Lazy UI instantiation | Avoid resource allocation until admin menu first opened | 9-02 |
+| Background overlay for modal | Dims game content and captures outside clicks | 9-02 |
 
 ### Technical Notes
 
@@ -191,6 +195,9 @@ Phase 10: [ ] Testing & Verification
 - Exterior wall restoration: After resize, restore exterior walls that were cleared by clear_room_navigation
 - Feature flag pattern: _is_admin_enabled() checks debug feature OR ProjectSettings override
 - Save management: Unregister all rooms first, then register loaded/empty state
+- Admin menu UI: CanvasLayer layer 10 > CenterContainer > PanelContainer pattern
+- Admin hotkey: KEY_QUOTELEFT (tilde ~) in _unhandled_input() with admin check
+- ConfirmationDialog: Use for destructive actions with explicit warning text
 
 ### Blockers
 
@@ -233,6 +240,7 @@ None currently.
 - [x] Execute 08-04-PLAN.md: Main.gd integration
 - [x] Execute 08-05-PLAN.md: Human verification
 - [x] Execute 09-01-PLAN.md: AdminMenu autoload singleton
+- [x] Execute 09-02-PLAN.md: Admin Menu UI
 
 ---
 
@@ -240,26 +248,25 @@ None currently.
 
 ### What Was Done
 
-- Completed Plan 09-01: AdminMenu autoload singleton
-- Created AdminMenu.gd with feature flag detection
-- Implemented revert_to_save() and reset_all_data() operations
-- Registered AdminMenu in project.godot after RoomManager
-- Key commits: 14dab44 (AdminMenu.gd), b635dda (autoload registration)
+- Completed Plan 09-02: Admin Menu UI
+- Created AdminMenuUI.gd with styled buttons and ConfirmationDialog
+- Added toggle_menu() and _create_ui() to AdminMenu.gd
+- Added tilde key (~) hotkey toggle in Main.gd
+- Key commits: 63fff88 (AdminMenuUI), 9f076a4 (toggle), c88c513 (hotkey)
 
 ### What's Next
 
-1. Execute Plan 09-02: Admin Menu UI
-2. Execute Plan 09-03: Human verification of admin features
+1. Execute Plan 09-03: Human verification of admin features
 
 ### Context for Next Session
 
-Plan 09-01 complete - AdminMenu singleton foundation ready:
-- AdminMenu.is_admin_enabled() returns true in debug builds
-- revert_to_save() clears session and reloads from disk
-- reset_all_data() deletes save file and clears all rooms
-- Ready for UI integration in Plan 09-02
+Plan 09-02 complete - Admin menu UI ready for human verification:
+- Tilde key (~) toggles admin menu in debug builds
+- Revert button confirms then reloads from last save
+- Reset button confirms then deletes all data
+- UI styled with UIStyleHelper, dangerous red for Reset
 
 ---
 
 *State initialized: 2026-01-21*
-*Last updated: 2026-02-07 (Phase 9 Plan 01 complete)*
+*Last updated: 2026-02-07 (Phase 9 Plan 02 complete)*
