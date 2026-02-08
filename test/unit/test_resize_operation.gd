@@ -4,11 +4,11 @@ extends GutTest
 
 var _resize_op: ResizeOperation
 var _wall_op: WallOperation
-var _mock_room_manager: RefCounted
+var _mock_room_manager: Node
 
 
 ## Mock RoomManager for get_all_rooms() calls
-class MockRoomManager extends RefCounted:
+class MockRoomManager extends Node:
 	var rooms: Array[RoomInstance] = []
 
 	func get_all_rooms() -> Array[RoomInstance]:
@@ -19,12 +19,13 @@ func before_each() -> void:
 	_resize_op = ResizeOperation.new()
 	_wall_op = WallOperation.new()
 	_mock_room_manager = MockRoomManager.new()
+	add_child_autofree(_mock_room_manager)
 
 
 func after_each() -> void:
 	_resize_op = null
 	_wall_op = null
-	_mock_room_manager = null
+	# _mock_room_manager cleaned up by autofree
 
 
 func _create_room_with_walls(box: Rect2i, room_type_id: String = "lobby") -> RoomInstance:

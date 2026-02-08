@@ -25,11 +25,7 @@ func _create_furniture(id: String, size: Vector2i = Vector2i(1, 1)) -> Furniture
 
 
 func _create_placement(furn: FurnitureResource, pos: Vector2i, rot: int) -> RoomInstance.FurniturePlacement:
-	var placement = RoomInstance.FurniturePlacement.new()
-	placement.furniture = furn
-	placement.position = pos
-	placement.rotation = rot
-	return placement
+	return RoomInstance.FurniturePlacement.new(furn, pos, rot)
 
 
 func test_can_instantiate() -> void:
@@ -105,10 +101,7 @@ func test_no_scene_creates_placeholder() -> void:
 
 
 func test_null_furniture_in_placement() -> void:
-	var placement = RoomInstance.FurniturePlacement.new()
-	placement.furniture = null  # Null furniture
-	placement.position = Vector2i(3, 3)
-	placement.rotation = 0
+	var placement = RoomInstance.FurniturePlacement.new(null, Vector2i(3, 3), 0)
 
 	var visual = _furn_op.create_furniture_visual(placement, _parent_node, null)
 

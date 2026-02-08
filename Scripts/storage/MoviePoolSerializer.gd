@@ -47,14 +47,14 @@ static func save_pool(pool: MoviePool) -> bool:
 
 	# Atomic rename: delete old file, rename temp to final
 	if FileAccess.file_exists(SAVE_PATH):
-		var err = DirAccess.remove_absolute(SAVE_PATH)
-		if err != OK:
-			push_error("MoviePoolSerializer: Failed to remove old save: %s" % error_string(err))
+		var remove_err = DirAccess.remove_absolute(SAVE_PATH)
+		if remove_err != OK:
+			push_error("MoviePoolSerializer: Failed to remove old save: %s" % error_string(remove_err))
 			return false
 
-	var err = DirAccess.rename_absolute(TEMP_PATH, SAVE_PATH)
-	if err != OK:
-		push_error("MoviePoolSerializer: Failed to rename temp to save: %s" % error_string(err))
+	var rename_err = DirAccess.rename_absolute(TEMP_PATH, SAVE_PATH)
+	if rename_err != OK:
+		push_error("MoviePoolSerializer: Failed to rename temp to save: %s" % error_string(rename_err))
 		return false
 
 	print("MoviePoolSerializer: Saved %d movies to %s" % [pool.size(), SAVE_PATH])
