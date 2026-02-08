@@ -327,9 +327,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md - AdminMenu autoload singleton with feature flag detection
-- [ ] 09-02-PLAN.md - AdminMenuUI with hotkey toggle and confirmation dialogs
-- [ ] 09-03-PLAN.md - Visual cleanup integration and human verification
+- [x] 09-01-PLAN.md - AdminMenu autoload singleton with feature flag detection
+- [x] 09-02-PLAN.md - AdminMenuUI with hotkey toggle and confirmation dialogs
+- [x] 09-03-PLAN.md - Visual cleanup integration and human verification
 
 **Risk Flags:**
 - LOW: Standard feature flag pattern
@@ -386,7 +386,7 @@ Plans:
 | 6 | Door Editing | Complete | DOOR-01, DOOR-02, DOOR-03 |
 | 7 | Room Deletion | Complete | EDIT-04, EDIT-05 |
 | 8 | Room Resize (Complex) | Complete | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
-| 9 | Admin Menu & Feature Flags | Planned | PER-05 |
+| 9 | Admin Menu & Feature Flags | Complete | PER-05 |
 | 10 | Testing & Verification | Pending | TEST-01, TEST-02, TEST-03, TEST-04 |
 
 ---
