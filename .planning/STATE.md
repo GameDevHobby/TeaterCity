@@ -1,6 +1,6 @@
 # Project State: TheaterCity
 
-**Last Updated:** 2026-02-08 (Phase 11 verified complete)
+**Last Updated:** 2026-02-08 (Phase 12 Plan 01 complete)
 
 ---
 
@@ -17,10 +17,10 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 ## Current Position
 
 **Milestone:** v1.1 Theater Core Mechanics
-**Phase:** 11 - Timer & State Foundation (VERIFIED COMPLETE)
-**Plan:** All 5 plans complete
-**Status:** Ready for Phase 12
-**Last activity:** 2026-02-08 -- Phase 11 verified (5/5 success criteria)
+**Phase:** 12 - Movie Data System (IN PROGRESS)
+**Plan:** 01 of 3 complete
+**Status:** In progress
+**Last activity:** 2026-02-08 -- Completed 12-01-PLAN.md
 
 **Progress:**
 ```
@@ -29,7 +29,7 @@ See: .planning/milestones/v1.0-ROADMAP.md
 
 Milestone v1.1: IN PROGRESS
 [█████] Phase 11: Timer & State Foundation ✓ VERIFIED
-[-----] Phase 12: Movie Data System (pending)
+[█----] Phase 12: Movie Data System (1/3 plans)
 [-----] Phase 13: Theater State Machine (pending)
 [-----] Phase 14: Movie Scheduling UI (pending)
 [-----] Phase 15: Patron Theater Behavior (pending)
@@ -45,7 +45,7 @@ Total: 1/5 phases complete | 4/14 requirements done
 |--------|-------|
 | v1.0 Plans Executed | 41 |
 | v1.0 Tests Written | 91 |
-| v1.1 Plans Executed | 5 |
+| v1.1 Plans Executed | 6 |
 | v1.1 Tests Written | 128 (91 + 37) |
 | v1.0 LOC | 9,905 GDScript |
 | v1.0 Duration | 18 days |
@@ -74,6 +74,8 @@ See `.planning/PROJECT.md` Key Decisions table (updated with outcomes).
 - 3-second toast display with 0.5s fade (11-04)
 - Simulate offline periods via backdated timestamps for testing (11-05)
 - Separate unit and integration test organization (11-05)
+- Int types for rating/duration in MovieResource (12-01)
+- Safe defaults in from_dict for robust deserialization (12-01)
 
 ### Technical Notes
 
@@ -100,8 +102,8 @@ None currently.
 
 - [x] Plan Phase 11 (Timer & State Foundation)
 - [x] Execute Phase 11
-- [ ] Plan Phase 12 (Movie Data System)
-- [ ] Execute Phase 12
+- [x] Plan Phase 12 (Movie Data System)
+- [ ] Execute Phase 12 (1/3 plans complete)
 - [ ] Plan Phase 13 (Theater State Machine)
 - [ ] Execute Phase 13
 - [ ] Plan Phase 14 (Movie Scheduling UI)
@@ -132,15 +134,15 @@ None currently.
 
 ### What's Next
 
-1. Plan Phase 12: Movie Data System
-2. Execute Phase 12 plans
-3. Continue through phases 13-15
+1. Execute Phase 12 plans 02 and 03
+2. Plan and execute Phase 13 (Theater State Machine)
+3. Continue through phases 14-15
 
 ### Context for Next Session
 
-Phase 11 complete. Ready to begin Phase 12 planning.
+Phase 12 Plan 01 complete. MovieResource data class created.
 
-Key files created:
+Key files created (Phase 11):
 - `Scripts/storage/TimerState.gd` - Timestamp-based offline timer
 - `Scripts/state_machine/StateDefinition.gd` - State configuration data class
 - `Scripts/state_machine/RoomStateMachine.gd` - State machine with timed transitions
@@ -151,12 +153,16 @@ Key files created:
 - `test/unit/test_room_state_machine.gd` - 16 unit tests for RoomStateMachine
 - `test/integration/test_timer_persistence.gd` - 5 integration tests for persistence
 
+Key files created (Phase 12):
+- `Scripts/data/MovieResource.gd` - Movie data model with JSON serialization
+
 Summaries:
 - `.planning/phases/11-timer-state-foundation/11-01-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-02-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-03-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-04-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-05-SUMMARY.md`
+- `.planning/phases/12-movie-data-system/12-01-SUMMARY.md`
 
 ---
 
