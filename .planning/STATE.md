@@ -18,9 +18,9 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 
 **Milestone:** v1.1 Theater Core Mechanics
 **Phase:** 11 - Timer & State Foundation (complete)
-**Plan:** 02 of 02 (Plan 11-03 complete)
+**Plan:** 02 of 02 (Plan 11-02 complete)
 **Status:** Phase 11 complete
-**Last activity:** 2026-02-08 -- Completed plan 11-03
+**Last activity:** 2026-02-08 -- Completed plan 11-02
 
 **Progress:**
 ```
@@ -64,6 +64,8 @@ See `.planning/PROJECT.md` Key Decisions table (updated with outcomes).
 - NOTIFICATION_APPLICATION_PAUSED for Android save
 - Recalculate all states on app resume
 - Overflow time back-dating during fast-forward recalculation (11-01)
+- Deferred initialization pattern for state machines (11-02)
+- Don't punish backward clock jumps, log only (11-02)
 - Programmatic texture generation for progress indicators (11-03)
 - MM:SS countdown format over percentage display (11-03)
 
@@ -109,6 +111,9 @@ None currently.
 
 - Phase 11 Plan 01 executed and completed (2026-02-08)
 - Created TimerState, StateDefinition, RoomStateMachine classes
+- Phase 11 Plan 02 executed and completed (2026-02-08)
+- Integrated state machines into RoomInstance/RoomManager persistence
+- Added app resume logic with clock manipulation detection
 - Phase 11 Plan 03 executed and completed (2026-02-08)
 - Created CircularTimerUI and StateDebugLabel UI components
 - All classes use RefCounted with JSON serialization support
@@ -134,6 +139,7 @@ Key files created:
 
 Summaries:
 - `.planning/phases/11-timer-state-foundation/11-01-SUMMARY.md`
+- `.planning/phases/11-timer-state-foundation/11-02-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-03-SUMMARY.md`
 
 ---
