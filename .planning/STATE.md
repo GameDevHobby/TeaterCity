@@ -17,10 +17,10 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 ## Current Position
 
 **Milestone:** v1.1 Theater Core Mechanics
-**Phase:** 11 - Timer & State Foundation (in progress)
-**Plan:** 01 of 01 (Plan 11-01 complete)
+**Phase:** 11 - Timer & State Foundation (complete)
+**Plan:** 02 of 02 (Plan 11-03 complete)
 **Status:** Phase 11 complete
-**Last activity:** 2026-02-08 -- Completed plan 11-01
+**Last activity:** 2026-02-08 -- Completed plan 11-03
 
 **Progress:**
 ```
@@ -64,6 +64,8 @@ See `.planning/PROJECT.md` Key Decisions table (updated with outcomes).
 - NOTIFICATION_APPLICATION_PAUSED for Android save
 - Recalculate all states on app resume
 - Overflow time back-dating during fast-forward recalculation (11-01)
+- Programmatic texture generation for progress indicators (11-03)
+- MM:SS countdown format over percentage display (11-03)
 
 ### Technical Notes
 
@@ -107,8 +109,11 @@ None currently.
 
 - Phase 11 Plan 01 executed and completed (2026-02-08)
 - Created TimerState, StateDefinition, RoomStateMachine classes
+- Phase 11 Plan 03 executed and completed (2026-02-08)
+- Created CircularTimerUI and StateDebugLabel UI components
 - All classes use RefCounted with JSON serialization support
 - Fast-forward recalculation with overflow handling implemented
+- Programmatic texture generation for circular progress
 
 ### What's Next
 
@@ -124,8 +129,12 @@ Key files created:
 - `Scripts/storage/TimerState.gd` - Timestamp-based offline timer
 - `Scripts/state_machine/StateDefinition.gd` - State configuration data class
 - `Scripts/state_machine/RoomStateMachine.gd` - State machine with timed transitions
+- `Scripts/ui/CircularTimerUI.gd` + `.tscn` - Circular progress with MM:SS countdown
+- `Scripts/ui/StateDebugLabel.gd` - Debug state name display
 
-Summary: `.planning/phases/11-timer-state-foundation/11-01-SUMMARY.md`
+Summaries:
+- `.planning/phases/11-timer-state-foundation/11-01-SUMMARY.md`
+- `.planning/phases/11-timer-state-foundation/11-03-SUMMARY.md`
 
 ---
 
