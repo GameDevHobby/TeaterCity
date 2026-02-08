@@ -364,14 +364,14 @@ Plans:
 **Plans:** 8 plans
 
 Plans:
-- [ ] 10-01-PLAN.md - Unit tests for ResizeOperation validation logic
-- [ ] 10-02-PLAN.md - Unit tests for DeletionOperation shared wall detection
-- [ ] 10-03-PLAN.md - Unit tests for NavigationOperation tile classification
-- [ ] 10-04-PLAN.md - Unit tests for FurnitureOperation visual creation
-- [ ] 10-05-PLAN.md - Unit tests for RoomSerializer save/load happy paths
-- [ ] 10-06-PLAN.md - Unit tests for RoomSerializer edge cases
-- [ ] 10-07-PLAN.md - Integration tests for furniture edit workflows
-- [ ] 10-08-PLAN.md - Integration tests for deletion and persistence workflows
+- [x] 10-01-PLAN.md - Unit tests for ResizeOperation validation logic
+- [x] 10-02-PLAN.md - Unit tests for DeletionOperation shared wall detection
+- [x] 10-03-PLAN.md - Unit tests for NavigationOperation tile classification
+- [x] 10-04-PLAN.md - Unit tests for FurnitureOperation visual creation
+- [x] 10-05-PLAN.md - Unit tests for RoomSerializer save/load happy paths
+- [x] 10-06-PLAN.md - Unit tests for RoomSerializer edge cases
+- [x] 10-07-PLAN.md - Integration tests for furniture edit workflows
+- [x] 10-08-PLAN.md - Integration tests for deletion and persistence workflows
 
 **Risk Flags:**
 - MEDIUM: Integration test complexity - may need test fixtures for room state
@@ -397,7 +397,7 @@ Plans:
 | 7 | Room Deletion | Complete | EDIT-04, EDIT-05 |
 | 8 | Room Resize (Complex) | Complete | EDIT-01, EDIT-02, EDIT-03, OVR-01 |
 | 9 | Admin Menu & Feature Flags | Complete | PER-05 |
-| 10 | Testing & Verification | Pending | TEST-01, TEST-02, TEST-03, TEST-04 |
+| 10 | Testing & Verification | Complete | TEST-01, TEST-02, TEST-03, TEST-04 |
 
 ---
 
