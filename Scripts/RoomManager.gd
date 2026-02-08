@@ -9,6 +9,7 @@ signal room_restored(room: RoomInstance)
 signal room_removed(room: RoomInstance)
 signal room_selected(room: RoomInstance)
 signal selection_cleared
+signal room_states_recalculated(transition_count: int)
 
 # Tap detection thresholds (distinguish tap from drag)
 const TAP_DISTANCE_THRESHOLD := 20.0  # pixels
@@ -29,6 +30,10 @@ var _touch_start_time: int = 0
 # Auto-save state
 var _save_debounce_timer: Timer = null
 var _save_pending := false
+
+# Timestamp tracking for clock manipulation detection
+var _last_known_timestamp: int = 0
+const TIMESTAMP_SAVE_KEY := "last_timestamp"
 
 
 # --- Lifecycle ---
@@ -51,9 +56,13 @@ func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_APPLICATION_PAUSED:
 			# App going to background (mobile) - save immediately
+			_last_known_timestamp = int(Time.get_unix_time_from_system())
 			if _save_pending:
 				_save_debounce_timer.stop()
 				_perform_save()
+		NOTIFICATION_APPLICATION_RESUMED:
+			# App returned from background - check for clock manipulation and recalculate states
+			_handle_app_resume()
 		NOTIFICATION_WM_CLOSE_REQUEST:
 			# Window close requested (desktop) - save immediately
 			if _save_pending:
@@ -85,6 +94,19 @@ func _load_saved_rooms() -> void:
 
 	if saved_rooms.size() > 0:
 		print("RoomManager: Restored %d rooms from save file" % saved_rooms.size())
+
+	# After all rooms loaded, recalculate states (simulates resume from closed app)
+	var total_transitions := 0
+	for room in _rooms:
+		if room.state_machine:
+			total_transitions += room.state_machine.recalculate_from_elapsed()
+
+	if total_transitions > 0:
+		room_states_recalculated.emit(total_transitions)
+		print("RoomManager: %d state transitions occurred while app was closed" % total_transitions)
+
+	# Initialize timestamp
+	_last_known_timestamp = int(Time.get_unix_time_from_system())
 
 
 # --- Public Methods ---
@@ -298,3 +320,33 @@ func _perform_save() -> void:
 		print("RoomManager: Auto-saved %d rooms" % _rooms.size())
 	else:
 		push_error("RoomManager: Auto-save failed!")
+
+
+# --- Resume & Recalculation ---
+
+func _handle_app_resume() -> void:
+	var current_time = int(Time.get_unix_time_from_system())
+
+	# Check for backward clock manipulation
+	if _last_known_timestamp > 0 and current_time < _last_known_timestamp:
+		var jump_seconds = _last_known_timestamp - current_time
+		print("RoomManager: Backward clock jump detected (%d seconds). Ignoring." % jump_seconds)
+		# Don't update _last_known_timestamp - keep the forward progress
+	else:
+		_last_known_timestamp = current_time
+
+	# Recalculate all room states
+	var total_transitions = _recalculate_all_room_states()
+
+	if total_transitions > 0:
+		room_states_recalculated.emit(total_transitions)
+		print("RoomManager: %d state transitions occurred while app was backgrounded" % total_transitions)
+
+
+func _recalculate_all_room_states() -> int:
+	var total_transitions := 0
+	for room in _rooms:
+		if room.state_machine:
+			var transitions = room.state_machine.recalculate_from_elapsed()
+			total_transitions += transitions
+	return total_transitions
