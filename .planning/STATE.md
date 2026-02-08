@@ -1,6 +1,6 @@
 # Project State: TheaterCity
 
-**Last Updated:** 2026-02-08 (Phase 12 Plan 01 complete)
+**Last Updated:** 2026-02-08 (Phase 12 Plan 02 complete)
 
 ---
 
@@ -18,9 +18,9 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 
 **Milestone:** v1.1 Theater Core Mechanics
 **Phase:** 12 - Movie Data System (IN PROGRESS)
-**Plan:** 01 of 3 complete
+**Plan:** 02 of 3 complete
 **Status:** In progress
-**Last activity:** 2026-02-08 -- Completed 12-01-PLAN.md
+**Last activity:** 2026-02-08 -- Completed 12-02-PLAN.md
 
 **Progress:**
 ```
@@ -29,7 +29,7 @@ See: .planning/milestones/v1.0-ROADMAP.md
 
 Milestone v1.1: IN PROGRESS
 [█████] Phase 11: Timer & State Foundation ✓ VERIFIED
-[█----] Phase 12: Movie Data System (1/3 plans)
+[██---] Phase 12: Movie Data System (2/3 plans)
 [-----] Phase 13: Theater State Machine (pending)
 [-----] Phase 14: Movie Scheduling UI (pending)
 [-----] Phase 15: Patron Theater Behavior (pending)
@@ -45,7 +45,7 @@ Total: 1/5 phases complete | 4/14 requirements done
 |--------|-------|
 | v1.0 Plans Executed | 41 |
 | v1.0 Tests Written | 91 |
-| v1.1 Plans Executed | 6 |
+| v1.1 Plans Executed | 7 |
 | v1.1 Tests Written | 128 (91 + 37) |
 | v1.0 LOC | 9,905 GDScript |
 | v1.0 Duration | 18 days |
@@ -76,6 +76,9 @@ See `.planning/PROJECT.md` Key Decisions table (updated with outcomes).
 - Separate unit and integration test organization (11-05)
 - Int types for rating/duration in MovieResource (12-01)
 - Safe defaults in from_dict for robust deserialization (12-01)
+- RNG instance per generator for reproducibility (12-02)
+- Rating floor of 30 to avoid terrible movies (12-02)
+- Default pool size 5-8 movies (12-02)
 
 ### Technical Notes
 
@@ -103,7 +106,7 @@ None currently.
 - [x] Plan Phase 11 (Timer & State Foundation)
 - [x] Execute Phase 11
 - [x] Plan Phase 12 (Movie Data System)
-- [ ] Execute Phase 12 (1/3 plans complete)
+- [ ] Execute Phase 12 (2/3 plans complete)
 - [ ] Plan Phase 13 (Theater State Machine)
 - [ ] Execute Phase 13
 - [ ] Plan Phase 14 (Movie Scheduling UI)
@@ -134,13 +137,13 @@ None currently.
 
 ### What's Next
 
-1. Execute Phase 12 plans 02 and 03
+1. Execute Phase 12 plan 03
 2. Plan and execute Phase 13 (Theater State Machine)
 3. Continue through phases 14-15
 
 ### Context for Next Session
 
-Phase 12 Plan 01 complete. MovieResource data class created.
+Phase 12 Plan 02 complete. MovieGenerator, MoviePool, and MoviePoolSerializer created.
 
 Key files created (Phase 11):
 - `Scripts/storage/TimerState.gd` - Timestamp-based offline timer
@@ -155,6 +158,9 @@ Key files created (Phase 11):
 
 Key files created (Phase 12):
 - `Scripts/data/MovieResource.gd` - Movie data model with JSON serialization
+- `Scripts/generation/MovieGenerator.gd` - Procedural movie generation with seeded RNG
+- `Scripts/storage/MoviePool.gd` - Runtime movie collection with ID lookup
+- `Scripts/storage/MoviePoolSerializer.gd` - Atomic JSON persistence for movie pool
 
 Summaries:
 - `.planning/phases/11-timer-state-foundation/11-01-SUMMARY.md`
@@ -163,6 +169,7 @@ Summaries:
 - `.planning/phases/11-timer-state-foundation/11-04-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-05-SUMMARY.md`
 - `.planning/phases/12-movie-data-system/12-01-SUMMARY.md`
+- `.planning/phases/12-movie-data-system/12-02-SUMMARY.md`
 
 ---
 
