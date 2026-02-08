@@ -1,6 +1,10 @@
 class_name AdminMenu
 extends Node
 
+## Emitted after reset_all_data() completes successfully.
+## Main.gd can connect to this for any final cleanup after all rooms are removed.
+signal rooms_reset
+
 ## AdminMenu autoload singleton - provides admin functionality with feature flag gating.
 ##
 ## Feature Flag Behavior:
@@ -111,15 +115,18 @@ func reset_all_data() -> bool:
 	# Get all current rooms (duplicate to avoid modification during iteration)
 	var current_rooms: Array[RoomInstance] = _room_manager.get_all_rooms().duplicate()
 
-	# Unregister each current room
+	# Unregister each current room (triggers room_removed signal for visual cleanup)
 	for room in current_rooms:
 		_room_manager.unregister_room(room)
 
 	# Delete the save file
 	var success := RoomSerializer.delete_save_file()
 
+	# Emit signal for any additional cleanup after all rooms are cleared
+	rooms_reset.emit()
+
 	if success:
-		print("AdminMenu: Reset all data - save file deleted")
+		print("AdminMenu: All data reset")
 	else:
 		push_error("AdminMenu: Failed to delete save file")
 
