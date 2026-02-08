@@ -25,6 +25,7 @@ var _resize_controller: RoomResizeController = null
 var _resize_highlight: RoomResizeHighlight = null
 var _resize_cancel_button: Button = null
 var _admin_button: Button = null
+var _resume_notification: ResumeNotificationUI = null
 
 func _ready() -> void:
 	# Scan exterior walls FIRST, before any rooms are loaded/restored
@@ -193,6 +194,9 @@ func _ready() -> void:
 	# Create admin button for mobile users (only if admin is enabled)
 	if _admin_menu.is_admin_enabled():
 		_create_admin_button()
+
+	# Set up resume notification
+	_setup_resume_notification()
 
 
 func _create_admin_button() -> void:
@@ -589,6 +593,19 @@ func _update_navigation_for_room(room: RoomInstance) -> void:
 		nav_op.update_room_navigation(room, tilemap_layer)
 	# Notify targets of navigation change
 	Targets.notify_navigation_changed()
+
+
+func _setup_resume_notification() -> void:
+	_resume_notification = preload("res://Scripts/ui/ResumeNotificationUI.tscn").instantiate()
+	add_child(_resume_notification)
+
+	# Connect to RoomManager signal
+	_room_manager.room_states_recalculated.connect(_on_room_states_recalculated)
+
+
+func _on_room_states_recalculated(transition_count: int) -> void:
+	if _resume_notification:
+		_resume_notification.show_notification(transition_count)
 
 
 ## Scan the wall tilemap for all existing wall tiles at game start.
