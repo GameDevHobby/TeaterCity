@@ -41,11 +41,11 @@ This milestone implements the foundational timer system and core theater gamepla
 | REQ-ID | Requirement | Priority | Acceptance Criteria |
 |--------|-------------|----------|---------------------|
 | THTR-01 | Theater room has states: Idle, Scheduled, Previews, Playing, Cleaning | Must | All 5 states exist; visual feedback shows current state |
-| THTR-02 | State transitions happen automatically based on timers | Must | Previews→Playing→Cleaning transitions occur automatically at correct times |
+| THTR-02 | State transitions happen automatically based on timers | Must | Previews->Playing->Cleaning transitions occur automatically at correct times |
 | THTR-03 | Movie data model with title, genre, rating, duration | Must | MovieResource exists with all fields; can serialize to/from JSON |
 | THTR-04 | Movie pool of randomly generated movies available to schedule | Must | Player sees list of available movies; movies have varied properties |
 | THTR-05 | Scheduling UI accessible from theater room's room-type button | Must | Tapping room-type button on theater opens scheduling panel |
-| THTR-06 | Player can select a movie from pool and schedule it | Must | Selection triggers Idle→Scheduled transition; movie stored in room state |
+| THTR-06 | Player can select a movie from pool and schedule it | Must | Selection triggers Idle->Scheduled transition; movie stored in room state |
 
 ### Patron Theater Behavior
 
@@ -62,20 +62,20 @@ This milestone implements the foundational timer system and core theater gamepla
 
 | REQ-ID | Phase | Plan | Status |
 |--------|-------|------|--------|
-| TIMER-01 | TBD | TBD | Pending |
-| TIMER-02 | TBD | TBD | Pending |
-| STATE-01 | TBD | TBD | Pending |
-| STATE-02 | TBD | TBD | Pending |
-| THTR-01 | TBD | TBD | Pending |
-| THTR-02 | TBD | TBD | Pending |
-| THTR-03 | TBD | TBD | Pending |
-| THTR-04 | TBD | TBD | Pending |
-| THTR-05 | TBD | TBD | Pending |
-| THTR-06 | TBD | TBD | Pending |
-| PATR-01 | TBD | TBD | Pending |
-| PATR-02 | TBD | TBD | Pending |
-| PATR-03 | TBD | TBD | Pending |
-| PATR-04 | TBD | TBD | Pending |
+| TIMER-01 | Phase 11 | TBD | Pending |
+| TIMER-02 | Phase 11 | TBD | Pending |
+| STATE-01 | Phase 11 | TBD | Pending |
+| STATE-02 | Phase 11 | TBD | Pending |
+| THTR-01 | Phase 13 | TBD | Pending |
+| THTR-02 | Phase 13 | TBD | Pending |
+| THTR-03 | Phase 12 | TBD | Pending |
+| THTR-04 | Phase 12 | TBD | Pending |
+| THTR-05 | Phase 14 | TBD | Pending |
+| THTR-06 | Phase 14 | TBD | Pending |
+| PATR-01 | Phase 15 | TBD | Pending |
+| PATR-02 | Phase 15 | TBD | Pending |
+| PATR-03 | Phase 15 | TBD | Pending |
+| PATR-04 | Phase 15 | TBD | Pending |
 
 ---
 
