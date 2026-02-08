@@ -18,9 +18,9 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 
 **Milestone:** v1.1 Theater Core Mechanics
 **Phase:** 11 - Timer & State Foundation (complete)
-**Plan:** 02 of 02 (Plan 11-02 complete)
+**Plan:** 04 of 04 (Plan 11-04 complete)
 **Status:** Phase 11 complete
-**Last activity:** 2026-02-08 -- Completed plan 11-02
+**Last activity:** 2026-02-08 -- Completed plan 11-04
 
 **Progress:**
 ```
@@ -34,7 +34,7 @@ Milestone v1.1: IN PROGRESS
 [-----] Phase 14: Movie Scheduling UI (pending)
 [-----] Phase 15: Patron Theater Behavior (pending)
 
-Total: 1/5 phases complete | 3/14 requirements done
+Total: 1/5 phases complete | 4/14 requirements done
 ```
 
 ---
@@ -68,6 +68,8 @@ See `.planning/PROJECT.md` Key Decisions table (updated with outcomes).
 - Don't punish backward clock jumps, log only (11-02)
 - Programmatic texture generation for progress indicators (11-03)
 - MM:SS countdown format over percentage display (11-03)
+- Generic toast messaging for Phase 11, enhance later (11-04)
+- 3-second toast display with 0.5s fade (11-04)
 
 ### Technical Notes
 
@@ -116,6 +118,8 @@ None currently.
 - Added app resume logic with clock manipulation detection
 - Phase 11 Plan 03 executed and completed (2026-02-08)
 - Created CircularTimerUI and StateDebugLabel UI components
+- Phase 11 Plan 04 executed and completed (2026-02-08)
+- Created ResumeNotificationUI toast component for app resume notifications
 - All classes use RefCounted with JSON serialization support
 - Fast-forward recalculation with overflow handling implemented
 - Programmatic texture generation for circular progress
@@ -136,11 +140,13 @@ Key files created:
 - `Scripts/state_machine/RoomStateMachine.gd` - State machine with timed transitions
 - `Scripts/ui/CircularTimerUI.gd` + `.tscn` - Circular progress with MM:SS countdown
 - `Scripts/ui/StateDebugLabel.gd` - Debug state name display
+- `Scripts/ui/ResumeNotificationUI.gd` + `.tscn` - Toast notification for app resume
 
 Summaries:
 - `.planning/phases/11-timer-state-foundation/11-01-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-02-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-03-SUMMARY.md`
+- `.planning/phases/11-timer-state-foundation/11-04-SUMMARY.md`
 
 ---
 
