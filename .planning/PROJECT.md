@@ -12,63 +12,54 @@ Players can modify their theater layout after initial construction and have thos
 
 ### Validated
 
-<!-- Shipped and confirmed working from existing codebase -->
+<!-- Shipped and confirmed working -->
 
-- [x] Room building workflow (draw box -> place doors -> place furniture -> complete) -- existing
-- [x] Room type definitions with size constraints and furniture requirements -- existing
-- [x] Furniture placement with collision detection and access tile validation -- existing
-- [x] Room validation against type constraints (door count, required furniture) -- existing
-- [x] Patron navigation with pathfinding that updates when rooms change -- existing
-- [x] Isometric coordinate system with screen<->tile conversion -- existing
-- [x] Mobile-optimized touch UI with PinchPanCamera -- existing
-- [x] Room type and furniture registries with lazy loading -- existing
+**Pre-existing (before v1.0):**
+- [x] Room building workflow (draw box -> place doors -> place furniture -> complete)
+- [x] Room type definitions with size constraints and furniture requirements
+- [x] Furniture placement with collision detection and access tile validation
+- [x] Room validation against type constraints (door count, required furniture)
+- [x] Patron navigation with pathfinding that updates when rooms change
+- [x] Isometric coordinate system with screen<->tile conversion
+- [x] Mobile-optimized touch UI with PinchPanCamera
+- [x] Room type and furniture registries with lazy loading
+
+**v1.0 Room Editor:**
+- [x] SEL-01: Player can tap a room to select it -- v1.0
+- [x] SEL-02: Selected room shows visual highlight -- v1.0
+- [x] SEL-03: Room menu appears with options: Edit Furniture, Edit Room, [Room-type placeholder] -- v1.0
+- [x] SEL-04: Room-type-specific placeholder button for future features -- v1.0
+- [x] EDIT-01: Player can resize room by adjusting walls -- v1.0
+- [x] EDIT-02: Resize blocked if furniture would be invalidated -- v1.0
+- [x] EDIT-03: Doors reset on resize, player re-places them -- v1.0
+- [x] EDIT-04: Player can delete a room -- v1.0
+- [x] EDIT-05: Walls heal (fill in) at door locations when room deleted -- v1.0
+- [x] DOOR-01: Player can add doors to room walls -- v1.0
+- [x] DOOR-02: Player can remove doors from room -- v1.0
+- [x] DOOR-03: Doors can only open to empty space (not into adjacent rooms) -- v1.0
+- [x] FUR-01: Player can select furniture by tapping directly in room -- v1.0
+- [x] FUR-02: Player can select furniture from list panel -- v1.0
+- [x] FUR-03: Player can move furniture to new position -- v1.0
+- [x] FUR-04: Player can add new furniture (within room type constraints) -- v1.0
+- [x] FUR-05: Player can delete furniture (respecting room type minimum requirements) -- v1.0
+- [x] OVR-01: Adjacent rooms can share wall boundaries -- v1.0
+- [x] OVR-02: Room resize cannot encroach on furniture from other rooms -- v1.0
+- [x] OVR-03: Validation prevents invalid room/furniture configurations -- v1.0
+- [x] PER-01: Rooms auto-save on changes -- v1.0
+- [x] PER-02: Furniture placements auto-save on changes -- v1.0
+- [x] PER-03: Room settings persist through game quit/restart -- v1.0
+- [x] PER-04: Data stored in user:// JSON file -- v1.0
+- [x] PER-05: Admin menu for save management (reset) -- v1.0
+- [x] TEST-01: Unit tests for room editing operations -- v1.0
+- [x] TEST-02: Unit tests for furniture management operations -- v1.0
+- [x] TEST-03: Unit tests for persistence layer -- v1.0
+- [x] TEST-04: Integration tests for edit workflows -- v1.0
 
 ### Active
 
-<!-- Current scope. Building toward these. -->
+<!-- Future scope. Not yet started. -->
 
-**Room Selection & Menu:**
-- [ ] SEL-01: Player can tap a room to select it
-- [ ] SEL-02: Selected room shows visual highlight
-- [ ] SEL-03: Room menu appears with options: Edit Furniture, Edit Room, [Room-type placeholder]
-- [ ] SEL-04: Room-type-specific placeholder button for future features (e.g., theater scheduling)
-
-**Room Editing:**
-- [ ] EDIT-01: Player can resize room by adjusting walls
-- [ ] EDIT-02: Resize blocked if furniture would be invalidated
-- [ ] EDIT-03: Doors reset on resize, player re-places them
-- [ ] EDIT-04: Player can delete a room
-- [ ] EDIT-05: Walls heal (fill in) at door locations when room deleted
-
-**Door Editing:**
-- [ ] DOOR-01: Player can add doors to room walls
-- [ ] DOOR-02: Player can remove doors from room
-- [ ] DOOR-03: Doors can only open to empty space (not into adjacent rooms)
-
-**Furniture Management:**
-- [ ] FUR-01: Player can select furniture by tapping directly in room
-- [ ] FUR-02: Player can select furniture from list panel
-- [ ] FUR-03: Player can move furniture to new position
-- [ ] FUR-04: Player can add new furniture (within room type constraints)
-- [ ] FUR-05: Player can delete furniture (respecting room type minimum requirements)
-
-**Overlap Prevention:**
-- [ ] OVR-01: Adjacent rooms can share wall boundaries
-- [ ] OVR-02: Room resize cannot encroach on furniture from other rooms
-- [ ] OVR-03: Validation prevents invalid room/furniture configurations
-
-**Persistence:**
-- [ ] PER-01: Rooms auto-save on changes
-- [ ] PER-02: Furniture placements auto-save on changes
-- [ ] PER-03: Room settings persist through game quit/restart
-- [ ] PER-04: Data stored in user:// JSON file
-- [ ] PER-05: Admin menu for save management (revert, reset) -- feature-flagged
-
-**Testing:**
-- [ ] TEST-01: Unit tests for room editing operations
-- [ ] TEST-02: Unit tests for furniture management operations
-- [ ] TEST-03: Unit tests for persistence layer
-- [ ] TEST-04: Integration tests for edit workflows
+(None - next milestone TBD)
 
 ### Out of Scope
 
@@ -107,46 +98,55 @@ Key existing files:
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Block resize if furniture invalidated | Simpler UX than auto-moving furniture; prevents accidental data loss | -- Pending |
-| Reset doors on resize | Walls change shape, easier to re-place doors than auto-adjust | -- Pending |
-| Doors to empty space only | Prevents confusing room-to-room connections; matches player mental model | -- Pending |
-| Auto-save with admin reset | Reduces friction vs explicit save; admin menu handles edge cases | -- Pending |
-| Feature-flag admin menu | Keep admin tools out of production builds easily | -- Pending |
-| Both tap and list for furniture selection | Accessibility and discoverability; tap is faster, list helps find items | -- Pending |
+| Block resize if furniture invalidated | Simpler UX than auto-moving furniture; prevents accidental data loss | ✓ Good - ResizeOperation validates furniture bounds before allowing resize |
+| Reset doors on resize | Walls change shape, easier to re-place doors than auto-adjust | ✓ Good - room.doors.clear() on resize, user re-places doors |
+| Doors to empty space only | Prevents confusing room-to-room connections; matches player mental model | ✓ Good - DoorOperation validates adjacent tile is not in another room |
+| Auto-save with admin reset | Reduces friction vs explicit save; admin menu handles edge cases | ✓ Good - 5s debounce auto-save, admin reset clears all |
+| Feature-flag admin menu | Keep admin tools out of production builds easily | ✓ Good - OS.has_feature("debug") + ProjectSettings flag |
+| Both tap and list for furniture selection | Accessibility and discoverability; tap is faster, list helps find items | ✓ Good - FurnitureListPanel syncs with tap selection |
+| Delete+rebuild for resize | Simpler than in-place wall modification; reuses existing WallOperation | ✓ Good - 80%+ code reuse from build system |
+| Area2D for room selection | Handles isometric diamond shapes better than rect collision | ✓ Good - CollisionPolygon2D matches isometric footprint |
+| Stateless operation classes | Easy to test, no side effects, follows existing patterns | ✓ Good - ResizeOperation, DeletionOperation, etc. all RefCounted |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEL-01 | Phase 1 | Pending |
-| SEL-02 | Phase 1 | Pending |
-| SEL-03 | Phase 2 | Pending |
-| SEL-04 | Phase 2 | Pending |
-| EDIT-01 | Phase 8 | Pending |
-| EDIT-02 | Phase 8 | Pending |
-| EDIT-03 | Phase 8 | Pending |
-| EDIT-04 | Phase 7 | Pending |
-| EDIT-05 | Phase 7 | Pending |
-| DOOR-01 | Phase 6 | Pending |
-| DOOR-02 | Phase 6 | Pending |
-| DOOR-03 | Phase 6 | Pending |
-| FUR-01 | Phase 4 | Pending |
-| FUR-02 | Phase 4 | Pending |
-| FUR-03 | Phase 5 | Pending |
-| FUR-04 | Phase 5 | Pending |
-| FUR-05 | Phase 5 | Pending |
-| OVR-01 | Phase 8 | Pending |
-| OVR-02 | Phase 5 | Pending |
-| OVR-03 | Phase 5 | Pending |
-| PER-01 | Phase 3 | Pending |
-| PER-02 | Phase 3 | Pending |
-| PER-03 | Phase 3 | Pending |
-| PER-04 | Phase 3 | Pending |
-| PER-05 | Phase 9 | Pending |
-| TEST-01 | Phase 10 | Pending |
-| TEST-02 | Phase 10 | Pending |
-| TEST-03 | Phase 10 | Pending |
-| TEST-04 | Phase 10 | Pending |
+| SEL-01 | Phase 1 | Complete |
+| SEL-02 | Phase 1 | Complete |
+| SEL-03 | Phase 2 | Complete |
+| SEL-04 | Phase 2 | Complete |
+| EDIT-01 | Phase 8 | Complete |
+| EDIT-02 | Phase 8 | Complete |
+| EDIT-03 | Phase 8 | Complete |
+| EDIT-04 | Phase 7 | Complete |
+| EDIT-05 | Phase 7 | Complete |
+| DOOR-01 | Phase 6 | Complete |
+| DOOR-02 | Phase 6 | Complete |
+| DOOR-03 | Phase 6 | Complete |
+| FUR-01 | Phase 4 | Complete |
+| FUR-02 | Phase 4 | Complete |
+| FUR-03 | Phase 5 | Complete |
+| FUR-04 | Phase 5 | Complete |
+| FUR-05 | Phase 5 | Complete |
+| OVR-01 | Phase 8 | Complete |
+| OVR-02 | Phase 5 | Complete |
+| OVR-03 | Phase 5 | Complete |
+| PER-01 | Phase 3 | Complete |
+| PER-02 | Phase 3 | Complete |
+| PER-03 | Phase 3 | Complete |
+| PER-04 | Phase 3 | Complete |
+| PER-05 | Phase 9 | Complete |
+| TEST-01 | Phase 10 | Complete |
+| TEST-02 | Phase 10 | Complete |
+| TEST-03 | Phase 10 | Complete |
+| TEST-04 | Phase 10 | Complete |
+
+## Context
+
+Shipped v1.0 with 9,905 LOC GDScript (6,223 scripts + 3,682 tests).
+Tech stack: Godot 4.5, GDScript, GUT testing framework.
+91 automated tests covering all room editor features.
 
 ---
-*Last updated: 2026-01-21 after roadmap creation*
+*Last updated: 2026-02-08 after v1.0 milestone*
