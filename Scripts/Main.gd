@@ -24,6 +24,7 @@ var _deletion_op: DeletionOperation = null
 var _resize_controller: RoomResizeController = null
 var _resize_highlight: RoomResizeHighlight = null
 var _resize_cancel_button: Button = null
+var _admin_button: Button = null
 
 func _ready() -> void:
 	# Scan exterior walls FIRST, before any rooms are loaded/restored
@@ -188,6 +189,34 @@ func _ready() -> void:
 	_resize_cancel_button.pressed.connect(_on_resize_cancel_pressed)
 	edit_menu_layer.add_child(_resize_cancel_button)
 	_resize_cancel_button.hide()  # Hidden until resize mode
+
+	# Create admin button for mobile users (only if admin is enabled)
+	if _admin_menu.is_admin_enabled():
+		_create_admin_button()
+
+
+func _create_admin_button() -> void:
+	# Get MainUILayer from scene tree (where BuildButton lives)
+	var main_ui_layer = get_node_or_null("MainUILayer")
+	if not main_ui_layer:
+		push_warning("Main: MainUILayer not found, skipping admin button")
+		return
+
+	_admin_button = Button.new()
+	_admin_button.name = "AdminButton"
+	_admin_button.text = "Admin"
+	_admin_button.custom_minimum_size = Vector2(80, 40)
+	UIStyleHelper.apply_button_style(_admin_button)
+
+	# Position in top-left corner (offset from edge)
+	_admin_button.position = Vector2(16, 16)
+
+	_admin_button.pressed.connect(_on_admin_button_pressed)
+	main_ui_layer.add_child(_admin_button)
+
+
+func _on_admin_button_pressed() -> void:
+	_admin_menu.toggle_menu()
 
 
 func _unhandled_input(event: InputEvent) -> void:

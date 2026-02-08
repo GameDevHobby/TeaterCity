@@ -1,4 +1,4 @@
-class_name AdminMenu
+
 extends Node
 
 ## Emitted after reset_all_data() completes successfully.
@@ -57,7 +57,11 @@ func toggle_menu() -> void:
 	if _ui_instance == null:
 		_create_ui()
 
-	_ui_instance.visible = !_ui_instance.visible
+	# Use show_menu/hide_menu to properly toggle both Control and CanvasLayer
+	if _ui_instance.visible:
+		_ui_instance.hide_menu()
+	else:
+		_ui_instance.show_menu()
 
 
 ## Create the admin menu UI instance.
