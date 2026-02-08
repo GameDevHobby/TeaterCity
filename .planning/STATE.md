@@ -18,9 +18,9 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 
 **Milestone:** v1.1 Theater Core Mechanics
 **Phase:** 11 - Timer & State Foundation (complete)
-**Plan:** 04 of 04 (Plan 11-04 complete)
+**Plan:** 05 of 05 (Plan 11-05 complete)
 **Status:** Phase 11 complete
-**Last activity:** 2026-02-08 -- Completed plan 11-04
+**Last activity:** 2026-02-08 -- Completed plan 11-05
 
 **Progress:**
 ```
@@ -45,6 +45,8 @@ Total: 1/5 phases complete | 4/14 requirements done
 |--------|-------|
 | v1.0 Plans Executed | 41 |
 | v1.0 Tests Written | 91 |
+| v1.1 Plans Executed | 5 |
+| v1.1 Tests Written | 128 (91 + 37) |
 | v1.0 LOC | 9,905 GDScript |
 | v1.0 Duration | 18 days |
 | v1.1 Requirements | 14 |
@@ -70,6 +72,8 @@ See `.planning/PROJECT.md` Key Decisions table (updated with outcomes).
 - MM:SS countdown format over percentage display (11-03)
 - Generic toast messaging for Phase 11, enhance later (11-04)
 - 3-second toast display with 0.5s fade (11-04)
+- Simulate offline periods via backdated timestamps for testing (11-05)
+- Separate unit and integration test organization (11-05)
 
 ### Technical Notes
 
@@ -120,6 +124,8 @@ None currently.
 - Created CircularTimerUI and StateDebugLabel UI components
 - Phase 11 Plan 04 executed and completed (2026-02-08)
 - Created ResumeNotificationUI toast component for app resume notifications
+- Phase 11 Plan 05 executed and completed (2026-02-08)
+- Created comprehensive test suite: 37 tests for timer and state machine infrastructure
 - All classes use RefCounted with JSON serialization support
 - Fast-forward recalculation with overflow handling implemented
 - Programmatic texture generation for circular progress
@@ -141,12 +147,16 @@ Key files created:
 - `Scripts/ui/CircularTimerUI.gd` + `.tscn` - Circular progress with MM:SS countdown
 - `Scripts/ui/StateDebugLabel.gd` - Debug state name display
 - `Scripts/ui/ResumeNotificationUI.gd` + `.tscn` - Toast notification for app resume
+- `test/unit/test_timer_state.gd` - 16 unit tests for TimerState
+- `test/unit/test_room_state_machine.gd` - 16 unit tests for RoomStateMachine
+- `test/integration/test_timer_persistence.gd` - 5 integration tests for persistence
 
 Summaries:
 - `.planning/phases/11-timer-state-foundation/11-01-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-02-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-03-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-04-SUMMARY.md`
+- `.planning/phases/11-timer-state-foundation/11-05-SUMMARY.md`
 
 ---
 
