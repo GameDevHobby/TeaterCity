@@ -7,3 +7,4 @@ nul
 *.apk
 TheaterCity.apk.idsig
 .planning/intel/
+*.uid
