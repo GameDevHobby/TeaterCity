@@ -11,9 +11,6 @@ extends Control
 ## Signals are emitted when the user confirms actions, allowing external
 ## handling of revert/reset operations.
 
-## Emitted when user confirms reverting to last save
-signal revert_requested
-
 ## Emitted when user confirms resetting all data
 signal reset_requested
 
@@ -24,7 +21,6 @@ signal reset_requested
 ## UI elements created in _ready()
 var _canvas_layer: CanvasLayer = null
 var _panel: PanelContainer = null
-var _revert_button: Button = null
 var _reset_button: Button = null
 var _close_button: Button = null
 
@@ -116,12 +112,6 @@ func _build_ui() -> void:
 	title_label.add_theme_color_override("font_color", UIStyleHelper.DEFAULT_FONT_COLOR)
 	vbox.add_child(title_label)
 
-	# Add Revert button
-	_revert_button = UIStyleHelper.create_styled_button("Revert to Last Save")
-	_revert_button.name = "RevertButton"
-	_revert_button.pressed.connect(_on_revert_pressed)
-	vbox.add_child(_revert_button)
-
 	# Add Reset button with dangerous red color
 	_reset_button = UIStyleHelper.create_styled_button(
 		"Reset All Data",
@@ -142,41 +132,6 @@ func _build_ui() -> void:
 	_close_button.name = "CloseButton"
 	_close_button.pressed.connect(_on_close_pressed)
 	vbox.add_child(_close_button)
-
-
-func _on_revert_pressed() -> void:
-	# Create confirmation dialog
-	var dialog = ConfirmationDialog.new()
-	dialog.dialog_text = "Revert to last saved state?\n\nAll unsaved changes will be lost."
-	dialog.ok_button_text = "Revert"
-	dialog.title = "Confirm Revert"
-
-	# Connect confirmed signal
-	dialog.confirmed.connect(_perform_revert.bind(dialog))
-	dialog.canceled.connect(dialog.queue_free)
-
-	# Add to canvas layer and show
-	_canvas_layer.add_child(dialog)
-	dialog.popup_centered()
-
-
-func _perform_revert(dialog: ConfirmationDialog) -> void:
-	# Clean up dialog
-	dialog.queue_free()
-
-	# Call AdminMenu revert operation
-	if _admin_menu:
-		var success = _admin_menu.revert_to_save()
-		if success:
-			print("AdminMenuUI: Revert successful")
-		else:
-			print("AdminMenuUI: Revert failed")
-
-	# Emit signal for external handling
-	revert_requested.emit()
-
-	# Hide the admin menu
-	hide_menu()
 
 
 func _on_reset_pressed() -> void:

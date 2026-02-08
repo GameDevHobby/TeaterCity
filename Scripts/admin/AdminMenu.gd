@@ -74,36 +74,6 @@ func _create_ui() -> void:
 	_ui_instance.hide()
 
 
-## Revert all rooms to the last saved state.
-## Discards any unsaved changes from the current session.
-## Returns true on success, false on failure.
-func revert_to_save() -> bool:
-	if not _is_enabled:
-		push_warning("AdminMenu: revert_to_save() called but admin features disabled")
-		return false
-
-	if _room_manager == null:
-		push_error("AdminMenu: RoomManager not available")
-		return false
-
-	# Get all current rooms (duplicate to avoid modification during iteration)
-	var current_rooms: Array[RoomInstance] = _room_manager.get_all_rooms().duplicate()
-
-	# Unregister each current room
-	for room in current_rooms:
-		_room_manager.unregister_room(room)
-
-	# Load saved rooms
-	var saved_rooms := RoomSerializer.load_rooms()
-
-	# Register each loaded room
-	for room in saved_rooms:
-		_room_manager.register_room(room)
-
-	print("AdminMenu: Reverted to save - %d rooms restored" % saved_rooms.size())
-	return true
-
-
 ## Reset all room data - deletes save file and clears current session.
 ## WARNING: This is destructive and cannot be undone!
 ## Returns true on success, false on failure.
