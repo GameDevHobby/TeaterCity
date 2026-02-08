@@ -1,9 +1,10 @@
 class_name RoomInstance
 extends RefCounted
 
-const SCHEMA_VERSION := 1
+const SCHEMA_VERSION := 2
 
 signal placement_changed
+signal state_changed(old_state: String, new_state: String)
 
 var id: String
 var room_type_id: String
@@ -11,6 +12,12 @@ var bounding_box: Rect2i
 var walls: Array[Vector2i] = []
 var doors: Array[DoorPlacement] = []
 var furniture: Array[FurniturePlacement] = []
+
+# Optional state machine for rooms with timed states (null if room type doesn't use it)
+var state_machine: RoomStateMachine = null
+
+# Pending state machine data (set by from_dict, consumed by room type initializer)
+var _pending_state_machine_data: Dictionary = {}
 
 class DoorPlacement:
 	var position: Vector2i
@@ -151,6 +158,47 @@ func get_monthly_upkeep() -> int:
 
 	return upkeep
 
+
+## Initialize state machine with room-type-specific state definitions.
+## Call this after loading, with the state definitions for this room type.
+## Returns number of state transitions that occurred during recalculation.
+func initialize_state_machine(state_definitions: Dictionary) -> int:
+	if state_definitions.is_empty():
+		return 0
+
+	if _pending_state_machine_data.is_empty():
+		# No saved state - create fresh state machine starting in first defined state
+		state_machine = RoomStateMachine.new()
+		for state_name in state_definitions:
+			var def = state_definitions[state_name]
+			state_machine.define_state(def.name, def.duration, def.next_state)
+		return 0
+
+	# Restore from saved data
+	state_machine = RoomStateMachine.from_dict(_pending_state_machine_data, state_definitions)
+	_pending_state_machine_data = {}
+
+	if state_machine == null:
+		# Recovery: corrupted data, log and reset
+		push_warning("RoomInstance %s: Corrupted state machine data, resetting" % id)
+		state_machine = RoomStateMachine.new()
+		for state_name in state_definitions:
+			var def = state_definitions[state_name]
+			state_machine.define_state(def.name, def.duration, def.next_state)
+		return 0
+
+	# Connect state changed signal for forwarding
+	state_machine.state_changed.connect(_on_state_machine_changed)
+
+	# Recalculate and count transitions
+	var transitions = state_machine.recalculate_from_elapsed()
+	return transitions
+
+
+func _on_state_machine_changed(old_state: String, new_state: String) -> void:
+	state_changed.emit(old_state, new_state)
+	placement_changed.emit()  # Trigger auto-save
+
 func to_dict() -> Dictionary:
 	var doors_arr: Array = []
 	for door in doors:
@@ -164,7 +212,7 @@ func to_dict() -> Dictionary:
 	for wall in walls:
 		walls_arr.append({"x": wall.x, "y": wall.y})
 
-	return {
+	var dict = {
 		"schema_version": SCHEMA_VERSION,
 		"id": id,
 		"room_type_id": room_type_id,
@@ -178,6 +226,12 @@ func to_dict() -> Dictionary:
 		"doors": doors_arr,
 		"furniture": furniture_arr
 	}
+
+	# After furniture serialization
+	if state_machine:
+		dict["state_machine"] = state_machine.to_dict()
+
+	return dict
 
 static func from_dict(data: Dictionary) -> RoomInstance:
 	var version = data.get("schema_version", 1)
@@ -204,5 +258,9 @@ static func from_dict(data: Dictionary) -> RoomInstance:
 	room.furniture.clear()
 	for furn_data in data.get("furniture", []):
 		room.furniture.append(FurniturePlacement.from_dict(furn_data))
+
+	# Store raw state machine data for later configuration by room type
+	if data.has("state_machine") and data.state_machine is Dictionary:
+		room._pending_state_machine_data = data.state_machine
 
 	return room

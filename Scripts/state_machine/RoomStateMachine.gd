@@ -46,50 +46,35 @@ func transition_to(new_state: String) -> void:
 	state_changed.emit(old_state, new_state)
 
 
-## Check if current timer complete and auto-transition if needed
-## Call from _process or periodically
-func update() -> void:
-	if not timer or not timer.is_active:
-		return
-
-	if timer.is_complete():
-		var state_def: StateDefinition = states.get(current_state)
+## Call on _process or periodically to check for auto-transitions.
+## Returns true if a transition occurred.
+func update() -> bool:
+	if timer and timer.is_complete():
+		var state_def = states.get(current_state)
 		if state_def and state_def.next_state != "":
 			transition_to(state_def.next_state)
+			return true
+	return false
 
 
-## Fast-forward through all completed states (call on app resume)
-## Loops through transitions as long as timer is complete and next_state exists
-## Accounts for overflow time when transitioning
-func recalculate_from_elapsed() -> void:
-	var max_iterations = 100  # Safety limit to prevent infinite loops
-	var iterations = 0
+## Called on app resume to fast-forward through offline transitions.
+## Returns the number of state transitions that occurred.
+func recalculate_from_elapsed() -> int:
+	var transition_count := 0
 
-	while iterations < max_iterations:
-		iterations += 1
+	while timer and timer.is_complete():
+		var state_def = states.get(current_state)
+		if state_def and state_def.next_state != "":
+			# Account for overflow into next state
+			var overflow = timer.get_elapsed() - timer.duration
+			transition_to(state_def.next_state)
+			transition_count += 1
+			if timer and timer.is_active:
+				timer.start_time -= overflow  # Back-date to account for overflow
+		else:
+			break  # No next state, stop
 
-		# Check if we have an active timer
-		if not timer or not timer.is_active:
-			break
-
-		# Check if timer is complete
-		if not timer.is_complete():
-			break
-
-		# Get current state definition
-		var state_def: StateDefinition = states.get(current_state)
-		if not state_def or state_def.next_state == "":
-			break
-
-		# Calculate overflow time
-		var overflow = timer.get_elapsed() - timer.duration
-
-		# Transition to next state
-		transition_to(state_def.next_state)
-
-		# Back-date timer to account for overflow
-		if timer and timer.is_active:
-			timer.start_time -= overflow
+	return transition_count
 
 
 ## Serialize (current_state + timer)
