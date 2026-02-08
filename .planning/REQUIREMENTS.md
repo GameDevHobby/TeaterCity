@@ -62,10 +62,10 @@ This milestone implements the foundational timer system and core theater gamepla
 
 | REQ-ID | Phase | Plan | Status |
 |--------|-------|------|--------|
-| TIMER-01 | Phase 11 | TBD | Pending |
-| TIMER-02 | Phase 11 | TBD | Pending |
-| STATE-01 | Phase 11 | TBD | Pending |
-| STATE-02 | Phase 11 | TBD | Pending |
+| TIMER-01 | Phase 11 | 11-01, 11-02 | Complete |
+| TIMER-02 | Phase 11 | 11-01 | Complete |
+| STATE-01 | Phase 11 | 11-01, 11-02 | Complete |
+| STATE-02 | Phase 11 | 11-02 | Complete |
 | THTR-01 | Phase 13 | TBD | Pending |
 | THTR-02 | Phase 13 | TBD | Pending |
 | THTR-03 | Phase 12 | TBD | Pending |
