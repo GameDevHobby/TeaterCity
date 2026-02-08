@@ -19,6 +19,9 @@ extends Node
 ## Private state
 var _is_enabled: bool = false
 
+## Lazy-instantiated UI instance
+var _ui_instance: Control = null
+
 ## Reference to RoomManager autoload (deferred to ensure RoomManager loads first)
 @onready var _room_manager: Node = get_node("/root/RoomManager")
 
@@ -39,6 +42,28 @@ func _ready() -> void:
 ## Use this to gate UI elements and operations.
 func is_admin_enabled() -> bool:
 	return _is_enabled
+
+
+## Toggle the admin menu UI visibility.
+## Creates the UI instance on first call (lazy instantiation).
+func toggle_menu() -> void:
+	if not _is_enabled:
+		return
+
+	if _ui_instance == null:
+		_create_ui()
+
+	_ui_instance.visible = !_ui_instance.visible
+
+
+## Create the admin menu UI instance.
+## Adds to scene tree root so it persists across scene changes.
+func _create_ui() -> void:
+	_ui_instance = AdminMenuUI.new()
+	_ui_instance.name = "AdminMenuUI"
+	# Add to root so it persists across scene changes
+	get_tree().root.add_child(_ui_instance)
+	_ui_instance.hide()
 
 
 ## Revert all rooms to the last saved state.
