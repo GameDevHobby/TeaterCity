@@ -1,6 +1,6 @@
 # Project State: TheaterCity
 
-**Last Updated:** 2026-02-08 (v1.0 milestone complete)
+**Last Updated:** 2026-02-08 (v1.1 milestone started)
 
 ---
 
@@ -8,25 +8,26 @@
 
 See: `.planning/PROJECT.md` (updated 2026-02-08)
 
-**Core value:** Players can modify their theater layout after initial construction and have those changes saved permanently.
+**Core value:** Players experience the satisfying loop of managing a theater: schedule movies, watch patrons arrive, and earn revenue.
 
-**Current focus:** Planning next milestone
+**Current focus:** v1.1 Theater Core Mechanics
 
 ---
 
 ## Current Position
 
-**Milestone:** v1.0 Room Editor - SHIPPED
-**Next Milestone:** TBD
-**Status:** Ready to plan
-**Last activity:** 2026-02-08 — v1.0 milestone complete
+**Milestone:** v1.1 Theater Core Mechanics
+**Phase:** Not started (defining requirements)
+**Plan:** —
+**Status:** Defining requirements
+**Last activity:** 2026-02-08 — Milestone v1.1 started
 
 **Progress:**
 ```
 Milestone v1.0: SHIPPED 2026-02-08 (10 phases, 41 plans)
 See: .planning/milestones/v1.0-ROADMAP.md
 
-Next milestone: Not yet started
+Milestone v1.1: DEFINING REQUIREMENTS
 ```
 
 ---
@@ -64,7 +65,9 @@ None currently.
 
 ### TODOs
 
-- [ ] Plan next milestone (theater scheduling, patron AI, or mobile launch)
+- [ ] Complete v1.1 requirements definition
+- [ ] Research theater mechanics domain
+- [ ] Create v1.1 roadmap
 
 ---
 
@@ -72,22 +75,23 @@ None currently.
 
 ### What Was Done
 
-- v1.0 Room Editor milestone shipped
-- 10 phases, 41 plans, 91 tests
-- All 29 requirements validated
-- Milestone archived to `.planning/milestones/`
+- v1.1 milestone scope defined: Theater Core Mechanics
+- Foundation: Abstract timers, room state machines
+- Theater: States, movies, scheduling, patron seating
+- Deferred: Patron preferences, progression, upgrades
 
 ### What's Next
 
-1. Run `/gsd:new-milestone` to start next milestone
-2. Define requirements for v1.1 (or v2.0)
-3. Create roadmap for next milestone
+1. Research (optional) - timer patterns, state machines, offline mechanics
+2. Define REQUIREMENTS.md with REQ-IDs
+3. Create ROADMAP.md with phases
 
 ### Context for Next Session
 
-v1.0 complete. Fresh slate for next milestone planning.
+v1.1 scope confirmed. Building foundation + theater core loop.
 
 ---
 
 *State initialized: 2026-01-21*
 *v1.0 shipped: 2026-02-08*
+*v1.1 started: 2026-02-08*

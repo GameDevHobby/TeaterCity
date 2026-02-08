@@ -1,12 +1,23 @@
-# TheaterCity Room Editor
+# TheaterCity
 
 ## What This Is
 
-A room editor for TheaterCity, a mobile theater/venue simulation game built in Godot 4.5. Players can select, resize, and delete rooms, manage furniture (add, move, delete), and have their changes persist across game sessions. The editor extends the existing room building system with full editing capabilities and data persistence.
+A mobile theater/venue simulation game built in Godot 4.5. Players build and manage a theater complex - constructing rooms, scheduling movies, and serving patrons who buy tickets and snacks. The game features time management mechanics where theaters run through states (scheduling, previews, playing, cleaning) in real time, even when the app is closed.
 
 ## Core Value
 
-Players can modify their theater layout after initial construction and have those changes saved permanently.
+Players experience the satisfying loop of managing a theater: schedule movies, watch patrons arrive, and earn revenue while progressing toward a thriving entertainment complex.
+
+## Current Milestone: v1.1 Theater Core Mechanics
+
+**Goal:** Implement the foundational timer system and core theater gameplay loop so players can schedule movies and watch patrons attend.
+
+**Target features:**
+- Abstract timer system (offline-capable, reusable for all room types)
+- Room state machine pattern for room-type-specific behavior
+- Theater states: Idle → Scheduled → Previews → Playing → Cleaning
+- Movie generation and scheduling UI
+- Patron theater attendance (pathfind, seat, watch, leave)
 
 ## Requirements
 
@@ -57,34 +68,58 @@ Players can modify their theater layout after initial construction and have thos
 
 ### Active
 
-<!-- Future scope. Not yet started. -->
+<!-- Current scope. Building toward these. -->
 
-(None - next milestone TBD)
+**v1.1 Theater Core Mechanics:**
+
+*Foundation Systems:*
+- [ ] TIMER-01: Abstract timer system that works offline (persists when app closed)
+- [ ] TIMER-02: Timers reusable across room types (theater, snackbar, bathroom, etc.)
+- [ ] STATE-01: Room state machine pattern for room-type-specific states
+- [ ] STATE-02: State persistence survives app quit/restart
+
+*Theater Implementation:*
+- [ ] THTR-01: Theater room has states: Idle, Scheduled, Previews, Playing, Cleaning
+- [ ] THTR-02: State transitions happen automatically based on timers
+- [ ] THTR-03: Movie data model with title, genre, rating, duration
+- [ ] THTR-04: Movie pool of randomly generated movies available to schedule
+- [ ] THTR-05: Scheduling UI accessible from theater room's room-type button
+- [ ] THTR-06: Player can select a movie from pool and schedule it
+
+*Patron Theater Behavior:*
+- [ ] PATR-01: Patrons pathfind to theater room during Scheduled/Previews states
+- [ ] PATR-02: Patrons claim available seats in theater
+- [ ] PATR-03: Patrons stay seated during Playing state
+- [ ] PATR-04: Patrons leave after movie ends (Cleaning state begins)
 
 ### Out of Scope
 
-- Cloud sync / online saves -- local device only for v1
+- Cloud sync / online saves -- local device only
 - Undo/redo stack -- admin reset is sufficient for now
-- Room-type-specific features (theater scheduling, etc.) -- placeholder only, implemented later
 - Mouse/keyboard input -- touch-only mobile design
 - Room rotation -- rooms stay axis-aligned
+- Patron movie preferences -- v1.2 (patrons watch any movie for now)
+- Movie matching / leave behavior -- v1.2 (patrons don't leave if no good movie)
+- Movie duration progression -- v1.2 (unlock longer movies over time)
+- Theater upgrades / movie queue -- v1.2+ (schedule multiple movies in sequence)
 
 ## Context
 
-TheaterCity is an existing Godot 4.5 project with a working room building system. The codebase uses:
+TheaterCity is an existing Godot 4.5 project with:
+- Complete room building and editing system (v1.0)
 - Event-driven architecture with Godot signals
-- Stateless operation classes (WallOperation, DoorOperation, CollisionOperation, etc.)
-- RoomInstance data model with inner classes for DoorPlacement and FurniturePlacement
+- Stateless operation classes (WallOperation, DoorOperation, ResizeOperation, etc.)
+- RoomInstance data model with persistence (JSON save/load)
 - Registry singletons for room types and furniture definitions
-- GUT testing framework with existing test coverage
+- RoomManager singleton for room tracking and selection
+- GUT testing framework with 91 tests
 
-The room building flow currently creates rooms but doesn't support editing after completion. This milestone adds editing capabilities and data persistence.
-
-Key existing files:
-- `scripts/room_building/RoomBuildController.gd` -- workflow state machine
-- `scripts/room_building/RoomBuildUI.gd` -- input handling and UI
-- `scripts/storage/RoomInstance.gd` -- room data model
-- `scripts/room_building/operations/` -- stateless operation classes
+Key systems to extend for v1.1:
+- `scripts/RoomManager.gd` -- room tracking, will need timer integration
+- `scripts/storage/RoomInstance.gd` -- room data, will add state machine
+- `scripts/room_editing/RoomEditMenu.gd` -- room-type button triggers scheduling UI
+- `Patron/patron.gd` -- patron navigation, will add theater seating behavior
+- `scripts/storage/RoomSerializer.gd` -- persistence, will add timer/state saving
 
 ## Constraints
 
@@ -142,11 +177,13 @@ Key existing files:
 | TEST-03 | Phase 10 | Complete |
 | TEST-04 | Phase 10 | Complete |
 
-## Context
+## Current State
 
 Shipped v1.0 with 9,905 LOC GDScript (6,223 scripts + 3,682 tests).
 Tech stack: Godot 4.5, GDScript, GUT testing framework.
 91 automated tests covering all room editor features.
 
+Patrons exist and navigate using NavigationAgent2D. They currently wander to random targets.
+
 ---
-*Last updated: 2026-02-08 after v1.0 milestone*
+*Last updated: 2026-02-08 after v1.1 milestone started*
