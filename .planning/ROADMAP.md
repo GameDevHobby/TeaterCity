@@ -14,6 +14,14 @@ This roadmap implements the foundational timer system and core theater gameplay 
 
 **Goal**: Establish reusable infrastructure for offline-capable timers and data-driven room state machines.
 **Depends on**: None (foundation phase)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Timer & state machine core classes (TimerState, RoomStateMachine, StateDefinition)
+- [ ] 11-02-PLAN.md — Persistence integration (RoomInstance, RoomManager resume logic)
+- [ ] 11-03-PLAN.md — Visual feedback UI (CircularTimerUI, StateDebugLabel)
+- [ ] 11-04-PLAN.md — Resume notification UI
+- [ ] 11-05-PLAN.md — Testing & verification
 
 **Requirements:**
 - TIMER-01: Abstract timer system that works offline
@@ -133,7 +141,7 @@ This roadmap implements the foundational timer system and core theater gameplay 
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
-| 11 | Timer & State Foundation | Pending | TBD |
+| 11 | Timer & State Foundation | Planned | 5 plans |
 | 12 | Movie Data System | Pending | TBD |
 | 13 | Theater State Machine | Pending | TBD |
 | 14 | Movie Scheduling UI | Pending | TBD |
