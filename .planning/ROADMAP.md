@@ -361,7 +361,17 @@ Plans:
 3. Integration tests simulate full edit workflows (select -> edit -> save -> reload)
 4. All tests pass on CI before milestone completion
 
-**Estimated Tasks:** 14-20
+**Plans:** 8 plans
+
+Plans:
+- [ ] 10-01-PLAN.md - Unit tests for ResizeOperation validation logic
+- [ ] 10-02-PLAN.md - Unit tests for DeletionOperation shared wall detection
+- [ ] 10-03-PLAN.md - Unit tests for NavigationOperation tile classification
+- [ ] 10-04-PLAN.md - Unit tests for FurnitureOperation visual creation
+- [ ] 10-05-PLAN.md - Unit tests for RoomSerializer save/load happy paths
+- [ ] 10-06-PLAN.md - Unit tests for RoomSerializer edge cases
+- [ ] 10-07-PLAN.md - Integration tests for furniture edit workflows
+- [ ] 10-08-PLAN.md - Integration tests for deletion and persistence workflows
 
 **Risk Flags:**
 - MEDIUM: Integration test complexity - may need test fixtures for room state
@@ -369,7 +379,7 @@ Plans:
 
 **Research Notes:**
 - Follow existing test patterns in codebase
-- Mock file system for persistence tests
+- Use actual file I/O for persistence tests with cleanup
 - Test mobile-specific scenarios (app suspension during save)
 
 ---
@@ -457,3 +467,4 @@ Phase 9 (Admin Menu)                                              Phase 8 (Room 
 *Phase 7 planned: 2026-01-30*
 *Phase 8 planned: 2026-02-01*
 *Phase 9 planned: 2026-02-07*
+*Phase 10 planned: 2026-02-07*
