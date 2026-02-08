@@ -9,8 +9,9 @@ extends Node2D
 ## These walls exist in the scene and should never be deleted.
 var _exterior_walls: Array[Vector2i] = []
 
-# Autoload reference (avoids static analysis issues in Godot 4.5)
+# Autoload references (avoids static analysis issues in Godot 4.5)
 @onready var _room_manager: Node = get_node("/root/RoomManager")
+@onready var _admin_menu: Node = get_node("/root/AdminMenu")
 
 var _build_mode_active = false
 var _furniture_controller: FurnitureEditController = null
@@ -189,6 +190,13 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_build"):
 		_on_build_button_pressed()
+
+	# Admin menu toggle (tilde key ~)
+	if event is InputEventKey and event.pressed and event.keycode == KEY_QUOTELEFT:
+		if _admin_menu.is_admin_enabled():
+			_admin_menu.toggle_menu()
+			get_viewport().set_input_as_handled()
+			return
 
 	# Deselect room when tapping empty space (touch release not consumed by Area2D)
 	if event is InputEventScreenTouch and not event.pressed:
