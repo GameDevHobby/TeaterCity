@@ -37,6 +37,9 @@ func _ready() -> void:
 	# Connect to RoomManager selection signals for future menu handling
 	_room_manager.room_selected.connect(_on_room_selected)
 
+	# Connect to room_removed for cleanup when rooms are deleted (including admin reset)
+	_room_manager.room_removed.connect(_on_room_removed_for_cleanup)
+
 	# Create selection highlight overlay in its own CanvasLayer for screen-space rendering
 	# CanvasLayer ensures the Control draws in screen space (matching tile_to_screen coords)
 	var selection_layer = CanvasLayer.new()
@@ -272,34 +275,42 @@ func _on_room_type_action_requested(room: RoomInstance) -> void:
 func _on_delete_room_requested(room: RoomInstance) -> void:
 	print("Deleting room: ", room.id)
 
-	# Get tilemap references
-	var wall_layer = room_build_manager.get_wall_tilemap_layer()
-
-	# 1. Delete furniture visuals (calls cleanup_visual -> queue_free)
-	_deletion_op.delete_furniture_visuals(room)
-
-	# 2. Delete door visuals (erase door tiles)
-	if wall_layer:
-		_deletion_op.delete_door_visuals(room, wall_layer)
-
-	# 3. Delete wall visuals (ONLY non-shared tiles, preserve exterior)
-	if wall_layer:
-		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager, _exterior_walls)
-
-	# 4. Restore floor tiles where walls were deleted (for navigation)
-	if wall_layer:
-		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager, _exterior_walls)
-
-	# 5. Unregister from RoomManager (cleans up Area2D, triggers auto-save)
+	# Unregister from RoomManager - this triggers room_removed which handles visual cleanup
 	_room_manager.unregister_room(room)
 
-	# 6. Clear selection (menu already hidden by RoomEditMenu)
+	# Clear selection (menu already hidden by RoomEditMenu)
 	_room_manager.clear_selection()
 
-	# 7. Notify patrons to recalculate paths (AFTER all changes complete)
+	# Notify patrons to recalculate paths (AFTER all changes complete)
 	Targets.notify_navigation_changed()
 
 	print("Room deleted: ", room.id)
+
+
+func _on_room_removed_for_cleanup(room: RoomInstance) -> void:
+	# Skip cleanup if this is a resize operation (visuals already handled by ResizeOperation)
+	# During resize, _resize_controller.get_current_room() returns the room being resized
+	if _resize_controller and _resize_controller.get_current_room() == room:
+		return
+
+	# Clean up room visuals when a room is unregistered
+	# This handles both single room deletion AND admin reset (which calls unregister_room for each)
+	var wall_layer = room_build_manager.get_wall_tilemap_layer()
+
+	# Delete furniture visuals
+	_deletion_op.delete_furniture_visuals(room)
+
+	# Delete door visuals
+	if wall_layer:
+		_deletion_op.delete_door_visuals(room, wall_layer)
+
+	# Delete wall visuals (preserving shared walls and exterior)
+	if wall_layer:
+		_deletion_op.delete_wall_visuals(room, wall_layer, _room_manager, _exterior_walls)
+
+	# Restore floor tiles
+	if wall_layer:
+		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager, _exterior_walls)
 
 
 func _on_resize_room_requested(room: RoomInstance) -> void:
