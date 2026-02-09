@@ -70,8 +70,8 @@ static func from_dict(data: Dictionary) -> TimerState:
 	var timer = TimerState.new()
 
 	# Use safe defaults for missing/invalid data, with type validation
-	var start = data.get("start_time", 0)
-	timer.start_time = start if start is int else 0
+	var start_val = data.get("start_time", 0)
+	timer.start_time = start_val if start_val is int else 0
 
 	var dur = data.get("duration", 0)
 	timer.duration = dur if dur is int else 0

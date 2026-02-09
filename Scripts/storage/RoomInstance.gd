@@ -34,8 +34,13 @@ class DoorPlacement:
 		}
 
 	static func from_dict(data: Dictionary) -> DoorPlacement:
-		var pos = Vector2i(data.position.x, data.position.y)
-		return DoorPlacement.new(pos, data.direction)
+		var pos_data = data.get("position", {})
+		var pos = Vector2i(
+			pos_data.get("x", 0) if pos_data is Dictionary else 0,
+			pos_data.get("y", 0) if pos_data is Dictionary else 0
+		)
+		var dir = data.get("direction", 0)
+		return DoorPlacement.new(pos, dir if dir is int else 0)
 
 class FurniturePlacement:
 	var furniture: FurnitureResource
@@ -56,13 +61,17 @@ class FurniturePlacement:
 		}
 
 	static func from_dict(data: Dictionary) -> FurniturePlacement:
-		var pos = Vector2i(data.position.x, data.position.y)
+		var pos_data = data.get("position", {})
+		var pos = Vector2i(
+			pos_data.get("x", 0) if pos_data is Dictionary else 0,
+			pos_data.get("y", 0) if pos_data is Dictionary else 0
+		)
 		var furn_id = data.get("furniture_id", "")
 		var furn: FurnitureResource = null
-		if furn_id != "":
+		if furn_id != "" and furn_id is String:
 			furn = FurnitureRegistry.get_instance().get_furniture(furn_id)
 		var rot = data.get("rotation", 0)
-		return FurniturePlacement.new(furn, pos, rot)
+		return FurniturePlacement.new(furn, pos, rot if rot is int else 0)
 
 	func get_occupied_tiles() -> Array[Vector2i]:
 		if not furniture:
@@ -238,29 +247,51 @@ static func from_dict(data: Dictionary) -> RoomInstance:
 	if version > SCHEMA_VERSION:
 		push_warning("RoomInstance: Loading data from newer schema version %d (current: %d)" % [version, SCHEMA_VERSION])
 
-	var room = RoomInstance.new(data.id, data.room_type_id)
+	# Validate required fields
+	var room_id = data.get("id", "")
+	var type_id = data.get("room_type_id", "")
+	if not room_id is String or room_id == "":
+		push_warning("RoomInstance.from_dict: Missing or invalid 'id' field")
+		return null
+	if not type_id is String or type_id == "":
+		push_warning("RoomInstance.from_dict: Missing or invalid 'room_type_id' field")
+		return null
 
-	# Restore bounding_box
-	var bbox = data.bounding_box
-	room.bounding_box = Rect2i(bbox.x, bbox.y, bbox.width, bbox.height)
+	var room = RoomInstance.new(room_id, type_id)
+
+	# Restore bounding_box with safe access
+	var bbox = data.get("bounding_box", {})
+	if bbox is Dictionary:
+		room.bounding_box = Rect2i(
+			bbox.get("x", 0) if bbox.get("x") is int else 0,
+			bbox.get("y", 0) if bbox.get("y") is int else 0,
+			bbox.get("width", 0) if bbox.get("width") is int else 0,
+			bbox.get("height", 0) if bbox.get("height") is int else 0
+		)
 
 	# Restore walls (clear and append to preserve typed array)
 	room.walls.clear()
 	for wall_data in data.get("walls", []):
-		room.walls.append(Vector2i(wall_data.x, wall_data.y))
+		if wall_data is Dictionary:
+			var wx = wall_data.get("x", 0)
+			var wy = wall_data.get("y", 0)
+			room.walls.append(Vector2i(wx if wx is int else 0, wy if wy is int else 0))
 
 	# Restore doors (clear and append to preserve typed array)
 	room.doors.clear()
 	for door_data in data.get("doors", []):
-		room.doors.append(DoorPlacement.from_dict(door_data))
+		if door_data is Dictionary:
+			room.doors.append(DoorPlacement.from_dict(door_data))
 
 	# Restore furniture (clear and append to preserve typed array)
 	room.furniture.clear()
 	for furn_data in data.get("furniture", []):
-		room.furniture.append(FurniturePlacement.from_dict(furn_data))
+		if furn_data is Dictionary:
+			room.furniture.append(FurniturePlacement.from_dict(furn_data))
 
 	# Store raw state machine data for later configuration by room type
-	if data.has("state_machine") and data.state_machine is Dictionary:
-		room._pending_state_machine_data = data.state_machine
+	var sm_data = data.get("state_machine")
+	if sm_data != null and sm_data is Dictionary:
+		room._pending_state_machine_data = sm_data
 
 	return room
