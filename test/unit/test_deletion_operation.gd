@@ -34,7 +34,7 @@ class MockRoomManager extends Node:
 
 
 func _create_mock_room_manager() -> MockRoomManager:
-	var rm = _create_mock_room_manager()
+	var rm = MockRoomManager.new()
 	add_child_autofree(rm)
 	return rm
 
@@ -165,10 +165,10 @@ func test_mixed_exterior_and_shared() -> void:
 
 
 func test_empty_room_returns_empty() -> void:
-	# Room with no walls
+	# Room with no walls (walls defaults to empty array, no need to assign)
 	var room = RoomInstance.new("empty_room", "test_type")
 	room.bounding_box = Rect2i(0, 0, 5, 5)
-	room.walls = []
+	# walls is already [] by default
 
 	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room)

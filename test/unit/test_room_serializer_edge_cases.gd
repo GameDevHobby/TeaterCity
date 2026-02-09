@@ -208,7 +208,7 @@ func test_negative_bounding_box() -> void:
 func test_zero_size_bounding_box() -> void:
 	var room = RoomInstance.new("zero_room", "lobby")
 	room.bounding_box = Rect2i(0, 0, 0, 0)
-	room.walls = []  # No walls for zero-size room
+	# walls defaults to empty array, no need to assign
 
 	var save_rooms: Array[RoomInstance] = []
 	save_rooms.append(room)
