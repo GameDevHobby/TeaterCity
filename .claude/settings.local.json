@@ -63,7 +63,14 @@
       "Bash(git -C \"C:/git/TheaterCity\" status)",
       "Bash(git rev-parse:*)",
       "Skill(gsd:execute-phase)",
-      "Bash(printf:*)"
+      "Bash(printf:*)",
+      "WebFetch(domain:docs.godotengine.org)",
+      "WebFetch(domain:www.gdquest.com)",
+      "Bash(if not exist \"C:\\\\git\\\\TheaterCity\\\\.planning\\\\research\\\\FEATURES.md\" echo.)",
+      "Bash(\"/c/Program Files/Godot/Godot_v4.4.1-stable_win64.exe\" --headless -s addons/gut/gut_cmdln.gd -gdir=res://test/unit -gexit)",
+      "mcp__gdai-mcp__execute_editor_script",
+      "Bash(\"C:/Users/chris/OneDrive/Documents/Godot_v4.5.1/Godot_v4.5.1-stable_win64.exe\" --headless --path \"C:/git/TheaterCity\" -s addons/gut/gut_cmdln.gd -gdir=res://test/unit -gexit)",
+      "Bash(\"C:/Users/chris/OneDrive/Documents/Godot_v4.5.1/Godot_v4.5.1-stable_win64.exe\" --headless --path \"C:/git/TheaterCity\" -s addons/gut/gut_cmdln.gd -gdir=res://test/integration -gexit)"
     ]
   }
 }

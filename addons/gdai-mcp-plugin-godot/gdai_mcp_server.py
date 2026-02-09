@@ -16,7 +16,7 @@ from mcp.shared.session import RequestResponder
 from mcp.server.session import ServerSession
 
 GDAI_MCP_SERVER_PORT = int(os.getenv("GDAI_MCP_SERVER_PORT", "3571"))
-GDAI_SERVER_VERSION = "0.2.8"
+GDAI_SERVER_VERSION = "0.3.0"
 GDAI_HTTP_SERVER_BASE_URL = f"http://localhost:{GDAI_MCP_SERVER_PORT}"
 
 

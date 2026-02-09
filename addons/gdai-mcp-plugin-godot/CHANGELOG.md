@@ -2,6 +2,16 @@
 
 > Get access to beta/dev versions exclusively on the [Discord server](/docs/update-guide).
 
+## 0.3.0
+
+- Update `move_node` to be able to move node to specific index
+- Updates for `get_godot_errors` and `clear_output_logs` for Godot 4.6
+- Added support for windows x64 double precision build
+
+## 0.2.9
+
+- Resolve windows defender issues
+
 ## 0.2.8
 
 - Auto check for updates on start
