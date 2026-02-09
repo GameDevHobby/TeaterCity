@@ -47,6 +47,7 @@ func test_load_invalid_json_syntax() -> void:
 
 	assert_not_null(rooms, "load_rooms() should return array for invalid JSON")
 	assert_eq(rooms.size(), 0, "load_rooms() should return empty array for invalid JSON")
+	assert_push_error_count(1, "Should log one push_error for invalid JSON")
 
 
 func test_load_truncated_json() -> void:
@@ -56,6 +57,7 @@ func test_load_truncated_json() -> void:
 
 	assert_not_null(rooms, "load_rooms() should return array for truncated JSON")
 	assert_eq(rooms.size(), 0, "load_rooms() should return empty array for truncated JSON")
+	assert_push_error_count(1, "Should log one push_error for truncated JSON")
 
 
 func test_load_empty_file() -> void:
@@ -65,6 +67,7 @@ func test_load_empty_file() -> void:
 
 	assert_not_null(rooms, "load_rooms() should return array for empty file")
 	assert_eq(rooms.size(), 0, "load_rooms() should return empty array for empty file")
+	assert_push_error_count(1, "Should log one push_error for empty file")
 
 
 func test_load_null_json() -> void:
@@ -74,6 +77,7 @@ func test_load_null_json() -> void:
 
 	assert_not_null(rooms, "load_rooms() should return array for null JSON")
 	assert_eq(rooms.size(), 0, "load_rooms() should return empty array for null JSON")
+	assert_push_error_count(1, "Should log one push_error for null JSON")
 
 
 func test_load_array_root() -> void:
@@ -83,6 +87,7 @@ func test_load_array_root() -> void:
 
 	assert_not_null(rooms, "load_rooms() should return array for array root")
 	assert_eq(rooms.size(), 0, "load_rooms() should return empty array for array root (not dict)")
+	assert_push_error_count(1, "Should log one push_error for array root")
 
 
 # ============================================================================
@@ -96,6 +101,7 @@ func test_load_missing_rooms_key() -> void:
 
 	assert_not_null(rooms, "load_rooms() should return array when missing rooms key")
 	assert_eq(rooms.size(), 0, "load_rooms() should return empty array when missing rooms key")
+	assert_push_error_count(1, "Should log one push_error for missing rooms key")
 
 
 func test_load_rooms_not_array() -> void:
@@ -105,6 +111,7 @@ func test_load_rooms_not_array() -> void:
 
 	assert_not_null(rooms, "load_rooms() should return array when rooms is not array")
 	assert_eq(rooms.size(), 0, "load_rooms() should return empty array when rooms is not array")
+	assert_push_error_count(1, "Should log one push_error for rooms not array")
 
 
 func test_load_room_not_dict() -> void:
@@ -249,6 +256,9 @@ func test_corrupted_does_not_crash() -> void:
 		assert_not_null(rooms, "load_rooms() should never crash, even with corruption: %s" % corrupted)
 		assert_true(rooms is Array, "load_rooms() should always return an array")
 
+	# Expect errors from corrupted files (most will log push_error)
+	assert_push_error_count(10, "Should log push_errors for corrupted files")
+
 
 func test_error_does_not_delete_file() -> void:
 	_write_raw_file("{invalid json")
@@ -257,3 +267,4 @@ func test_error_does_not_delete_file() -> void:
 
 	assert_eq(rooms.size(), 0, "Should return empty array for corrupt file")
 	assert_true(FileAccess.file_exists(SAVE_PATH), "Corrupt file should still exist after failed load")
+	assert_push_error_count(1, "Should log one push_error for corrupt file")

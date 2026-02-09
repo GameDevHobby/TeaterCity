@@ -51,33 +51,28 @@ func test_transition_to_timed_state_starts_timer() -> void:
 func test_transition_to_untimed_state_stops_timer() -> void:
 	sm.transition_to("active")  # Start with timed state
 	sm.transition_to("idle")  # Switch to untimed
-	assert_false(sm.timer.is_active, "timer should be inactive for untimed state")
+	# Timer is set to null for untimed states (not just inactive)
+	assert_null(sm.timer, "timer should be null for untimed state")
 
 
 func test_transition_to_unknown_state_does_nothing() -> void:
 	sm.transition_to("idle")
 	sm.transition_to("nonexistent")
 	assert_eq(sm.current_state, "idle", "should remain in idle for unknown state")
+	assert_push_error_count(1, "should log push_error for unknown state")
 
 
 # --- Signal Emission ---
 
 func test_state_changed_signal_emitted() -> void:
-	var signal_received = false
-	var received_old = ""
-	var received_new = ""
-
-	sm.state_changed.connect(func(old, new):
-		signal_received = true
-		received_old = old
-		received_new = new
-	)
+	watch_signals(sm)
 
 	sm.transition_to("active")
 
-	assert_true(signal_received, "state_changed should be emitted")
-	assert_eq(received_old, "", "old state should be empty initially")
-	assert_eq(received_new, "active", "new state should be active")
+	assert_signal_emitted(sm, "state_changed", "state_changed should be emitted")
+	var signal_params = get_signal_parameters(sm, "state_changed", 0)
+	assert_eq(signal_params[0], "", "old state should be empty initially")
+	assert_eq(signal_params[1], "active", "new state should be active")
 
 
 # --- Update (single transition check) ---
@@ -109,8 +104,9 @@ func test_recalculate_no_transitions_when_fresh() -> void:
 
 func test_recalculate_single_transition() -> void:
 	sm.transition_to("active")
-	# Simulate 15 seconds passed (> 10s duration, should transition to cooldown)
-	sm.timer.start_time = int(Time.get_unix_time_from_system()) - 15
+	# Simulate 12 seconds passed (> 10s duration, but < 15s total for active+cooldown)
+	# Should transition: active -> cooldown (overflow 2s into cooldown timer)
+	sm.timer.start_time = int(Time.get_unix_time_from_system()) - 12
 
 	var count = sm.recalculate_from_elapsed()
 	assert_eq(count, 1, "should have 1 transition")

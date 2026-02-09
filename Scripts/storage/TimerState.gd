@@ -65,16 +65,22 @@ func to_dict() -> Dictionary:
 	}
 
 
+## Helper to safely convert JSON numbers (which may be float) to int
+static func _to_int(value, default: int = 0) -> int:
+	if value is int:
+		return value
+	if value is float:
+		return int(value)
+	return default
+
+
 ## Deserialize from dictionary with safe defaults
 static func from_dict(data: Dictionary) -> TimerState:
 	var timer = TimerState.new()
 
 	# Use safe defaults for missing/invalid data, with type validation
-	var start_val = data.get("start_time", 0)
-	timer.start_time = start_val if start_val is int else 0
-
-	var dur = data.get("duration", 0)
-	timer.duration = dur if dur is int else 0
+	timer.start_time = _to_int(data.get("start_time", 0))
+	timer.duration = _to_int(data.get("duration", 0))
 
 	var active = data.get("is_active", false)
 	timer.is_active = active if active is bool else false

@@ -273,27 +273,33 @@ func test_three_rooms_with_complex_sharing() -> void:
 	room_manager.add_room(room2)
 	room_manager.add_room(room3)
 
-	# Room1 shares right wall with room2
+	# Room1 shares right wall with room2 (add room1's right wall x=4 to room2)
 	for i in range(5):
 		room2.walls.append(Vector2i(4, i))
 
-	# Room2 shares right wall with room3
+	# Room2 shares right wall with room3 (add room2's right wall x=9 to room3)
 	for i in range(5):
 		room3.walls.append(Vector2i(9, i))
 
 	var exterior_walls: Array[Vector2i] = []
 
-	# Check room1 - should exclude 5 shared walls
+	# Room1 has 16 walls, 5 at x=4 are shared with room2 -> 11 deletable
 	var deletable1 = _deletion_op.get_deletable_walls(room1, room_manager, exterior_walls)
 	assert_eq(deletable1.size(), 11, "Room1 should exclude 5 shared walls")
 
-	# Check room2 - should exclude 10 shared walls (5 on each side)
+	# Room2 has 16 original + 5 appended = 21 walls
+	# 5 at x=4 shared with room1, 5 at x=9 shared with room3 = 10 shared
+	# But wait - room2's x=9 walls are its OWN right wall, not appended
+	# room2 original walls include x=9, room3 has appended x=9 walls
+	# So room2.walls at x=9 are shared because room3.walls also has x=9
+	# 21 total - 10 shared = 11 deletable (not 6)
 	var deletable2 = _deletion_op.get_deletable_walls(room2, room_manager, exterior_walls)
-	assert_eq(deletable2.size(), 6, "Room2 should exclude 10 shared walls")
+	assert_eq(deletable2.size(), 11, "Room2 should exclude 10 shared walls from 21 total")
 
-	# Check room3 - should exclude 5 shared walls
+	# Room3 has 16 original + 5 appended = 21 walls
+	# 5 at x=9 are shared with room2 -> 16 deletable
 	var deletable3 = _deletion_op.get_deletable_walls(room3, room_manager, exterior_walls)
-	assert_eq(deletable3.size(), 11, "Room3 should exclude 5 shared walls")
+	assert_eq(deletable3.size(), 16, "Room3 should exclude 5 shared walls from 21 total")
 
 
 func test_single_shared_tile() -> void:

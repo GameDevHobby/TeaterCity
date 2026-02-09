@@ -19,6 +19,14 @@ var state_machine: RoomStateMachine = null
 # Pending state machine data (set by from_dict, consumed by room type initializer)
 var _pending_state_machine_data: Dictionary = {}
 
+## Helper to safely convert JSON numbers (which may be float) to int
+static func _to_int(value, default: int = 0) -> int:
+	if value is int:
+		return value
+	if value is float:
+		return int(value)
+	return default
+
 class DoorPlacement:
 	var position: Vector2i
 	var direction: int
@@ -36,11 +44,11 @@ class DoorPlacement:
 	static func from_dict(data: Dictionary) -> DoorPlacement:
 		var pos_data = data.get("position", {})
 		var pos = Vector2i(
-			pos_data.get("x", 0) if pos_data is Dictionary else 0,
-			pos_data.get("y", 0) if pos_data is Dictionary else 0
+			RoomInstance._to_int(pos_data.get("x", 0)) if pos_data is Dictionary else 0,
+			RoomInstance._to_int(pos_data.get("y", 0)) if pos_data is Dictionary else 0
 		)
-		var dir = data.get("direction", 0)
-		return DoorPlacement.new(pos, dir if dir is int else 0)
+		var dir = RoomInstance._to_int(data.get("direction", 0))
+		return DoorPlacement.new(pos, dir)
 
 class FurniturePlacement:
 	var furniture: FurnitureResource
@@ -63,15 +71,15 @@ class FurniturePlacement:
 	static func from_dict(data: Dictionary) -> FurniturePlacement:
 		var pos_data = data.get("position", {})
 		var pos = Vector2i(
-			pos_data.get("x", 0) if pos_data is Dictionary else 0,
-			pos_data.get("y", 0) if pos_data is Dictionary else 0
+			RoomInstance._to_int(pos_data.get("x", 0)) if pos_data is Dictionary else 0,
+			RoomInstance._to_int(pos_data.get("y", 0)) if pos_data is Dictionary else 0
 		)
 		var furn_id = data.get("furniture_id", "")
 		var furn: FurnitureResource = null
 		if furn_id != "" and furn_id is String:
 			furn = FurnitureRegistry.get_instance().get_furniture(furn_id)
-		var rot = data.get("rotation", 0)
-		return FurniturePlacement.new(furn, pos, rot if rot is int else 0)
+		var rot = RoomInstance._to_int(data.get("rotation", 0))
+		return FurniturePlacement.new(furn, pos, rot)
 
 	func get_occupied_tiles() -> Array[Vector2i]:
 		if not furniture:
@@ -263,19 +271,20 @@ static func from_dict(data: Dictionary) -> RoomInstance:
 	var bbox = data.get("bounding_box", {})
 	if bbox is Dictionary:
 		room.bounding_box = Rect2i(
-			bbox.get("x", 0) if bbox.get("x") is int else 0,
-			bbox.get("y", 0) if bbox.get("y") is int else 0,
-			bbox.get("width", 0) if bbox.get("width") is int else 0,
-			bbox.get("height", 0) if bbox.get("height") is int else 0
+			_to_int(bbox.get("x", 0)),
+			_to_int(bbox.get("y", 0)),
+			_to_int(bbox.get("width", 0)),
+			_to_int(bbox.get("height", 0))
 		)
 
 	# Restore walls (clear and append to preserve typed array)
 	room.walls.clear()
 	for wall_data in data.get("walls", []):
 		if wall_data is Dictionary:
-			var wx = wall_data.get("x", 0)
-			var wy = wall_data.get("y", 0)
-			room.walls.append(Vector2i(wx if wx is int else 0, wy if wy is int else 0))
+			room.walls.append(Vector2i(
+				_to_int(wall_data.get("x", 0)),
+				_to_int(wall_data.get("y", 0))
+			))
 
 	# Restore doors (clear and append to preserve typed array)
 	room.doors.clear()

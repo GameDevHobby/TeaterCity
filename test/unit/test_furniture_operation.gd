@@ -138,8 +138,9 @@ func test_multiple_furniture_visuals_independent() -> void:
 
 func test_furniture_with_rotation() -> void:
 	var furn = _create_furniture("counter", Vector2i(2, 1))
+	# Use different positions to avoid duplicate name issues
 	var placement_rot0 = _create_placement(furn, Vector2i(3, 3), 0)
-	var placement_rot1 = _create_placement(furn, Vector2i(3, 3), 1)
+	var placement_rot1 = _create_placement(furn, Vector2i(5, 5), 1)
 
 	var visual_rot0 = _furn_op.create_furniture_visual(placement_rot0, _parent_node, null)
 	var visual_rot1 = _furn_op.create_furniture_visual(placement_rot1, _parent_node, null)
@@ -147,6 +148,6 @@ func test_furniture_with_rotation() -> void:
 	# Position should differ based on rotation (RotationHelper.get_center_offset affects position)
 	assert_not_null(visual_rot0.position, "Rotation 0 visual should have position")
 	assert_not_null(visual_rot1.position, "Rotation 1 visual should have position")
-	# Names should be same (position is tile position, not affected by rotation)
+	# Names should follow the format with their respective positions
 	assert_eq(visual_rot0.name, "Furniture_counter_3_3", "Rotation 0 name")
-	assert_eq(visual_rot1.name, "Furniture_counter_3_3", "Rotation 1 name")
+	assert_eq(visual_rot1.name, "Furniture_counter_5_5", "Rotation 1 name")
