@@ -99,13 +99,16 @@ func test_shared_walls_preserved_on_delete() -> void:
 	var room1 = _create_and_register_room("room_left", Rect2i(0, 0, 5, 5))
 	var room2 = _create_and_register_room("room_right", Rect2i(5, 0, 5, 5))
 
-	# Find shared walls (room1's right edge = room2's left edge at x=5)
+	# Add shared walls: room1's right wall (x=4) also belongs to room2
+	# This simulates merged adjacent walls in the game
 	var shared_walls: Array[Vector2i] = []
-	for wall_pos in room1.walls:
-		if wall_pos in room2.walls:
-			shared_walls.append(wall_pos)
+	for y in range(5):
+		var shared_pos = Vector2i(4, y)
+		if shared_pos in room1.walls:
+			room2.walls.append(shared_pos)
+			shared_walls.append(shared_pos)
 
-	assert_true(shared_walls.size() > 0, "Adjacent rooms should have shared wall tiles")
+	assert_true(shared_walls.size() > 0, "Should have set up shared wall tiles")
 
 	# Get deletable walls for room1 (should exclude shared walls)
 	var deletable_walls = _deletion_op.get_deletable_walls(room1, RoomManager, [])
