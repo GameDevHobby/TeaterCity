@@ -23,7 +23,7 @@ func _create_room_with_walls(box: Rect2i) -> RoomInstance:
 	return room
 
 
-class MockRoomManager extends RefCounted:
+class MockRoomManager extends Node:
 	var rooms: Array[RoomInstance] = []
 
 	func get_all_rooms() -> Array[RoomInstance]:
@@ -33,10 +33,16 @@ class MockRoomManager extends RefCounted:
 		rooms.append(room)
 
 
+func _create_mock_room_manager() -> MockRoomManager:
+	var rm = _create_mock_room_manager()
+	add_child_autofree(rm)
+	return rm
+
+
 func test_all_walls_deletable_no_shared_no_exterior() -> void:
 	# Single room, no exterior walls, all walls should be deletable
 	var room = _create_room_with_walls(Rect2i(0, 0, 5, 5))
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room)
 
 	var exterior_walls: Array[Vector2i] = []
@@ -48,7 +54,7 @@ func test_all_walls_deletable_no_shared_no_exterior() -> void:
 func test_exterior_walls_excluded() -> void:
 	# Room with some exterior walls - those should be excluded
 	var room = _create_room_with_walls(Rect2i(0, 0, 5, 5))
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room)
 
 	# Mark top-left corner and top wall as exterior
@@ -72,7 +78,7 @@ func test_shared_walls_excluded() -> void:
 	var room1 = _create_room_with_walls(Rect2i(0, 0, 5, 5))
 	var room2 = _create_room_with_walls(Rect2i(5, 0, 5, 5))  # Adjacent on the right
 
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room1)
 	room_manager.add_room(room2)
 
@@ -103,7 +109,7 @@ func test_partial_shared_wall() -> void:
 	var room1 = _create_room_with_walls(Rect2i(0, 0, 5, 5))
 	var room2 = _create_room_with_walls(Rect2i(5, 0, 3, 3))  # Smaller adjacent room
 
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room1)
 	room_manager.add_room(room2)
 
@@ -129,7 +135,7 @@ func test_mixed_exterior_and_shared() -> void:
 	var room1 = _create_room_with_walls(Rect2i(0, 0, 5, 5))
 	var room2 = _create_room_with_walls(Rect2i(5, 0, 5, 5))
 
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room1)
 	room_manager.add_room(room2)
 
@@ -164,7 +170,7 @@ func test_empty_room_returns_empty() -> void:
 	room.bounding_box = Rect2i(0, 0, 5, 5)
 	room.walls = []
 
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room)
 
 	var exterior_walls: Array[Vector2i] = []
@@ -178,7 +184,7 @@ func test_adjacent_rooms_share_wall() -> void:
 	var room1 = _create_room_with_walls(Rect2i(0, 0, 5, 5))
 	var room2 = _create_room_with_walls(Rect2i(0, 5, 5, 5))  # Below room1
 
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room1)
 	room_manager.add_room(room2)
 
@@ -203,7 +209,7 @@ func test_rooms_not_touching() -> void:
 	var room1 = _create_room_with_walls(Rect2i(0, 0, 5, 5))
 	var room2 = _create_room_with_walls(Rect2i(10, 10, 5, 5))  # Far away
 
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room1)
 	room_manager.add_room(room2)
 
@@ -262,7 +268,7 @@ func test_three_rooms_with_complex_sharing() -> void:
 	var room2 = _create_room_with_walls(Rect2i(5, 0, 5, 5))
 	var room3 = _create_room_with_walls(Rect2i(10, 0, 5, 5))
 
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room1)
 	room_manager.add_room(room2)
 	room_manager.add_room(room3)
@@ -295,7 +301,7 @@ func test_single_shared_tile() -> void:
 	var room1 = _create_room_with_walls(Rect2i(0, 0, 5, 5))
 	var room2 = _create_room_with_walls(Rect2i(5, 5, 5, 5))  # Diagonal adjacent
 
-	var room_manager = MockRoomManager.new()
+	var room_manager = _create_mock_room_manager()
 	room_manager.add_room(room1)
 	room_manager.add_room(room2)
 
