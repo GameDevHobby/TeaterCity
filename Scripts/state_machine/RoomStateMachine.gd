@@ -93,17 +93,18 @@ static func from_dict(data: Dictionary, state_definitions: Dictionary) -> RoomSt
 	# Restore state definitions
 	machine.states = state_definitions
 
-	# Restore current state (with safe default)
-	machine.current_state = data.get("current_state", "")
+	# Restore current state (with safe default and type validation)
+	var state = data.get("current_state", "")
+	machine.current_state = state if state is String else ""
 
 	# Validate current state
 	if machine.current_state != "" and not machine.states.has(machine.current_state):
 		push_warning("RoomStateMachine: Loaded state '%s' not found in definitions, resetting to empty" % machine.current_state)
 		machine.current_state = ""
 
-	# Restore timer if present
+	# Restore timer if present and valid
 	var timer_data = data.get("timer")
-	if timer_data != null:
+	if timer_data != null and timer_data is Dictionary:
 		machine.timer = TimerState.from_dict(timer_data)
 
 	return machine
