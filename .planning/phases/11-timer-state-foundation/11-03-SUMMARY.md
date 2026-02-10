@@ -21,9 +21,9 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/ui/CircularTimerUI.gd
-    - Scripts/ui/CircularTimerUI.tscn
-    - Scripts/ui/StateDebugLabel.gd
+    - scripts/ui/CircularTimerUI.gd
+    - scripts/ui/CircularTimerUI.tscn
+    - scripts/ui/StateDebugLabel.gd
   modified: []
 
 key-decisions:
@@ -70,9 +70,9 @@ All tasks committed together:
    - StateDebugLabel.gd: Debug state name display
 
 ## Files Created/Modified
-- `Scripts/ui/CircularTimerUI.gd` - Circular progress indicator with TimerState binding and MM:SS countdown
-- `Scripts/ui/CircularTimerUI.tscn` - Scene with TextureProgressBar and centered Label
-- `Scripts/ui/StateDebugLabel.gd` - Debug label with RoomStateMachine signal-driven updates
+- `scripts/ui/CircularTimerUI.gd` - Circular progress indicator with TimerState binding and MM:SS countdown
+- `scripts/ui/CircularTimerUI.tscn` - Scene with TextureProgressBar and centered Label
+- `scripts/ui/StateDebugLabel.gd` - Debug label with RoomStateMachine signal-driven updates
 
 ## Decisions Made
 

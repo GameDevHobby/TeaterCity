@@ -56,7 +56,7 @@
       "Bash(git -C \"C:/git/TheaterCity\" check-ignore -q .planning)",
       "Bash(git -C \"C:/git/TheaterCity\" log --oneline -5)",
       "Bash(git -C \"C:/git/TheaterCity\" status --short)",
-      "Bash(git -C \"C:/git/TheaterCity\" add \"Scripts/storage/RoomSerializer.gd\")",
+      "Bash(git -C \"C:/git/TheaterCity\" add \"scripts/storage/RoomSerializer.gd\")",
       "Bash(git -C \"C:/git/TheaterCity\" commit -m \"$\\(cat <<''EOF''\nfeat\\(03-02\\): add RoomSerializer for atomic file I/O\n\n- Add save_rooms\\(\\) with atomic write pattern \\(temp + verify + rename\\)\n- Add load_rooms\\(\\) with graceful degradation on corrupted files\n- Add has_save_file\\(\\) and delete_save_file\\(\\) utilities\n- Use JSON format with version and timestamp metadata\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git -C \"C:/git/TheaterCity\" add \".planning/phases/03-persistence-infrastructure/03-02-SUMMARY.md\" \".planning/STATE.md\")",
       "Bash(git -C \"C:/git/TheaterCity\" commit -m \"$\\(cat <<''EOF''\ndocs\\(03-02\\): complete RoomSerializer plan\n\nTasks completed: 1/1\n- Task 1: Create RoomSerializer with save/load methods\n\nSUMMARY: .planning/phases/03-persistence-infrastructure/03-02-SUMMARY.md\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",

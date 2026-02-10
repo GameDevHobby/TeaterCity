@@ -26,7 +26,7 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Scripts/room_editing/FurnitureSelectionHighlight.gd
+    - scripts/room_editing/FurnitureSelectionHighlight.gd
 
 key-decisions:
   - "Drag preview shows at cursor position, not original furniture position"
@@ -70,7 +70,7 @@ Each task was committed atomically:
 2. **Task 2: Connect to drag preview signals and implement _draw updates** - `be36d25` (feat)
 
 ## Files Created/Modified
-- `Scripts/room_editing/FurnitureSelectionHighlight.gd` - Added drag preview state variables, color constants, signal handlers, _draw_drag_preview method with multi-layer rendering
+- `scripts/room_editing/FurnitureSelectionHighlight.gd` - Added drag preview state variables, color constants, signal handlers, _draw_drag_preview method with multi-layer rendering
 
 ## Decisions Made
 

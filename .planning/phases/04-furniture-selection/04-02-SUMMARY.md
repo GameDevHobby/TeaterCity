@@ -25,10 +25,10 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/room_editing/FurnitureListPanel.gd
+    - scripts/room_editing/FurnitureListPanel.gd
   modified:
-    - Scripts/Main.gd
-    - Scripts/room_editing/FurnitureEditController.gd
+    - scripts/Main.gd
+    - scripts/room_editing/FurnitureEditController.gd
 
 decisions:
   - id: list-panel-position
@@ -52,7 +52,7 @@ metrics:
 
 ## What Was Built
 
-### FurnitureListPanel (`Scripts/room_editing/FurnitureListPanel.gd`)
+### FurnitureListPanel (`scripts/room_editing/FurnitureListPanel.gd`)
 
 Scrollable list panel showing all furniture in selected room:
 
@@ -113,7 +113,7 @@ None - plan executed exactly as written.
 
 ## Verification Status
 
-- [x] File exists: `Scripts/room_editing/FurnitureListPanel.gd`
+- [x] File exists: `scripts/room_editing/FurnitureListPanel.gd`
 - [x] FurnitureListPanel has class_name
 - [x] Has `furniture_item_selected` signal
 - [x] Has `done_pressed` signal

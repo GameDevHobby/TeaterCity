@@ -16,7 +16,7 @@ tech_stack:
 key_files:
   created: []
   modified:
-    - Scripts/RoomManager.gd
+    - scripts/RoomManager.gd
 
 decisions:
   - id: "debounce-5s"

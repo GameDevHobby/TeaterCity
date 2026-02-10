@@ -32,7 +32,7 @@ godot --path .
 - Manages entity instances that patrons can navigate to
 - Provides `get_random_entity()` for random target selection
 
-**Room Building System** (`Scripts/room_building/`):
+**Room Building System** (`scripts/room_building/`):
 - `RoomBuildController`: Main orchestrator managing build workflow and state transitions
 - `RoomBuildUI`: Handles user input (box drawing, door placement) and UI state feedback
 - Operations pattern in `operations/` subdirectory:
@@ -41,13 +41,13 @@ godot --path .
   - `ValidationOperation`: Validates complete rooms against type requirements (size, doors, furniture)
 - State flow: `idle` → `draw_box` → `place_doors` → `idle` (via `state_name` property)
 
-**Room Data & Storage** (`Scripts/storage/`):
+**Room Data & Storage** (`scripts/storage/`):
 - `RoomInstance`: RefCounted data model for rooms with:
   - Properties: `id`, `room_type_id`, `bounding_box`, `walls`, `doors`, `furniture`
   - Inner classes: `DoorPlacement` (position + direction), `FurniturePlacement` (id + position + rotation)
   - Methods: `get_total_cost()`, `get_monthly_upkeep()`, `add_door()`, `add_furniture()`
 
-**Data Registries** (`Scripts/data/`):
+**Data Registries** (`scripts/data/`):
 - Singleton registry pattern with lazy-loading from `.tres` resources
 - `RoomTypeRegistry` + `RoomTypeResource`: Room type definitions (min/max size, door requirements, allowed/required furniture)
 - `FurnitureRegistry` + `FurnitureResource`: Furniture definitions (size, cost, monthly upkeep, sprite)

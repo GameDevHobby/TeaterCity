@@ -22,8 +22,8 @@ tech-stack:
 
 key-files:
   modified:
-    - Scripts/RoomManager.gd
-    - Scripts/room_building/RoomBuildController.gd
+    - scripts/RoomManager.gd
+    - scripts/room_building/RoomBuildController.gd
 
 key-decisions:
   - "Use call_deferred for _load_saved_rooms to allow scene nodes to connect first"
@@ -68,8 +68,8 @@ completed: 2026-01-23
 
 ## Files Modified
 
-- `Scripts/RoomManager.gd` - Added room_restored signal, deferred loading
-- `Scripts/room_building/RoomBuildController.gd` - Added _on_room_restored handler
+- `scripts/RoomManager.gd` - Added room_restored signal, deferred loading
+- `scripts/room_building/RoomBuildController.gd` - Added _on_room_restored handler
 
 ## Issues Encountered & Fixed
 

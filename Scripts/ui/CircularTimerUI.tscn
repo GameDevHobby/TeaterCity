@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cmhvl4k3jktyr"]
 
-[ext_resource type="Script" path="res://Scripts/ui/CircularTimerUI.gd" id="1_hx7vy"]
+[ext_resource type="Script" path="res://scripts/ui/CircularTimerUI.gd" id="1_hx7vy"]
 
 [node name="CircularTimerUI" type="Control"]
 layout_mode = 3

@@ -10,13 +10,13 @@ must_haves:
     - "Feature flag can be toggled without code changes"
     - "Room visuals update correctly after reset"
   artifacts:
-    - path: "Scripts/admin/AdminMenu.gd"
+    - path: "scripts/admin/AdminMenu.gd"
       status: verified
       lines: 125
-    - path: "Scripts/admin/AdminMenuUI.gd"
+    - path: "scripts/admin/AdminMenuUI.gd"
       status: verified
       lines: 173
-    - path: "Scripts/Main.gd"
+    - path: "scripts/Main.gd"
       status: verified
       contains: ["KEY_QUOTELEFT", "is_admin_enabled", "_admin_button"]
     - path: "project.godot"
@@ -74,9 +74,9 @@ This deviation was made during human verification of Plan 03 and is explicitly d
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `Scripts/admin/AdminMenu.gd` | Autoload singleton with feature flag checking | VERIFIED | 125 lines, no stubs, exports `is_admin_enabled()`, `toggle_menu()`, `reset_all_data()` |
-| `Scripts/admin/AdminMenuUI.gd` | UI Control with Reset button and confirmation | VERIFIED | 173 lines, no stubs, ConfirmationDialog for destructive action |
-| `Scripts/Main.gd` | Hotkey toggle and admin button integration | VERIFIED | KEY_QUOTELEFT handling at line 227, admin button created at line 195 |
+| `scripts/admin/AdminMenu.gd` | Autoload singleton with feature flag checking | VERIFIED | 125 lines, no stubs, exports `is_admin_enabled()`, `toggle_menu()`, `reset_all_data()` |
+| `scripts/admin/AdminMenuUI.gd` | UI Control with Reset button and confirmation | VERIFIED | 173 lines, no stubs, ConfirmationDialog for destructive action |
+| `scripts/Main.gd` | Hotkey toggle and admin button integration | VERIFIED | KEY_QUOTELEFT handling at line 227, admin button created at line 195 |
 | `project.godot` | AdminMenu autoload registration | VERIFIED | Line 24: `AdminMenu="*res://scripts/admin/AdminMenu.gd"` |
 
 ### Key Link Verification

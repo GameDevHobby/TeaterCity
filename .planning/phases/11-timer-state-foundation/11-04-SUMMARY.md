@@ -21,10 +21,10 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/ui/ResumeNotificationUI.gd
-    - Scripts/ui/ResumeNotificationUI.tscn
+    - scripts/ui/ResumeNotificationUI.gd
+    - scripts/ui/ResumeNotificationUI.tscn
   modified:
-    - Scripts/Main.gd
+    - scripts/Main.gd
 
 key-decisions:
   - "Generic 'X state changes' message for Phase 11 foundation (will be enhanced in later phases)"
@@ -71,9 +71,9 @@ completed: 2026-02-08
    - Main.gd: Instantiate notification and connect to room_states_recalculated signal
 
 ## Files Created/Modified
-- `Scripts/ui/ResumeNotificationUI.gd` - Toast notification component with show_notification(count) method
-- `Scripts/ui/ResumeNotificationUI.tscn` - CanvasLayer scene with PanelContainer and label
-- `Scripts/Main.gd` - Setup function and signal handler for resume notifications
+- `scripts/ui/ResumeNotificationUI.gd` - Toast notification component with show_notification(count) method
+- `scripts/ui/ResumeNotificationUI.tscn` - CanvasLayer scene with PanelContainer and label
+- `scripts/Main.gd` - Setup function and signal handler for resume notifications
 
 ## Decisions Made
 

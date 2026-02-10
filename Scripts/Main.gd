@@ -596,7 +596,7 @@ func _update_navigation_for_room(room: RoomInstance) -> void:
 
 
 func _setup_resume_notification() -> void:
-	_resume_notification = preload("res://Scripts/ui/ResumeNotificationUI.tscn").instantiate()
+	_resume_notification = preload("res://scripts/ui/ResumeNotificationUI.tscn").instantiate()
 	add_child(_resume_notification)
 
 	# Connect to RoomManager signal

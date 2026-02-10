@@ -25,7 +25,7 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/storage/RoomSerializer.gd
+    - scripts/storage/RoomSerializer.gd
   modified: []
 
 decisions:
@@ -47,7 +47,7 @@ metrics:
 
 ### Task 1: Create RoomSerializer with save/load methods
 
-Created `Scripts/storage/RoomSerializer.gd` as a RefCounted class with static methods for file operations.
+Created `scripts/storage/RoomSerializer.gd` as a RefCounted class with static methods for file operations.
 
 **Constants defined:**
 - `SAVE_PATH = "user://saves/rooms.json"`

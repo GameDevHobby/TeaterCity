@@ -50,14 +50,14 @@ Phase 11 is **foundation infrastructure** that establishes patterns for later ph
 **Objective:** Confirm all Phase 11 files were created
 
 **Files to verify:**
-- [ ] `Scripts/storage/TimerState.gd`
-- [ ] `Scripts/state_machine/StateDefinition.gd`
-- [ ] `Scripts/state_machine/RoomStateMachine.gd`
-- [ ] `Scripts/ui/CircularTimerUI.gd`
-- [ ] `Scripts/ui/CircularTimerUI.tscn`
-- [ ] `Scripts/ui/StateDebugLabel.gd`
-- [ ] `Scripts/ui/ResumeNotificationUI.gd`
-- [ ] `Scripts/ui/ResumeNotificationUI.tscn`
+- [ ] `scripts/storage/TimerState.gd`
+- [ ] `scripts/state_machine/StateDefinition.gd`
+- [ ] `scripts/state_machine/RoomStateMachine.gd`
+- [ ] `scripts/ui/CircularTimerUI.gd`
+- [ ] `scripts/ui/CircularTimerUI.tscn`
+- [ ] `scripts/ui/StateDebugLabel.gd`
+- [ ] `scripts/ui/ResumeNotificationUI.gd`
+- [ ] `scripts/ui/ResumeNotificationUI.tscn`
 - [ ] `test/unit/test_timer_state.gd`
 - [ ] `test/unit/test_room_state_machine.gd`
 - [ ] `test/integration/test_timer_persistence.gd`

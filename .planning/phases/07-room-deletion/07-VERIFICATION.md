@@ -23,7 +23,7 @@
 **Status:** PASS
 
 Evidence:
-- `Scripts/room_editing/RoomEditMenu.gd` includes "Delete Room" button
+- `scripts/room_editing/RoomEditMenu.gd` includes "Delete Room" button
 - `ConfirmationDialog` appears on delete request
 - Confirm/Cancel flow prevents accidental deletion
 
@@ -88,10 +88,10 @@ Evidence:
 
 | File | Purpose |
 |------|---------|
-| `Scripts/room_building/operations/DeletionOperation.gd` | Deletion logic and wall preservation |
-| `Scripts/Main.gd` | Deletion orchestration and exterior wall tracking |
-| `Scripts/room_editing/RoomEditMenu.gd` | Delete button and confirmation dialog |
-| `Scripts/storage/RoomManager.gd` | Room unregistration |
+| `scripts/room_building/operations/DeletionOperation.gd` | Deletion logic and wall preservation |
+| `scripts/Main.gd` | Deletion orchestration and exterior wall tracking |
+| `scripts/room_editing/RoomEditMenu.gd` | Delete button and confirmation dialog |
+| `scripts/storage/RoomManager.gd` | Room unregistration |
 
 ## Must-Haves Checklist
 

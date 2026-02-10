@@ -23,10 +23,10 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/admin/AdminMenuUI.gd
+    - scripts/admin/AdminMenuUI.gd
   modified:
-    - Scripts/admin/AdminMenu.gd
-    - Scripts/Main.gd
+    - scripts/admin/AdminMenu.gd
+    - scripts/Main.gd
 
 key-decisions:
   - "CanvasLayer layer 10 for modal above all UI"
@@ -70,9 +70,9 @@ Each task was committed atomically:
 3. **Task 3: Add hotkey toggle in Main.gd** - `c88c513` (feat)
 
 ## Files Created/Modified
-- `Scripts/admin/AdminMenuUI.gd` - Admin menu UI Control with buttons and confirmation dialogs
-- `Scripts/admin/AdminMenu.gd` - Added toggle_menu() and _create_ui() methods
-- `Scripts/Main.gd` - Added tilde key handling and _admin_menu reference
+- `scripts/admin/AdminMenuUI.gd` - Admin menu UI Control with buttons and confirmation dialogs
+- `scripts/admin/AdminMenu.gd` - Added toggle_menu() and _create_ui() methods
+- `scripts/Main.gd` - Added tilde key handling and _admin_menu reference
 
 ## Decisions Made
 - CanvasLayer layer 10 ensures modal renders above all other UI elements

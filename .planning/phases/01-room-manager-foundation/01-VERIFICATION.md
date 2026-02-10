@@ -34,11 +34,11 @@ score: 10/10 must-haves verified
 
 | Artifact | Expected | Exists | Lines | Substantive | Wired | Status |
 |----------|----------|--------|-------|-------------|-------|--------|
-| Scripts/RoomManager.gd | Room tracking singleton | YES | 136 | YES (no stubs) | YES (autoload) | VERIFIED |
-| Scripts/room_building/RoomSelectionHighlight.gd | Visual highlight | YES | 36 | YES (no stubs) | YES (signals) | VERIFIED |
-| Scripts/Main.gd | CanvasLayer wrapper, deselection | YES | 63 | YES (1 Phase 2 placeholder) | YES (instantiates highlight) | VERIFIED |
-| Scripts/room_building/RoomBuildController.gd | Room registration | YES | 170 | YES | YES (calls register_room) | VERIFIED |
-| Scripts/room_building/RoomBuildUI.gd | Mouse filter fix | YES | 577 | YES | YES (MOUSE_FILTER_IGNORE) | VERIFIED |
+| scripts/RoomManager.gd | Room tracking singleton | YES | 136 | YES (no stubs) | YES (autoload) | VERIFIED |
+| scripts/room_building/RoomSelectionHighlight.gd | Visual highlight | YES | 36 | YES (no stubs) | YES (signals) | VERIFIED |
+| scripts/Main.gd | CanvasLayer wrapper, deselection | YES | 63 | YES (1 Phase 2 placeholder) | YES (instantiates highlight) | VERIFIED |
+| scripts/room_building/RoomBuildController.gd | Room registration | YES | 170 | YES | YES (calls register_room) | VERIFIED |
+| scripts/room_building/RoomBuildUI.gd | Mouse filter fix | YES | 577 | YES | YES (MOUSE_FILTER_IGNORE) | VERIFIED |
 | project.godot | RoomManager autoload | YES | 65 | YES | YES | VERIFIED |
 
 ### Key Link Verification

@@ -48,7 +48,7 @@ The established libraries/tools for this domain:
 
 ### Recommended Project Structure
 ```
-Scripts/
+scripts/
 ├── storage/
 │   ├── RoomInstance.gd        # Existing - extend with timer/state fields
 │   ├── RoomSerializer.gd      # Existing - no changes needed

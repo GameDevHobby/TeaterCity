@@ -24,7 +24,7 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Scripts/storage/RoomInstance.gd
+    - scripts/storage/RoomInstance.gd
 
 decisions:
   - Vector2i as {x,y} objects: JSON.parse_string() handles objects better than arrays

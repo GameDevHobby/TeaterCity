@@ -8,7 +8,7 @@
 
 ### Task 1: Add mouse click handling to RoomManager._on_area_input
 - **Commit:** 88d6963
-- **Files modified:** Scripts/RoomManager.gd
+- **Files modified:** scripts/RoomManager.gd
 
 Modified `_on_area_input()` to handle both input types:
 - `InputEventMouseButton` for desktop mouse clicks (new)

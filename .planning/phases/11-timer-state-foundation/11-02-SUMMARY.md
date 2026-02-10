@@ -24,9 +24,9 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Scripts/storage/RoomInstance.gd
-    - Scripts/RoomManager.gd
-    - Scripts/state_machine/RoomStateMachine.gd
+    - scripts/storage/RoomInstance.gd
+    - scripts/RoomManager.gd
+    - scripts/state_machine/RoomStateMachine.gd
 
 key-decisions:
   - "Deferred initialization pattern for state machines (pending data + initialize_state_machine)"
@@ -70,9 +70,9 @@ Each task was committed atomically:
 2. **Task 2: Extend RoomManager with resume logic and timestamp tracking** - `5f421a7` (feat)
 
 ## Files Created/Modified
-- `Scripts/storage/RoomInstance.gd` - Added state_machine field, initialize_state_machine() method, state serialization, SCHEMA_VERSION bump to 2
-- `Scripts/RoomManager.gd` - Added resume logic, timestamp tracking, clock manipulation detection, _recalculate_all_room_states()
-- `Scripts/state_machine/RoomStateMachine.gd` - Updated recalculate_from_elapsed() to return int, update() to return bool
+- `scripts/storage/RoomInstance.gd` - Added state_machine field, initialize_state_machine() method, state serialization, SCHEMA_VERSION bump to 2
+- `scripts/RoomManager.gd` - Added resume logic, timestamp tracking, clock manipulation detection, _recalculate_all_room_states()
+- `scripts/state_machine/RoomStateMachine.gd` - Updated recalculate_from_elapsed() to return int, update() to return bool
 
 ## Decisions Made
 

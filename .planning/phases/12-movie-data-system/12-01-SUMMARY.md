@@ -19,7 +19,7 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/data/MovieResource.gd
+    - scripts/data/MovieResource.gd
   modified: []
 
 key-decisions:
@@ -60,7 +60,7 @@ Each task was committed atomically:
 1. **Task 1: Create MovieResource data class** - `d5d2432` (feat)
 
 ## Files Created/Modified
-- `Scripts/data/MovieResource.gd` - Movie data model with id, title, genre, rating, duration fields
+- `scripts/data/MovieResource.gd` - Movie data model with id, title, genre, rating, duration fields
 
 ## Decisions Made
 

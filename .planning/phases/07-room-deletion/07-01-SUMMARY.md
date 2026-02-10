@@ -70,8 +70,8 @@ Created `scripts/room_building/operations/DeletionOperation.gd` following the es
 
 | File | Change |
 |------|--------|
-| Scripts/RoomManager.gd | Added room_removed signal and unregister_room() method |
-| Scripts/room_building/operations/DeletionOperation.gd | Created new file with deletion helper methods |
+| scripts/RoomManager.gd | Added room_removed signal and unregister_room() method |
+| scripts/room_building/operations/DeletionOperation.gd | Created new file with deletion helper methods |
 
 ## Deviations from Plan
 

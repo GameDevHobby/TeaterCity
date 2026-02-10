@@ -22,9 +22,9 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/storage/TimerState.gd
-    - Scripts/state_machine/StateDefinition.gd
-    - Scripts/state_machine/RoomStateMachine.gd
+    - scripts/storage/TimerState.gd
+    - scripts/state_machine/StateDefinition.gd
+    - scripts/state_machine/RoomStateMachine.gd
   modified: []
 
 key-decisions:
@@ -68,9 +68,9 @@ Each task was committed atomically:
 2. **Task 2: Create StateDefinition and RoomStateMachine classes** - `e32c61f` (feat)
 
 ## Files Created/Modified
-- `Scripts/storage/TimerState.gd` - Timestamp-based offline timer with elapsed/remaining calculation
-- `Scripts/state_machine/StateDefinition.gd` - Data class for state configuration (name, duration, next_state)
-- `Scripts/state_machine/RoomStateMachine.gd` - Abstract state machine with timed auto-transitions and fast-forward support
+- `scripts/storage/TimerState.gd` - Timestamp-based offline timer with elapsed/remaining calculation
+- `scripts/state_machine/StateDefinition.gd` - Data class for state configuration (name, duration, next_state)
+- `scripts/state_machine/RoomStateMachine.gd` - Abstract state machine with timed auto-transitions and fast-forward support
 
 ## Decisions Made
 

@@ -27,11 +27,11 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Scripts/room_building/operations/ValidationOperation.gd
-    - Scripts/room_editing/FurnitureEditController.gd
-    - Scripts/room_editing/FurnitureListPanel.gd
-    - Scripts/storage/RoomInstance.gd
-    - Scripts/Main.gd
+    - scripts/room_building/operations/ValidationOperation.gd
+    - scripts/room_editing/FurnitureEditController.gd
+    - scripts/room_editing/FurnitureListPanel.gd
+    - scripts/storage/RoomInstance.gd
+    - scripts/Main.gd
 
 key-decisions:
   - "Validate against room type requirements before deletion"
@@ -75,11 +75,11 @@ Each task was committed atomically:
 3. **Task 3: Add delete button UI** - `ce95da3` (feat)
 
 ## Files Created/Modified
-- `Scripts/room_building/operations/ValidationOperation.gd` - Added can_delete_furniture() validation method
-- `Scripts/room_editing/FurnitureEditController.gd` - Added delete_furniture(), furniture_deleted/furniture_delete_failed signals, _validation_operation
-- `Scripts/storage/RoomInstance.gd` - Added visual_node property to FurniturePlacement
-- `Scripts/room_editing/FurnitureListPanel.gd` - Added delete button, error label, signal handlers
-- `Scripts/Main.gd` - Wired furniture_delete_requested signal to controller
+- `scripts/room_building/operations/ValidationOperation.gd` - Added can_delete_furniture() validation method
+- `scripts/room_editing/FurnitureEditController.gd` - Added delete_furniture(), furniture_deleted/furniture_delete_failed signals, _validation_operation
+- `scripts/storage/RoomInstance.gd` - Added visual_node property to FurniturePlacement
+- `scripts/room_editing/FurnitureListPanel.gd` - Added delete button, error label, signal handlers
+- `scripts/Main.gd` - Wired furniture_delete_requested signal to controller
 
 ## Decisions Made
 
@@ -108,7 +108,7 @@ Each task was committed atomically:
 - **Found during:** Task 2 (Implementing delete_furniture method)
 - **Issue:** Plan referenced visual_node property but it didn't exist in RoomInstance.FurniturePlacement (was supposed to be added by plan 05-01 which hadn't been executed)
 - **Fix:** Added `var visual_node: Node2D = null` property to FurniturePlacement class
-- **Files modified:** Scripts/storage/RoomInstance.gd
+- **Files modified:** scripts/storage/RoomInstance.gd
 - **Verification:** Property exists, delete_furniture method can reference it
 - **Committed in:** 4123e5b (Task 2 commit)
 

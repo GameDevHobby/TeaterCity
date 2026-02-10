@@ -27,7 +27,7 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/room_building/operations/ResizeOperation.gd
+    - scripts/room_building/operations/ResizeOperation.gd
   modified: []
 
 key-decisions:
@@ -71,7 +71,7 @@ Each task was committed atomically:
 1. **Task 1: Create ResizeOperation class with validation** - `d304957` (feat)
 
 ## Files Created/Modified
-- `Scripts/room_building/operations/ResizeOperation.gd` - Stateless resize validation and execution operation
+- `scripts/room_building/operations/ResizeOperation.gd` - Stateless resize validation and execution operation
 
 ## Decisions Made
 - Validation order prioritizes fast-fail: size constraints first (cheap), then overlap (medium), then furniture (detailed)

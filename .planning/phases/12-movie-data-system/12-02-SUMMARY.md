@@ -23,9 +23,9 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/generation/MovieGenerator.gd
-    - Scripts/storage/MoviePool.gd
-    - Scripts/storage/MoviePoolSerializer.gd
+    - scripts/generation/MovieGenerator.gd
+    - scripts/storage/MoviePool.gd
+    - scripts/storage/MoviePoolSerializer.gd
   modified: []
 
 key-decisions:
@@ -69,9 +69,9 @@ Each task was committed atomically:
 2. **Task 2: Create MoviePool and MoviePoolSerializer** - `7ab0c9a` (feat)
 
 ## Files Created/Modified
-- `Scripts/generation/MovieGenerator.gd` - Procedural movie generation with seeded RNG
-- `Scripts/storage/MoviePool.gd` - Runtime movie collection with ID lookup
-- `Scripts/storage/MoviePoolSerializer.gd` - Atomic JSON persistence for movie pool
+- `scripts/generation/MovieGenerator.gd` - Procedural movie generation with seeded RNG
+- `scripts/storage/MoviePool.gd` - Runtime movie collection with ID lookup
+- `scripts/storage/MoviePoolSerializer.gd` - Atomic JSON persistence for movie pool
 
 ## Decisions Made
 

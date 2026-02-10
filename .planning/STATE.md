@@ -148,21 +148,21 @@ None currently.
 Phase 12 complete. Movie data system ready with MovieResource, MovieGenerator, MoviePool, MoviePoolSerializer, and 21 unit tests.
 
 Key files created (Phase 11):
-- `Scripts/storage/TimerState.gd` - Timestamp-based offline timer
-- `Scripts/state_machine/StateDefinition.gd` - State configuration data class
-- `Scripts/state_machine/RoomStateMachine.gd` - State machine with timed transitions
-- `Scripts/ui/CircularTimerUI.gd` + `.tscn` - Circular progress with MM:SS countdown
-- `Scripts/ui/StateDebugLabel.gd` - Debug state name display
-- `Scripts/ui/ResumeNotificationUI.gd` + `.tscn` - Toast notification for app resume
+- `scripts/storage/TimerState.gd` - Timestamp-based offline timer
+- `scripts/state_machine/StateDefinition.gd` - State configuration data class
+- `scripts/state_machine/RoomStateMachine.gd` - State machine with timed transitions
+- `scripts/ui/CircularTimerUI.gd` + `.tscn` - Circular progress with MM:SS countdown
+- `scripts/ui/StateDebugLabel.gd` - Debug state name display
+- `scripts/ui/ResumeNotificationUI.gd` + `.tscn` - Toast notification for app resume
 - `test/unit/test_timer_state.gd` - 16 unit tests for TimerState
 - `test/unit/test_room_state_machine.gd` - 16 unit tests for RoomStateMachine
 - `test/integration/test_timer_persistence.gd` - 5 integration tests for persistence
 
 Key files created (Phase 12):
-- `Scripts/data/MovieResource.gd` - Movie data model with JSON serialization
-- `Scripts/generation/MovieGenerator.gd` - Procedural movie generation with seeded RNG
-- `Scripts/storage/MoviePool.gd` - Runtime movie collection with ID lookup
-- `Scripts/storage/MoviePoolSerializer.gd` - Atomic JSON persistence for movie pool
+- `scripts/data/MovieResource.gd` - Movie data model with JSON serialization
+- `scripts/generation/MovieGenerator.gd` - Procedural movie generation with seeded RNG
+- `scripts/storage/MoviePool.gd` - Runtime movie collection with ID lookup
+- `scripts/storage/MoviePoolSerializer.gd` - Atomic JSON persistence for movie pool
 - `test/unit/test_movie_data.gd` - 21 unit tests for movie data system
 
 Summaries:

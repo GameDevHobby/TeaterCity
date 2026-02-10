@@ -54,10 +54,10 @@ All furniture editing operations verified working:
 
 ## Files Modified
 
-- Scripts/Main.gd - Camera toggle for furniture edit mode
-- Scripts/room_editing/FurnitureEditController.gd - Drag handling, input consumption
-- Scripts/room_editing/FurnitureListPanel.gd - Panel positioning fixes
-- Scripts/room_building/RoomBuildController.gd - Room counter initialization
+- scripts/Main.gd - Camera toggle for furniture edit mode
+- scripts/room_editing/FurnitureEditController.gd - Drag handling, input consumption
+- scripts/room_editing/FurnitureListPanel.gd - Panel positioning fixes
+- scripts/room_building/RoomBuildController.gd - Room counter initialization
 
 ## Success Criteria Met
 

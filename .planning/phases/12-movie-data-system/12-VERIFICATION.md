@@ -36,10 +36,10 @@ human_verification:
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| Scripts/data/MovieResource.gd | Movie data model with id, title, genre, rating, duration | VERIFIED | 34 lines. All fields present (int types). class_name exported. to_dict/from_dict implemented. No stubs. |
-| Scripts/generation/MovieGenerator.gd | Procedural movie generation | VERIFIED | 61 lines. Uses RandomNumberGenerator with set_seed(). Generates varied titles/genres/ratings/durations. No stubs. |
-| Scripts/storage/MoviePool.gd | Runtime movie collection | VERIFIED | 63 lines. CRUD operations (add, remove, get, size). to_dict/from_dict for persistence. No stubs. |
-| Scripts/storage/MoviePoolSerializer.gd | JSON persistence for pool | VERIFIED | 125 lines. Atomic write pattern matching RoomSerializer. Version checking. Error handling. No stubs. |
+| scripts/data/MovieResource.gd | Movie data model with id, title, genre, rating, duration | VERIFIED | 34 lines. All fields present (int types). class_name exported. to_dict/from_dict implemented. No stubs. |
+| scripts/generation/MovieGenerator.gd | Procedural movie generation | VERIFIED | 61 lines. Uses RandomNumberGenerator with set_seed(). Generates varied titles/genres/ratings/durations. No stubs. |
+| scripts/storage/MoviePool.gd | Runtime movie collection | VERIFIED | 63 lines. CRUD operations (add, remove, get, size). to_dict/from_dict for persistence. No stubs. |
+| scripts/storage/MoviePoolSerializer.gd | JSON persistence for pool | VERIFIED | 125 lines. Atomic write pattern matching RoomSerializer. Version checking. Error handling. No stubs. |
 | test/unit/test_movie_data.gd | Unit tests for movie system | VERIFIED | 296 lines. 21 tests covering MovieResource, MovieGenerator, MoviePool. Committed in 64b1f7d. No stubs. |
 
 **All 5 artifacts verified:** Existence VERIFIED, Substantive VERIFIED, Exported VERIFIED

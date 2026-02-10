@@ -26,9 +26,9 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Scripts/room_editing/FurnitureEditController.gd
-    - Scripts/storage/RoomInstance.gd
-    - Scripts/room_building/operations/FurnitureOperation.gd
+    - scripts/room_editing/FurnitureEditController.gd
+    - scripts/storage/RoomInstance.gd
+    - scripts/room_building/operations/FurnitureOperation.gd
 
 key-decisions:
   - "Temporary removal during validation to avoid self-collision"
@@ -72,9 +72,9 @@ Each task was committed atomically:
 3. **Task 3: Add visual_node tracking to FurniturePlacement** - `b74d677` (feat)
 
 ## Files Created/Modified
-- `Scripts/room_editing/FurnitureEditController.gd` - Added drag state machine with _dragging, _drag_offset, _preview_position; motion event handlers; drag lifecycle methods (_start_drag, _update_drag_position, _end_drag)
-- `Scripts/storage/RoomInstance.gd` - Added visual_node property and cleanup_visual() method to FurniturePlacement
-- `Scripts/room_building/operations/FurnitureOperation.gd` - Store visual_node reference when creating furniture visuals
+- `scripts/room_editing/FurnitureEditController.gd` - Added drag state machine with _dragging, _drag_offset, _preview_position; motion event handlers; drag lifecycle methods (_start_drag, _update_drag_position, _end_drag)
+- `scripts/storage/RoomInstance.gd` - Added visual_node property and cleanup_visual() method to FurniturePlacement
+- `scripts/room_building/operations/FurnitureOperation.gd` - Store visual_node reference when creating furniture visuals
 
 ## Decisions Made
 

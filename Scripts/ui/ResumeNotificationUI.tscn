@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b3j5k8l9m2nop"]
 
-[ext_resource type="Script" path="res://Scripts/ui/ResumeNotificationUI.gd" id="1_resume"]
+[ext_resource type="Script" path="res://scripts/ui/ResumeNotificationUI.gd" id="1_resume"]
 
 [node name="ResumeNotificationUI" type="CanvasLayer"]
 script = ExtResource("1_resume")

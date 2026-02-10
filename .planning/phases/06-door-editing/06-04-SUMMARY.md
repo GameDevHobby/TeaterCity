@@ -27,7 +27,7 @@ key-files:
   created:
     - scripts/room_editing/DoorEditHighlight.gd
   modified:
-    - Scripts/Main.gd
+    - scripts/Main.gd
 
 key-decisions:
   - "Orange (0.8,0.6,0.2,0.3) for available walls, purple (0.6,0.2,0.8,0.4) for existing doors"
@@ -71,7 +71,7 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 - `scripts/room_editing/DoorEditHighlight.gd` - Visual highlight for door edit mode, draws wall tiles with color-coded states
-- `Scripts/Main.gd` - DoorEditController/DoorEditHighlight creation, signal wiring, navigation updates
+- `scripts/Main.gd` - DoorEditController/DoorEditHighlight creation, signal wiring, navigation updates
 
 ## Decisions Made
 - Orange color (0.8, 0.6, 0.2, 0.3) for available walls - warm tone to indicate interactable

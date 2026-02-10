@@ -25,10 +25,10 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/room_editing/FurnitureEditController.gd
-    - Scripts/room_editing/FurnitureSelectionHighlight.gd
+    - scripts/room_editing/FurnitureEditController.gd
+    - scripts/room_editing/FurnitureSelectionHighlight.gd
   modified:
-    - Scripts/Main.gd
+    - scripts/Main.gd
 
 decisions:
   - id: furniture-cyan-color
@@ -52,7 +52,7 @@ metrics:
 
 ## What Was Built
 
-### FurnitureEditController (`Scripts/room_editing/FurnitureEditController.gd`)
+### FurnitureEditController (`scripts/room_editing/FurnitureEditController.gd`)
 
 Controller managing furniture edit mode:
 
@@ -63,7 +63,7 @@ Controller managing furniture edit mode:
 - **Dual Input:** Handles both InputEventMouseButton (desktop) and InputEventScreenTouch (mobile)
 - **Deselection:** `_unhandled_input` detects taps outside furniture areas
 
-### FurnitureSelectionHighlight (`Scripts/room_editing/FurnitureSelectionHighlight.gd`)
+### FurnitureSelectionHighlight (`scripts/room_editing/FurnitureSelectionHighlight.gd`)
 
 Visual feedback for selected furniture:
 
@@ -120,8 +120,8 @@ None - plan executed exactly as written.
 
 ## Verification Status
 
-- [x] File exists: `Scripts/room_editing/FurnitureEditController.gd`
-- [x] File exists: `Scripts/room_editing/FurnitureSelectionHighlight.gd`
+- [x] File exists: `scripts/room_editing/FurnitureEditController.gd`
+- [x] File exists: `scripts/room_editing/FurnitureSelectionHighlight.gd`
 - [x] FurnitureEditController has class_name
 - [x] FurnitureEditController has required signals
 - [x] FurnitureSelectionHighlight has class_name

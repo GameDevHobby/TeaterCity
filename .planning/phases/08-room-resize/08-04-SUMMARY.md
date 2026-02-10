@@ -13,8 +13,8 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Scripts/room_editing/RoomEditMenu.gd
-    - Scripts/Main.gd
+    - scripts/room_editing/RoomEditMenu.gd
+    - scripts/Main.gd
 decisions:
   - id: area2d-update-pattern
     choice: "Use unregister/register to update Area2D after resize"
@@ -88,8 +88,8 @@ None - plan executed exactly as written.
 
 | File | Changes |
 |------|---------|
-| Scripts/room_editing/RoomEditMenu.gd | +11 lines (signal, button, handler) |
-| Scripts/Main.gd | +85 lines (variables, setup, 4 handlers) |
+| scripts/room_editing/RoomEditMenu.gd | +11 lines (signal, button, handler) |
+| scripts/Main.gd | +85 lines (variables, setup, 4 handlers) |
 
 ## Commits
 

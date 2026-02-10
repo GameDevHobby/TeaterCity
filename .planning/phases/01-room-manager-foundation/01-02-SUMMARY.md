@@ -24,10 +24,10 @@ tech-stack:
 
 key-files:
   created:
-    - "Scripts/room_building/RoomSelectionHighlight.gd"
+    - "scripts/room_building/RoomSelectionHighlight.gd"
   modified:
-    - "Scripts/room_building/RoomBuildController.gd"
-    - "Scripts/Main.gd"
+    - "scripts/room_building/RoomBuildController.gd"
+    - "scripts/Main.gd"
 
 key-decisions:
   - "CanvasLayer wrapper required for screen-space rendering in Node2D main scene"
@@ -72,9 +72,9 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `Scripts/room_building/RoomSelectionHighlight.gd` - Visual highlight Control, connects to RoomManager signals, draws yellow tint on selected room tiles
-- `Scripts/room_building/RoomBuildController.gd` - Added RoomManager.register_room() call after room_completed emission
-- `Scripts/Main.gd` - CanvasLayer wrapper for highlight, room_selected handler, tap-outside deselection in _unhandled_input
+- `scripts/room_building/RoomSelectionHighlight.gd` - Visual highlight Control, connects to RoomManager signals, draws yellow tint on selected room tiles
+- `scripts/room_building/RoomBuildController.gd` - Added RoomManager.register_room() call after room_completed emission
+- `scripts/Main.gd` - CanvasLayer wrapper for highlight, room_selected handler, tap-outside deselection in _unhandled_input
 
 ## Decisions Made
 

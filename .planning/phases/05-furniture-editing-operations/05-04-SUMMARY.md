@@ -30,10 +30,10 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Scripts/room_editing/FurnitureEditController.gd
-    - Scripts/room_editing/FurnitureListPanel.gd
-    - Scripts/Main.gd
-    - Scripts/room_building/RoomBuildController.gd
+    - scripts/room_editing/FurnitureEditController.gd
+    - scripts/room_editing/FurnitureListPanel.gd
+    - scripts/Main.gd
+    - scripts/room_building/RoomBuildController.gd
 
 key-decisions:
   - "Placement mode as separate state from selection/drag"
@@ -78,10 +78,10 @@ Each task was committed atomically:
 3. **Task 3: Wire up placement mode in Main.gd** - `e3c06b2` (feat)
 
 ## Files Created/Modified
-- `Scripts/room_editing/FurnitureEditController.gd` - Added placement mode state, enter/exit/confirm methods, placement input handling
-- `Scripts/room_editing/FurnitureListPanel.gd` - Added Add button, picker panel, picker button population from room type
-- `Scripts/Main.gd` - Wired furniture_selected_for_add, furniture_added signals, creates visual nodes
-- `Scripts/room_building/RoomBuildController.gd` - Added get_tilemap_layer and get_furniture_parent helper methods
+- `scripts/room_editing/FurnitureEditController.gd` - Added placement mode state, enter/exit/confirm methods, placement input handling
+- `scripts/room_editing/FurnitureListPanel.gd` - Added Add button, picker panel, picker button population from room type
+- `scripts/Main.gd` - Wired furniture_selected_for_add, furniture_added signals, creates visual nodes
+- `scripts/room_building/RoomBuildController.gd` - Added get_tilemap_layer and get_furniture_parent helper methods
 
 ## Decisions Made
 

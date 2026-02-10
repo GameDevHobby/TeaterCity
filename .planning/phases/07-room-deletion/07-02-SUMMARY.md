@@ -22,8 +22,8 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Scripts/room_editing/RoomEditMenu.gd
-    - Scripts/Main.gd
+    - scripts/room_editing/RoomEditMenu.gd
+    - scripts/Main.gd
 
 key-decisions:
   - "Confirmation dialog prevents accidental deletion"
@@ -67,8 +67,8 @@ Each task was committed atomically:
 2. **Task 2: Wire deletion sequence in Main.gd** - `0790e55` (feat)
 
 ## Files Created/Modified
-- `Scripts/room_editing/RoomEditMenu.gd` - Added Delete Room button, ConfirmationDialog, delete_room_pressed signal
-- `Scripts/Main.gd` - Added DeletionOperation instance, _on_delete_room_requested handler with 8-step sequence
+- `scripts/room_editing/RoomEditMenu.gd` - Added Delete Room button, ConfirmationDialog, delete_room_pressed signal
+- `scripts/Main.gd` - Added DeletionOperation instance, _on_delete_room_requested handler with 8-step sequence
 
 ## Decisions Made
 

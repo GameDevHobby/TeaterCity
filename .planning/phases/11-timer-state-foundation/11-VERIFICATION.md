@@ -31,16 +31,16 @@ score: 5/5 must-haves verified
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| Scripts/storage/TimerState.gd | Timestamp-based offline timer | VERIFIED | 77 lines, 7 functions, uses int timestamps, has to_dict/from_dict |
-| Scripts/state_machine/RoomStateMachine.gd | Abstract state machine for rooms | VERIFIED | 109 lines, 6 functions, has timer property, recalculate_from_elapsed() returns count |
-| Scripts/state_machine/StateDefinition.gd | Data class for state configuration | VERIFIED | 20 lines, simple data class with name/duration/next_state |
-| Scripts/storage/RoomInstance.gd | Room data with optional state machine | VERIFIED | SCHEMA_VERSION=2, state_machine field, initialize_state_machine() method |
-| Scripts/RoomManager.gd | Room manager with resume logic | VERIFIED | Handles NOTIFICATION_APPLICATION_RESUMED, _recalculate_all_room_states() exists |
-| Scripts/ui/CircularTimerUI.gd | Circular progress indicator | VERIFIED | 110 lines, set_timer/show_at_position/hide_timer methods, MM:SS format |
-| Scripts/ui/CircularTimerUI.tscn | Scene for circular timer | VERIFIED | 974 bytes, scene file exists |
-| Scripts/ui/StateDebugLabel.gd | Debug label showing state name | VERIFIED | 70 lines, set_state_machine/show_at_position/hide_label methods |
-| Scripts/ui/ResumeNotificationUI.gd | Toast notification for resume | VERIFIED | 65 lines, show_notification method, auto-fade logic |
-| Scripts/ui/ResumeNotificationUI.tscn | Scene for resume notification | VERIFIED | 881 bytes, scene file exists |
+| scripts/storage/TimerState.gd | Timestamp-based offline timer | VERIFIED | 77 lines, 7 functions, uses int timestamps, has to_dict/from_dict |
+| scripts/state_machine/RoomStateMachine.gd | Abstract state machine for rooms | VERIFIED | 109 lines, 6 functions, has timer property, recalculate_from_elapsed() returns count |
+| scripts/state_machine/StateDefinition.gd | Data class for state configuration | VERIFIED | 20 lines, simple data class with name/duration/next_state |
+| scripts/storage/RoomInstance.gd | Room data with optional state machine | VERIFIED | SCHEMA_VERSION=2, state_machine field, initialize_state_machine() method |
+| scripts/RoomManager.gd | Room manager with resume logic | VERIFIED | Handles NOTIFICATION_APPLICATION_RESUMED, _recalculate_all_room_states() exists |
+| scripts/ui/CircularTimerUI.gd | Circular progress indicator | VERIFIED | 110 lines, set_timer/show_at_position/hide_timer methods, MM:SS format |
+| scripts/ui/CircularTimerUI.tscn | Scene for circular timer | VERIFIED | 974 bytes, scene file exists |
+| scripts/ui/StateDebugLabel.gd | Debug label showing state name | VERIFIED | 70 lines, set_state_machine/show_at_position/hide_label methods |
+| scripts/ui/ResumeNotificationUI.gd | Toast notification for resume | VERIFIED | 65 lines, show_notification method, auto-fade logic |
+| scripts/ui/ResumeNotificationUI.tscn | Scene for resume notification | VERIFIED | 881 bytes, scene file exists |
 | test/unit/test_timer_state.gd | Unit tests for TimerState | VERIFIED | 131 lines, 14 test functions |
 | test/unit/test_room_state_machine.gd | Unit tests for RoomStateMachine | VERIFIED | 167 lines, 16 test functions |
 | test/integration/test_timer_persistence.gd | Integration tests for timer persistence | VERIFIED | 119 lines, 5 test functions |

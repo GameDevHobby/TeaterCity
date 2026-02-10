@@ -28,9 +28,9 @@
 
 | File | Changes |
 |------|---------|
-| Scripts/admin/AdminMenu.gd | Added rooms_reset signal, removed revert_to_save(), fixed toggle_menu() |
-| Scripts/admin/AdminMenuUI.gd | Removed Revert button and handlers |
-| Scripts/Main.gd | Added room_removed cleanup handler, admin button creation |
+| scripts/admin/AdminMenu.gd | Added rooms_reset signal, removed revert_to_save(), fixed toggle_menu() |
+| scripts/admin/AdminMenuUI.gd | Removed Revert button and handlers |
+| scripts/Main.gd | Added room_removed cleanup handler, admin button creation |
 
 ## Deviations
 

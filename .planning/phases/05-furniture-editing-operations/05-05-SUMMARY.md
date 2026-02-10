@@ -29,7 +29,7 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Scripts/room_editing/FurnitureSelectionHighlight.gd
+    - scripts/room_editing/FurnitureSelectionHighlight.gd
 
 key-decisions:
   - "Placement preview uses same colors as drag preview (green valid, red invalid)"
@@ -72,7 +72,7 @@ Each task was committed atomically:
 2. **Task 2 & 3: Verify RoomBuildController accessors and Main wiring** - `ca6dbad` (chore)
 
 ## Files Created/Modified
-- `Scripts/room_editing/FurnitureSelectionHighlight.gd` - Added placement mode state, signal connections, _draw_placement_preview method
+- `scripts/room_editing/FurnitureSelectionHighlight.gd` - Added placement mode state, signal connections, _draw_placement_preview method
 
 ## Decisions Made
 

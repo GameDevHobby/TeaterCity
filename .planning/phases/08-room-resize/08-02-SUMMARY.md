@@ -24,7 +24,7 @@ tech-stack:
 
 key-files:
   created:
-    - Scripts/room_editing/RoomResizeController.gd
+    - scripts/room_editing/RoomResizeController.gd
   modified: []
 
 key-decisions:
@@ -67,7 +67,7 @@ Each task was committed atomically:
 1. **Task 1: Create RoomResizeController with state machine and input handling** - `31484bd` (feat)
 
 ## Files Created/Modified
-- `Scripts/room_editing/RoomResizeController.gd` - Resize workflow controller with state machine, input handling, and validation integration
+- `scripts/room_editing/RoomResizeController.gd` - Resize workflow controller with state machine, input handling, and validation integration
 
 ## Decisions Made
 - Controller does NOT handle visual drawing - emits signals only (RoomResizeHighlight in plan 03 will handle rendering)
