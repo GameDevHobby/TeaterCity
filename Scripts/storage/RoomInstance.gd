@@ -189,6 +189,7 @@ func initialize_state_machine(state_definitions: Dictionary) -> int:
 		for state_name in state_definitions:
 			var def = state_definitions[state_name]
 			state_machine.define_state(def.name, def.duration, def.next_state)
+		_connect_state_machine_signal()
 		return 0
 
 	# Restore from saved data
@@ -202,14 +203,22 @@ func initialize_state_machine(state_definitions: Dictionary) -> int:
 		for state_name in state_definitions:
 			var def = state_definitions[state_name]
 			state_machine.define_state(def.name, def.duration, def.next_state)
+		_connect_state_machine_signal()
 		return 0
 
 	# Connect state changed signal for forwarding
-	state_machine.state_changed.connect(_on_state_machine_changed)
+	_connect_state_machine_signal()
 
 	# Recalculate and count transitions
 	var transitions = state_machine.recalculate_from_elapsed()
 	return transitions
+
+
+func _connect_state_machine_signal() -> void:
+	if state_machine == null:
+		return
+	if not state_machine.state_changed.is_connected(_on_state_machine_changed):
+		state_machine.state_changed.connect(_on_state_machine_changed)
 
 
 func _on_state_machine_changed(old_state: String, new_state: String) -> void:

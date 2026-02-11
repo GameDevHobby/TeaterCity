@@ -201,6 +201,13 @@ func _on_complete_pressed() -> void:
 	# Update navigation
 	_navigation_op.update_room_navigation(current_room, tilemap_layer)
 
+	# Initialize theater state machine before room registration
+	if TheaterStateConfig.is_theater_room(current_room):
+		var theater_state_definitions = TheaterStateConfig.build_state_definitions()
+		current_room.initialize_state_machine(theater_state_definitions)
+		if current_room.state_machine and current_room.state_machine.current_state == "":
+			current_room.state_machine.transition_to("idle")
+
 	# Notify patrons to recalculate their paths
 	Targets.notify_navigation_changed()
 
@@ -228,6 +235,13 @@ func _on_room_restored(room: RoomInstance) -> void:
 
 	# Get room type to check if it has walls
 	var room_type := RoomTypeRegistry.get_instance().get_room_type(room.room_type_id)
+
+	# Rehydrate theater state machine before downstream consumers rely on it
+	if TheaterStateConfig.is_theater_room(room):
+		var theater_state_definitions = TheaterStateConfig.build_state_definitions()
+		room.initialize_state_machine(theater_state_definitions)
+		if room.state_machine and room.state_machine.current_state == "":
+			room.state_machine.transition_to("idle")
 
 	# Restore wall visuals (only for rooms with walls)
 	if room_type and room_type.has_walls and room.walls.size() > 0:
