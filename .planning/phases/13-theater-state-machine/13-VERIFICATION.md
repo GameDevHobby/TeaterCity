@@ -1,8 +1,8 @@
 phase: 13
 phase_name: Theater State Machine
-status: human_needed
+status: passed
 verified_at: 2026-02-11
-score: 4/5
+score: 5/5
 
 ## Goal
 
@@ -19,8 +19,8 @@ Implement theater-specific states and automatic timer-driven transitions.
    - `previews -> playing` transition defined and ticked at runtime.
 4. `Cleaning state begins automatically after movie duration ends` - **PASS (code verified)**
    - `playing -> cleaning` transition defined and ticked at runtime.
-5. `Idle state resumes automatically after cleaning duration ends` - **HUMAN VERIFICATION REQUIRED**
-   - `cleaning -> idle` transition is implemented, but runtime behavior was not executed in this environment because `godot` binary is unavailable.
+5. `Idle state resumes automatically after cleaning duration ends` - **PASS (human verified)**
+   - User-confirmed runtime behavior after local play test and save/load validation.
 
 ## Automated Verification Limits
 
@@ -36,6 +36,10 @@ Implement theater-specific states and automatic timer-driven transitions.
 4. Delete a theater room and confirm state label is removed cleanly.
 5. Save/reload and confirm restored theaters keep working state labels and transitions.
 
-## Recommendation
+## Human Approval
 
-- After local runtime verification, mark Phase 13 verified and proceed to Phase 14.
+- Approved by user after validating:
+  - state transitions run correctly,
+  - save/load restores correct theater state,
+  - room deletion removes state label,
+  - restart restores state labels.

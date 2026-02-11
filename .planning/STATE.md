@@ -1,6 +1,6 @@
 # Project State: TheaterCity
 
-**Last Updated:** 2026-02-08 (Phase 12 complete)
+**Last Updated:** 2026-02-11 (Phase 13 complete)
 
 ---
 
@@ -17,10 +17,10 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 ## Current Position
 
 **Milestone:** v1.1 Theater Core Mechanics
-**Phase:** 12 - Movie Data System (COMPLETE)
+**Phase:** 13 - Theater State Machine (COMPLETE)
 **Plan:** 03 of 3 complete
 **Status:** Phase complete
-**Last activity:** 2026-02-08 -- Completed 12-03-PLAN.md
+**Last activity:** 2026-02-11 -- Completed 13-03-PLAN.md
 
 **Progress:**
 ```
@@ -30,11 +30,11 @@ See: .planning/milestones/v1.0-ROADMAP.md
 Milestone v1.1: IN PROGRESS
 [█████] Phase 11: Timer & State Foundation ✓ VERIFIED
 [█████] Phase 12: Movie Data System ✓ COMPLETE
-[-----] Phase 13: Theater State Machine (pending)
+[█████] Phase 13: Theater State Machine ✓ VERIFIED
 [-----] Phase 14: Movie Scheduling UI (pending)
 [-----] Phase 15: Patron Theater Behavior (pending)
 
-Total: 2/5 phases complete | 4/14 requirements done
+Total: 3/5 phases complete | 6/14 requirements done
 ```
 
 ---
@@ -109,8 +109,8 @@ None currently.
 - [x] Execute Phase 11
 - [x] Plan Phase 12 (Movie Data System)
 - [x] Execute Phase 12 (COMPLETE)
-- [ ] Plan Phase 13 (Theater State Machine)
-- [ ] Execute Phase 13
+- [x] Plan Phase 13 (Theater State Machine)
+- [x] Execute Phase 13 (COMPLETE)
 - [ ] Plan Phase 14 (Movie Scheduling UI)
 - [ ] Execute Phase 14
 - [ ] Plan Phase 15 (Patron Theater Behavior)
@@ -139,13 +139,13 @@ None currently.
 
 ### What's Next
 
-1. Plan and execute Phase 13 (Theater State Machine)
-2. Continue through phases 14-15
+1. Plan and execute Phase 14 (Movie Scheduling UI)
+2. Execute Phase 15 (Patron Theater Behavior)
 3. Complete v1.1 milestone
 
 ### Context for Next Session
 
-Phase 12 complete. Movie data system ready with MovieResource, MovieGenerator, MoviePool, MoviePoolSerializer, and 21 unit tests.
+Phase 13 complete and verified by user runtime checks. Theater rooms now support full timed state flow with visible labels and persistence-safe restoration.
 
 Key files created (Phase 11):
 - `scripts/storage/TimerState.gd` - Timestamp-based offline timer
@@ -165,6 +165,17 @@ Key files created (Phase 12):
 - `scripts/storage/MoviePoolSerializer.gd` - Atomic JSON persistence for movie pool
 - `test/unit/test_movie_data.gd` - 21 unit tests for movie data system
 
+Key files created (Phase 13):
+- `scripts/state_machine/TheaterStateConfig.gd` - Canonical theater state definitions + room-type guard
+- `test/unit/test_theater_state_machine.gd` - Unit tests for theater graph and timed transitions
+- `test/integration/test_theater_state_resume.gd` - Integration tests for save/load and resume progression
+
+Key files updated (Phase 13):
+- `scripts/storage/RoomInstance.gd` - Consistent state-machine signal wiring for fresh/restore paths
+- `scripts/room_building/RoomBuildController.gd` - Theater state initialization for create + restore lifecycles
+- `scripts/Main.gd` - Runtime theater ticking and per-room state label lifecycle
+- `scripts/ui/StateDebugLabel.gd` - Improved readable badge-style label theme
+
 Summaries:
 - `.planning/phases/11-timer-state-foundation/11-01-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-02-SUMMARY.md`
@@ -174,6 +185,10 @@ Summaries:
 - `.planning/phases/12-movie-data-system/12-01-SUMMARY.md`
 - `.planning/phases/12-movie-data-system/12-02-SUMMARY.md`
 - `.planning/phases/12-movie-data-system/12-03-SUMMARY.md`
+- `.planning/phases/13-theater-state-machine/13-01-SUMMARY.md`
+- `.planning/phases/13-theater-state-machine/13-02-SUMMARY.md`
+- `.planning/phases/13-theater-state-machine/13-03-SUMMARY.md`
+- `.planning/phases/13-theater-state-machine/13-VERIFICATION.md`
 
 ---
 

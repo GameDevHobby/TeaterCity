@@ -79,9 +79,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 13-01-PLAN.md — Theater state config and room lifecycle initialization wiring
-- [ ] 13-02-PLAN.md — Runtime theater ticking and visible state indicators
-- [ ] 13-03-PLAN.md — Unit/integration verification for theater state behavior
+- [x] 13-01-PLAN.md — Theater state config and room lifecycle initialization wiring
+- [x] 13-02-PLAN.md — Runtime theater ticking and visible state indicators
+- [x] 13-03-PLAN.md — Unit/integration verification for theater state behavior
 
 **Requirements:**
 - THTR-01: Theater room has states: Idle, Scheduled, Previews, Playing, Cleaning
@@ -155,7 +155,7 @@ Plans:
 |-------|------|--------|-------|
 | 11 | Timer & State Foundation | ✓ Complete | 5/5 |
 | 12 | Movie Data System | Planned | 0/3 |
-| 13 | Theater State Machine | Planned | 0/3 |
+| 13 | Theater State Machine | ✓ Complete | 3/3 |
 | 14 | Movie Scheduling UI | Pending | TBD |
 | 15 | Patron Theater Behavior | Pending | TBD |
 

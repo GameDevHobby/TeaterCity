@@ -66,8 +66,8 @@ This milestone implements the foundational timer system and core theater gamepla
 | TIMER-02 | Phase 11 | 11-01 | Complete |
 | STATE-01 | Phase 11 | 11-01, 11-02 | Complete |
 | STATE-02 | Phase 11 | 11-02 | Complete |
-| THTR-01 | Phase 13 | TBD | Pending |
-| THTR-02 | Phase 13 | TBD | Pending |
+| THTR-01 | Phase 13 | 13-01, 13-02, 13-03 | Complete |
+| THTR-02 | Phase 13 | 13-01, 13-02, 13-03 | Complete |
 | THTR-03 | Phase 12 | TBD | Pending |
 | THTR-04 | Phase 12 | TBD | Pending |
 | THTR-05 | Phase 14 | TBD | Pending |
