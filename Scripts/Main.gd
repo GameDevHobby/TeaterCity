@@ -26,6 +26,8 @@ var _resize_highlight: RoomResizeHighlight = null
 var _resize_cancel_button: Button = null
 var _admin_button: Button = null
 var _resume_notification: ResumeNotificationUI = null
+var _theater_state_label_layer: CanvasLayer = null
+var _theater_state_labels: Dictionary = {}
 
 func _ready() -> void:
 	# Scan exterior walls FIRST, before any rooms are loaded/restored
@@ -38,6 +40,8 @@ func _ready() -> void:
 
 	# Connect to RoomManager selection signals for future menu handling
 	_room_manager.room_selected.connect(_on_room_selected)
+	_room_manager.room_added.connect(_on_room_added)
+	_room_manager.room_restored.connect(_on_room_restored)
 
 	# Connect to room_removed for cleanup when rooms are deleted (including admin reset)
 	_room_manager.room_removed.connect(_on_room_removed_for_cleanup)
@@ -60,6 +64,12 @@ func _ready() -> void:
 	edit_menu_layer.name = "EditMenuLayer"
 	edit_menu_layer.layer = 1  # Above selection highlight (layer 0)
 	add_child(edit_menu_layer)
+
+	# Create state label CanvasLayer (screen-space overlays for theater states)
+	_theater_state_label_layer = CanvasLayer.new()
+	_theater_state_label_layer.name = "TheaterStateLabelLayer"
+	_theater_state_label_layer.layer = 1
+	add_child(_theater_state_label_layer)
 
 	# Create RoomEditMenu instance
 	_room_edit_menu = RoomEditMenu.new()
@@ -198,6 +208,10 @@ func _ready() -> void:
 	# Set up resume notification
 	_setup_resume_notification()
 
+	# Ensure any pre-existing theater rooms (if present) have state labels
+	for room in _room_manager.get_all_rooms():
+		_ensure_theater_state_label(room)
+
 
 func _create_admin_button() -> void:
 	# Get MainUILayer from scene tree (where BuildButton lives)
@@ -241,6 +255,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _room_manager.get_selected_room():
 			_room_manager.clear_selection()
 
+
+func _process(_delta: float) -> void:
+	for room in _room_manager.get_all_rooms():
+		if not TheaterStateConfig.is_theater_room(room):
+			continue
+		if room.state_machine:
+			room.state_machine.update()
+		_update_theater_state_label(room)
+
 func _on_build_button_pressed() -> void:
 	_build_mode_active = !_build_mode_active
 	if _build_mode_active:
@@ -253,6 +276,14 @@ func _on_build_button_pressed() -> void:
 
 func _on_room_completed(_room: RoomInstance) -> void:
 	_exit_build_mode()
+
+
+func _on_room_added(room: RoomInstance) -> void:
+	_ensure_theater_state_label(room)
+
+
+func _on_room_restored(room: RoomInstance) -> void:
+	_ensure_theater_state_label(room)
 
 
 func _on_room_selected(room: RoomInstance) -> void:
@@ -344,6 +375,8 @@ func _on_room_removed_for_cleanup(room: RoomInstance) -> void:
 	# Restore floor tiles
 	if wall_layer:
 		_deletion_op.restore_room_floor_tiles(room, wall_layer, _room_manager, _exterior_walls)
+
+	_remove_theater_state_label(room)
 
 
 func _on_resize_room_requested(room: RoomInstance) -> void:
@@ -606,6 +639,64 @@ func _setup_resume_notification() -> void:
 func _on_room_states_recalculated(transition_count: int) -> void:
 	if _resume_notification:
 		_resume_notification.show_notification(transition_count)
+
+
+func _ensure_theater_state_label(room: RoomInstance) -> void:
+	if not TheaterStateConfig.is_theater_room(room):
+		return
+	if room == null or room.id == "":
+		return
+	if _theater_state_label_layer == null:
+		return
+	if _theater_state_labels.has(room.id):
+		var existing = _theater_state_labels[room.id]
+		if is_instance_valid(existing):
+			if room.state_machine:
+				existing.set_state_machine(room.state_machine)
+			return
+
+	var label := StateDebugLabel.new()
+	label.name = "TheaterStateLabel_%s" % room.id
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if room.state_machine:
+		label.set_state_machine(room.state_machine)
+	_theater_state_label_layer.add_child(label)
+	_theater_state_labels[room.id] = label
+
+
+func _update_theater_state_label(room: RoomInstance) -> void:
+	if room == null or not _theater_state_labels.has(room.id):
+		return
+
+	var label: StateDebugLabel = _theater_state_labels[room.id]
+	if not is_instance_valid(label):
+		_theater_state_labels.erase(room.id)
+		return
+
+	if room.state_machine == null or room.state_machine.current_state == "":
+		label.hide_label()
+		return
+
+	label.set_state_machine(room.state_machine)
+
+	var bbox := room.bounding_box
+	var center_x := bbox.position.x + bbox.size.x / 2
+	var center_y := bbox.position.y + bbox.size.y / 2
+	var center_tile := Vector2i(center_x, center_y)
+	var screen_pos := IsometricMath.tile_to_screen(center_tile, get_viewport())
+	label.show_at_position(screen_pos + Vector2(0, -24))
+
+
+func _remove_theater_state_label(room: RoomInstance) -> void:
+	if room == null:
+		return
+	if not _theater_state_labels.has(room.id):
+		return
+
+	var label: StateDebugLabel = _theater_state_labels[room.id]
+	if is_instance_valid(label):
+		label.queue_free()
+	_theater_state_labels.erase(room.id)
 
 
 ## Scan the wall tilemap for all existing wall tiles at game start.
