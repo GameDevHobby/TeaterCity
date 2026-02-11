@@ -11,9 +11,24 @@ var _is_showing := false
 
 func _ready() -> void:
 	visible = false
-	# Style for debug visibility
-	add_theme_color_override("font_color", Color(1.0, 1.0, 0.0, 1.0))  # Yellow
+	# Readable non-button badge styling
+	add_theme_color_override("font_color", Color(0.95, 0.95, 0.9, 1.0))
 	add_theme_font_size_override("font_size", 12)
+	add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.6))
+	add_theme_constant_override("shadow_offset_x", 1)
+	add_theme_constant_override("shadow_offset_y", 1)
+
+	var badge_style := StyleBoxFlat.new()
+	badge_style.bg_color = Color(0.08, 0.09, 0.12, 0.72)
+	badge_style.border_color = Color(0.66, 0.69, 0.72, 0.5)
+	badge_style.set_border_width_all(1)
+	badge_style.set_corner_radius_all(4)
+	badge_style.set_content_margin(SIDE_LEFT, 6)
+	badge_style.set_content_margin(SIDE_RIGHT, 6)
+	badge_style.set_content_margin(SIDE_TOP, 3)
+	badge_style.set_content_margin(SIDE_BOTTOM, 3)
+	add_theme_stylebox_override("normal", badge_style)
+
 	horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 

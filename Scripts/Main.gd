@@ -333,7 +333,25 @@ func _on_edit_room_requested(room: RoomInstance) -> void:
 
 
 func _on_room_type_action_requested(room: RoomInstance) -> void:
-	print("Room type action requested: ", room.id, " type: ", room.room_type_id)
+	if room == null:
+		return
+
+	if not TheaterStateConfig.is_theater_room(room):
+		print("Room type action requested: ", room.id, " type: ", room.room_type_id)
+		return
+
+	if room.state_machine == null:
+		print("Theater %s has no state machine initialized" % room.id)
+		return
+
+	if room.state_machine.current_state == "":
+		room.state_machine.transition_to("idle")
+
+	if room.state_machine.current_state == "idle":
+		room.state_machine.transition_to("scheduled")
+		print("Theater %s scheduled" % room.id)
+	else:
+		print("Theater %s already active in state '%s'" % [room.id, room.state_machine.current_state])
 
 
 func _on_delete_room_requested(room: RoomInstance) -> void:
