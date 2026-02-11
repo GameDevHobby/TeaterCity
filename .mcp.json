@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "godot-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "C:/git/TheaterCity/addons/gdai-mcp-plugin-godot/gdai_mcp_server.py"
+      ]
+    }
+  }
+}
