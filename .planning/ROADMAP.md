@@ -105,6 +105,12 @@ Plans:
 
 **Goal**: Players can schedule movies through an accessible UI connected to theater rooms.
 **Depends on**: Phase 12 (movies must exist), Phase 13 (theater state machine must exist)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 14-01-PLAN.md — Scheduling data plumbing (RoomInstance payload + movie pool runtime wiring)
+- [ ] 14-02-PLAN.md — Theater schedule modal UI and room-type button integration
+- [ ] 14-03-PLAN.md — Scheduling tests and runtime verification checkpoint
 
 **Requirements:**
 - THTR-05: Scheduling UI accessible from theater room's room-type button
@@ -156,7 +162,7 @@ Plans:
 | 11 | Timer & State Foundation | ✓ Complete | 5/5 |
 | 12 | Movie Data System | Planned | 0/3 |
 | 13 | Theater State Machine | ✓ Complete | 3/3 |
-| 14 | Movie Scheduling UI | Pending | TBD |
+| 14 | Movie Scheduling UI | Planned | 0/3 |
 | 15 | Patron Theater Behavior | Pending | TBD |
 
 ---
