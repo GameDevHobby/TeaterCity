@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=4 uid="uid://b5gx7yrfplj7k"]
+[gd_scene load_steps=33 format=4 uid="uid://b5gx7yrfplj7k"]
 
 [ext_resource type="Texture2D" uid="uid://cgyyfd85xayf4" path="res://resources/tiles/RetroDiner_Tiles_128x128/RetroDiner_Tiles_Classic_128x128.png" id="1_r0du0"]
 [ext_resource type="Script" uid="uid://dyainvbf8joc2" path="res://scripts/Main.gd" id="1_trn2v"]
@@ -19,6 +19,8 @@
 [ext_resource type="Script" path="res://scripts/room_editing/DoorEditHighlight.gd" id="15_doorhl"]
 [ext_resource type="Script" path="res://scripts/room_editing/RoomResizeController.gd" id="16_resizectrl"]
 [ext_resource type="Script" path="res://scripts/room_editing/RoomResizeHighlight.gd" id="17_resizehl"]
+[ext_resource type="PackedScene" path="res://scripts/ui/ResumeNotificationUI.tscn" id="18_resume"]
+[ext_resource type="PackedScene" path="res://scripts/ui/StateDebugLabel.tscn" id="19_statelabel"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.12, 0.1, 0.15, 0.95)
@@ -1257,6 +1259,7 @@ script = ExtResource("1_trn2v")
 room_build_manager = NodePath("RoomBuildSystem/RoomBuildController")
 camera = NodePath("PinchPanCamera")
 build_button = NodePath("MainUILayer/BuildButton")
+state_debug_label_scene = ExtResource("19_statelabel")
 
 [node name="PinchPanCamera" type="Marker2D" parent="."]
 position = Vector2(554, 347)
@@ -1496,6 +1499,8 @@ text = "Cancel"
 
 [node name="TheaterStateLabelLayer" type="CanvasLayer" parent="."]
 layer = 1
+
+[node name="ResumeNotificationUI" parent="." instance=ExtResource("18_resume")]
 
 [node name="FurnitureEditLayer" type="CanvasLayer" parent="."]
 

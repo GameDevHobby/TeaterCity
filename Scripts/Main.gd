@@ -4,6 +4,7 @@ extends Node2D
 @export var room_build_manager: RoomBuildController
 @export var camera: PinchPanCamera
 @export var build_button: Button
+@export var state_debug_label_scene: PackedScene
 
 ## Exterior wall positions scanned from tilemap at startup.
 ## These walls exist in the scene and should never be deleted.
@@ -25,7 +26,7 @@ var _deletion_op: DeletionOperation = null
 @onready var _resize_highlight: RoomResizeHighlight = $ResizeEditLayer/RoomResizeHighlight
 @onready var _resize_cancel_button: Button = $EditMenuLayer/ResizeCancelButton
 @onready var _admin_button: Button = $MainUILayer/AdminButton
-var _resume_notification: ResumeNotificationUI = null
+@onready var _resume_notification: ResumeNotificationUI = $ResumeNotificationUI
 @onready var _theater_state_label_layer: CanvasLayer = $TheaterStateLabelLayer
 var _theater_state_labels: Dictionary = {}
 var _movie_pool: MoviePool = null
@@ -624,9 +625,6 @@ func _update_navigation_for_room(room: RoomInstance) -> void:
 
 
 func _setup_resume_notification() -> void:
-	_resume_notification = preload("res://scripts/ui/ResumeNotificationUI.tscn").instantiate()
-	add_child(_resume_notification)
-
 	# Connect to RoomManager signal
 	_room_manager.room_states_recalculated.connect(_on_room_states_recalculated)
 
@@ -650,7 +648,11 @@ func _ensure_theater_state_label(room: RoomInstance) -> void:
 				existing.set_state_machine(room.state_machine)
 			return
 
-	var label := preload("res://scripts/ui/StateDebugLabel.tscn").instantiate() as StateDebugLabel
+	if state_debug_label_scene == null:
+		push_warning("Main: state_debug_label_scene is not assigned")
+		return
+
+	var label := state_debug_label_scene.instantiate() as StateDebugLabel
 	label.name = "TheaterStateLabel_%s" % room.id
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if room.state_machine:

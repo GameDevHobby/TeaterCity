@@ -120,6 +120,29 @@ Before adding `*.new()`, `instantiate()`, or `add_child()`:
 
 If any answer indicates scene-authored, do not implement via runtime node construction.
 
+## Node Reference Policy (Hard Rule)
+
+For scene node references and runtime scene loading, use exported references, not string paths.
+
+### Mandatory Rules
+
+1. Use `@export` node references for persistent scene dependencies (buttons, panels, controllers, overlays).
+2. Do not use `$Node/Path` shorthand in production scripts.
+3. Do not use `get_node("relative/path")` or `get_node_or_null("relative/path")` for stable scene-owned references.
+4. For runtime-instanced scenes, use exported `PackedScene` fields instead of hardcoded `preload("res://...")` strings.
+5. If a dynamic helper scene needs child access, prefer a script API on that scene over string-based child lookups.
+
+### Allowed Exceptions (Narrow)
+
+- Autoload/global singleton access (`/root/...`) may remain temporarily during migration.
+- Transient one-off introspection/debug code where exported references are not practical.
+
+### Why
+
+- Protects against editor hierarchy/path changes.
+- Makes dependencies visible and editable in Inspector.
+- Removes fragile hidden string-coupling.
+
 ## Prioritized Migration Sequence (Scene-First Compliance)
 
 Use this order to migrate existing violations with lowest risk first and fastest visual-editing wins.

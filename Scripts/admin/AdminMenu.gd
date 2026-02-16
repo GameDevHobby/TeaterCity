@@ -23,6 +23,8 @@ signal rooms_reset
 ## Private state
 var _is_enabled: bool = false
 
+@export var admin_menu_ui_scene: PackedScene = preload("res://scripts/admin/AdminMenuUI.tscn")
+
 ## Lazy-instantiated UI instance
 var _ui_instance: AdminMenuUI = null
 
@@ -67,7 +69,11 @@ func toggle_menu() -> void:
 ## Create the admin menu UI instance.
 ## Adds to scene tree root so it persists across scene changes.
 func _create_ui() -> void:
-	_ui_instance = preload("res://scripts/admin/AdminMenuUI.tscn").instantiate() as AdminMenuUI
+	if admin_menu_ui_scene == null:
+		push_error("AdminMenu: admin_menu_ui_scene is not assigned")
+		return
+
+	_ui_instance = admin_menu_ui_scene.instantiate() as AdminMenuUI
 	_ui_instance.name = "AdminMenuUI"
 	# Add to root so it persists across scene changes
 	get_tree().root.add_child(_ui_instance)
