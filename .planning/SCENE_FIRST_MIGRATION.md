@@ -51,33 +51,33 @@ Tracks migration of runtime-created fixed node hierarchies into scene-authored `
 
 ## 5) Main Fixed Hierarchy Extraction
 
-- [ ] Move fixed layers/controllers/buttons from `scripts/Main.gd` to `Main.tscn` or child scenes
-- [ ] Replace runtime construction with node references (`@export`/`@onready`)
-- [ ] Preserve existing behavior and signal wiring
+- [x] Move fixed layers/controllers/buttons from `scripts/Main.gd` to `Main.tscn` or child scenes
+- [x] Replace runtime construction with node references (`@export`/`@onready`)
+- [x] Preserve existing behavior and signal wiring
 
 **Done when:** `_ready()` no longer builds persistent fixed node hierarchies.
 
 ## 6) Room Selection Wrapper Migration
 
-- [ ] Refactor persistent selection structure in `scripts/RoomManager.gd`
-- [ ] Use pre-authored room selection component scene/template where feasible
-- [ ] Keep only truly dynamic parts runtime-driven
+- [x] Refactor persistent selection structure in `scripts/RoomManager.gd`
+- [x] Use pre-authored room selection component scene/template where feasible
+- [x] Keep only truly dynamic parts runtime-driven
 
 **Done when:** stable selection collision structure is scene/component-authored.
 
 ## 7) Furniture Helper Nodes
 
-- [ ] Migrate fixed helper nodes in `objects/furniture/furniture_base.gd` into furniture scenes
-- [ ] Keep script logic for runtime configuration only
-- [ ] Validate representative furniture prefabs after migration
+- [x] Migrate fixed helper nodes in `objects/furniture/furniture_base.gd` into furniture scenes
+- [x] Keep script logic for runtime configuration only
+- [x] Validate representative furniture prefabs after migration
 
 **Done when:** stable collision/navigation helper nodes are authored in furniture scenes.
 
 ## 8) Project-Wide Guardrail Pass
 
-- [ ] Sweep for fixed runtime node construction patterns
-- [ ] Convert repeated dynamic UI/game elements to prefab instancing where practical
-- [ ] Document any intentional exceptions inline with justification
+- [x] Sweep for fixed runtime node construction patterns
+- [x] Convert repeated dynamic UI/game elements to prefab instancing where practical
+- [x] Document any intentional exceptions inline with justification
 
 **Done when:** fixed runtime node creation patterns are removed and scene-first policy is enforceable.
 
@@ -93,3 +93,7 @@ Use this section to append step progress notes.
 - 2026-02-16: Step 2 completed - RoomEditMenu hierarchy moved to `scripts/room_editing/RoomEditMenu.tscn`; `Main.gd` now instantiates the scene.
 - 2026-02-16: Step 3 completed - FurnitureListPanel shell moved to scene, repeated buttons now use `FurnitureListItemButton.tscn` instancing.
 - 2026-02-16: Step 4 completed - AdminMenuUI migrated to scene and AdminMenu now uses `AdminMenuUI.tscn` instancing.
+- 2026-02-16: Step 5 completed - Fixed edit/selection/resize/door layers and control nodes moved to `Main.tscn`; `Main.gd` now binds scene-authored nodes.
+- 2026-02-16: Step 6 completed - Room selection wrappers now instantiate `scripts/room_editing/RoomSelectionArea.tscn` template instead of building nodes with `.new()`.
+- 2026-02-16: Step 7 completed - `furniture_base.gd` no longer creates NavigationObstacle2D at runtime; furniture scenes are the source of helper nodes.
+- 2026-02-16: Step 8 completed - Guardrail sweep performed; dynamic `StateDebugLabel` now scene-instanced and transient edit hitbox runtime creation explicitly documented.

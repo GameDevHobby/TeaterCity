@@ -267,6 +267,8 @@ func _create_furniture_areas(room: RoomInstance) -> void:
 	for i in range(room.furniture.size()):
 		var furn: RoomInstance.FurniturePlacement = room.furniture[i]
 
+		# Intentional runtime creation: transient, variable-count selection hitboxes
+		# tied to current furniture list and rebuilt/cleaned during edit mode.
 		var area := Area2D.new()
 		area.name = "FurnitureArea_%d" % i
 		area.input_pickable = true  # CRITICAL - default is false

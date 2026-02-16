@@ -191,6 +191,8 @@ func _create_wall_areas(room: RoomInstance) -> void:
 	var world_parent = get_tree().current_scene
 
 	for wall_pos in room.walls:
+		# Intentional runtime creation: transient, variable-count wall hitboxes
+		# for door editing only; all areas are cleaned up on mode exit.
 		var area := Area2D.new()
 		var pos_hash := _position_to_hash(wall_pos)
 		area.name = "WallArea_%d_%d" % [wall_pos.x, wall_pos.y]

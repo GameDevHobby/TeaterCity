@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=4 uid="uid://b5gx7yrfplj7k"]
+[gd_scene load_steps=31 format=4 uid="uid://b5gx7yrfplj7k"]
 
 [ext_resource type="Texture2D" uid="uid://cgyyfd85xayf4" path="res://resources/tiles/RetroDiner_Tiles_128x128/RetroDiner_Tiles_Classic_128x128.png" id="1_r0du0"]
 [ext_resource type="Script" uid="uid://dyainvbf8joc2" path="res://scripts/Main.gd" id="1_trn2v"]
@@ -9,6 +9,16 @@
 [ext_resource type="PackedScene" uid="uid://c006gl3x1x8qs" path="res://objects/target.tscn" id="5_3dxm6"]
 [ext_resource type="PackedScene" uid="uid://ohglcmejviuu" path="res://objects/spawner.tscn" id="5_fos0i"]
 [ext_resource type="TileSet" uid="uid://6pxb3e4flcdm" path="res://resources/tiles/wall_tileset.tres" id="7_03owx"]
+[ext_resource type="Script" path="res://scripts/room_building/RoomSelectionHighlight.gd" id="8_selhl"]
+[ext_resource type="PackedScene" path="res://scripts/room_editing/RoomEditMenu.tscn" id="9_remenu"]
+[ext_resource type="PackedScene" path="res://scripts/room_editing/TheaterSchedulePanel.tscn" id="10_sched"]
+[ext_resource type="PackedScene" path="res://scripts/room_editing/FurnitureListPanel.tscn" id="11_furnlist"]
+[ext_resource type="Script" path="res://scripts/room_editing/FurnitureEditController.gd" id="12_furnctrl"]
+[ext_resource type="Script" path="res://scripts/room_editing/FurnitureSelectionHighlight.gd" id="13_furnhl"]
+[ext_resource type="Script" path="res://scripts/room_editing/DoorEditController.gd" id="14_doorctrl"]
+[ext_resource type="Script" path="res://scripts/room_editing/DoorEditHighlight.gd" id="15_doorhl"]
+[ext_resource type="Script" path="res://scripts/room_editing/RoomResizeController.gd" id="16_resizectrl"]
+[ext_resource type="Script" path="res://scripts/room_editing/RoomResizeHighlight.gd" id="17_resizehl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.12, 0.1, 0.15, 0.95)
@@ -1443,4 +1453,115 @@ text = "Build"
 icon_alignment = 1
 expand_icon = true
 
+[node name="AdminButton" type="Button" parent="MainUILayer"]
+visible = false
+z_index = 10
+custom_minimum_size = Vector2(80, 40)
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 96.0
+offset_bottom = 56.0
+text = "Admin"
+
+[node name="SelectionHighlightLayer" type="CanvasLayer" parent="."]
+
+[node name="SelectionHighlight" type="Control" parent="SelectionHighlightLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("8_selhl")
+
+[node name="EditMenuLayer" type="CanvasLayer" parent="."]
+layer = 1
+
+[node name="RoomEditMenu" parent="EditMenuLayer" instance=ExtResource("9_remenu")]
+
+[node name="TheaterSchedulePanel" parent="EditMenuLayer" instance=ExtResource("10_sched")]
+
+[node name="FurnitureListPanel" parent="EditMenuLayer" instance=ExtResource("11_furnlist")]
+
+[node name="DoorEditDoneButton" type="Button" parent="EditMenuLayer"]
+visible = false
+custom_minimum_size = Vector2(70, 40)
+text = "Done"
+
+[node name="ResizeCancelButton" type="Button" parent="EditMenuLayer"]
+visible = false
+custom_minimum_size = Vector2(80, 40)
+text = "Cancel"
+
+[node name="TheaterStateLabelLayer" type="CanvasLayer" parent="."]
+layer = 1
+
+[node name="FurnitureEditLayer" type="CanvasLayer" parent="."]
+
+[node name="FurnitureEditController" type="Control" parent="FurnitureEditLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("12_furnctrl")
+
+[node name="FurnitureSelectionHighlight" type="Control" parent="FurnitureEditLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("13_furnhl")
+
+[node name="DoorEditLayer" type="CanvasLayer" parent="."]
+
+[node name="DoorEditController" type="Control" parent="DoorEditLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("14_doorctrl")
+
+[node name="DoorEditHighlight" type="Control" parent="DoorEditLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("15_doorhl")
+
+[node name="ResizeEditLayer" type="CanvasLayer" parent="."]
+
+[node name="RoomResizeController" type="Control" parent="ResizeEditLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("16_resizectrl")
+
+[node name="RoomResizeHighlight" type="Control" parent="ResizeEditLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("17_resizehl")
+
 [connection signal="pressed" from="MainUILayer/BuildButton" to="." method="_on_build_button_pressed"]
+[connection signal="pressed" from="MainUILayer/AdminButton" to="." method="_on_admin_button_pressed"]

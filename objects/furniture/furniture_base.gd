@@ -110,10 +110,8 @@ func _setup_sprite() -> void:
 func _setup_navigation_obstacle(size: Vector2i) -> void:
 	var obstacle = get_node_or_null("NavigationObstacle2D") as NavigationObstacle2D
 	if not obstacle:
-		# Create obstacle if it doesn't exist
-		obstacle = NavigationObstacle2D.new()
-		obstacle.name = "NavigationObstacle2D"
-		add_child(obstacle)
+		push_warning("FurnitureBase %s: missing NavigationObstacle2D child (scene-author this node)" % name)
+		return
 
 	# Enable avoidance
 	obstacle.avoidance_enabled = true

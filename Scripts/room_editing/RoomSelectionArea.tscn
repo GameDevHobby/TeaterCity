@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="RoomSelectionArea" type="Area2D"]
+input_pickable = true
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]

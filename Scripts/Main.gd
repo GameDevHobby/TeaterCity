@@ -14,22 +14,22 @@ var _exterior_walls: Array[Vector2i] = []
 @onready var _admin_menu: Node = get_node("/root/AdminMenu")
 
 var _build_mode_active = false
-var _furniture_controller: FurnitureEditController = null
-var _furniture_list_panel: FurnitureListPanel = null
-var _door_edit_controller: DoorEditController = null
-var _door_edit_highlight: DoorEditHighlight = null
-var _room_edit_menu: RoomEditMenu = null
-var _door_edit_done_button: Button = null
+@onready var _furniture_controller: FurnitureEditController = $FurnitureEditLayer/FurnitureEditController
+@onready var _furniture_list_panel: FurnitureListPanel = $EditMenuLayer/FurnitureListPanel
+@onready var _door_edit_controller: DoorEditController = $DoorEditLayer/DoorEditController
+@onready var _door_edit_highlight: DoorEditHighlight = $DoorEditLayer/DoorEditHighlight
+@onready var _room_edit_menu: RoomEditMenu = $EditMenuLayer/RoomEditMenu
+@onready var _door_edit_done_button: Button = $EditMenuLayer/DoorEditDoneButton
 var _deletion_op: DeletionOperation = null
-var _resize_controller: RoomResizeController = null
-var _resize_highlight: RoomResizeHighlight = null
-var _resize_cancel_button: Button = null
-var _admin_button: Button = null
+@onready var _resize_controller: RoomResizeController = $ResizeEditLayer/RoomResizeController
+@onready var _resize_highlight: RoomResizeHighlight = $ResizeEditLayer/RoomResizeHighlight
+@onready var _resize_cancel_button: Button = $EditMenuLayer/ResizeCancelButton
+@onready var _admin_button: Button = $MainUILayer/AdminButton
 var _resume_notification: ResumeNotificationUI = null
-var _theater_state_label_layer: CanvasLayer = null
+@onready var _theater_state_label_layer: CanvasLayer = $TheaterStateLabelLayer
 var _theater_state_labels: Dictionary = {}
 var _movie_pool: MoviePool = null
-var _theater_schedule_panel: TheaterSchedulePanel = null
+@onready var _theater_schedule_panel: TheaterSchedulePanel = $EditMenuLayer/TheaterSchedulePanel
 var _camera_pan_before_schedule_modal := true
 
 func _ready() -> void:
@@ -49,42 +49,25 @@ func _ready() -> void:
 	# Connect to room_removed for cleanup when rooms are deleted (including admin reset)
 	_room_manager.room_removed.connect(_on_room_removed_for_cleanup)
 
-	# Create selection highlight overlay in its own CanvasLayer for screen-space rendering
-	# CanvasLayer ensures the Control draws in screen space (matching tile_to_screen coords)
-	var selection_layer = CanvasLayer.new()
-	selection_layer.name = "SelectionHighlightLayer"
-	selection_layer.layer = 0  # Same layer as game world, but rendered after
-	add_child(selection_layer)
-
-	var selection_highlight = RoomSelectionHighlight.new()
-	selection_highlight.name = "SelectionHighlight"
-	selection_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block input
-	selection_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)  # Cover full screen
-	selection_layer.add_child(selection_highlight)
-
-	# Create edit menu CanvasLayer (above selection highlight)
-	var edit_menu_layer = CanvasLayer.new()
-	edit_menu_layer.name = "EditMenuLayer"
-	edit_menu_layer.layer = 1  # Above selection highlight (layer 0)
-	add_child(edit_menu_layer)
-
-	# Create state label CanvasLayer (screen-space overlays for theater states)
-	_theater_state_label_layer = CanvasLayer.new()
-	_theater_state_label_layer.name = "TheaterStateLabelLayer"
-	_theater_state_label_layer.layer = 1
-	add_child(_theater_state_label_layer)
-
-	# Create RoomEditMenu instance
-	_room_edit_menu = preload("res://scripts/room_editing/RoomEditMenu.tscn").instantiate()
-	_room_edit_menu.name = "RoomEditMenu"
-	edit_menu_layer.add_child(_room_edit_menu)
-
-	# Create TheaterSchedulePanel modal
-	_theater_schedule_panel = preload("res://scripts/room_editing/TheaterSchedulePanel.tscn").instantiate()
-	_theater_schedule_panel.name = "TheaterSchedulePanel"
+	# Scene-authored fixed UI/edit hierarchy setup
+	_theater_schedule_panel.hide_panel()
 	_theater_schedule_panel.schedule_confirmed.connect(_on_theater_schedule_confirmed)
 	_theater_schedule_panel.schedule_cancelled.connect(_on_theater_schedule_cancelled)
-	edit_menu_layer.add_child(_theater_schedule_panel)
+
+	_furniture_controller.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_furniture_controller.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_furniture_controller.mode_exited.connect(_on_furniture_edit_exited)
+
+	var selection_highlight := get_node("SelectionHighlightLayer/SelectionHighlight") as RoomSelectionHighlight
+	if selection_highlight:
+		selection_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		selection_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
+
+	var furniture_highlight := get_node("FurnitureEditLayer/FurnitureSelectionHighlight") as FurnitureSelectionHighlight
+	if furniture_highlight:
+		furniture_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		furniture_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
+		furniture_highlight.set_controller(_furniture_controller)
 
 	# Create DeletionOperation
 	_deletion_op = DeletionOperation.new()
@@ -96,34 +79,6 @@ func _ready() -> void:
 	_room_edit_menu.delete_room_pressed.connect(_on_delete_room_requested)
 	_room_edit_menu.resize_room_pressed.connect(_on_resize_room_requested)
 
-	# Create furniture editing CanvasLayer (same layer as room selection for correct z-order)
-	var furniture_edit_layer = CanvasLayer.new()
-	furniture_edit_layer.name = "FurnitureEditLayer"
-	furniture_edit_layer.layer = 0  # Same layer as SelectionHighlightLayer
-	add_child(furniture_edit_layer)
-
-	# Create FurnitureEditController
-	_furniture_controller = FurnitureEditController.new()
-	_furniture_controller.name = "FurnitureEditController"
-	_furniture_controller.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_furniture_controller.set_anchors_preset(Control.PRESET_FULL_RECT)
-	furniture_edit_layer.add_child(_furniture_controller)
-
-	# Create FurnitureSelectionHighlight
-	var furniture_highlight = FurnitureSelectionHighlight.new()
-	furniture_highlight.name = "FurnitureSelectionHighlight"
-	furniture_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	furniture_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
-	furniture_edit_layer.add_child(furniture_highlight)
-	furniture_highlight.set_controller(_furniture_controller)
-
-	# Connect furniture controller mode_exited signal
-	_furniture_controller.mode_exited.connect(_on_furniture_edit_exited)
-
-	# Create furniture list panel (in EditMenuLayer since it's screen-space UI)
-	_furniture_list_panel = preload("res://scripts/room_editing/FurnitureListPanel.tscn").instantiate()
-	_furniture_list_panel.name = "FurnitureListPanel"
-	edit_menu_layer.add_child(_furniture_list_panel)
 	_furniture_list_panel.set_controller(_furniture_controller)
 
 	# Connect list panel signals
@@ -137,25 +92,10 @@ func _ready() -> void:
 	_furniture_controller.furniture_added.connect(_on_furniture_added)
 	_furniture_controller.placement_preview_updated.connect(_on_placement_preview_updated)
 
-	# Create door editing CanvasLayer (same layer as room selection for correct z-order)
-	var door_edit_layer = CanvasLayer.new()
-	door_edit_layer.name = "DoorEditLayer"
-	door_edit_layer.layer = 0  # Same layer as SelectionHighlightLayer
-	add_child(door_edit_layer)
-
-	# Create DoorEditController
-	_door_edit_controller = DoorEditController.new()
-	_door_edit_controller.name = "DoorEditController"
 	_door_edit_controller.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_door_edit_controller.set_anchors_preset(Control.PRESET_FULL_RECT)
-	door_edit_layer.add_child(_door_edit_controller)
-
-	# Create DoorEditHighlight
-	_door_edit_highlight = DoorEditHighlight.new()
-	_door_edit_highlight.name = "DoorEditHighlight"
 	_door_edit_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_door_edit_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
-	door_edit_layer.add_child(_door_edit_highlight)
 	_door_edit_highlight.set_controller(_door_edit_controller)
 
 	# Connect door edit controller signals
@@ -165,35 +105,14 @@ func _ready() -> void:
 	_door_edit_controller.door_remove_failed.connect(_on_door_remove_failed)
 	_door_edit_controller.mode_exited.connect(_on_door_edit_mode_exited)
 
-	# Create Done button for door edit mode (in EditMenuLayer for screen-space UI)
-	_door_edit_done_button = Button.new()
-	_door_edit_done_button.name = "DoorEditDoneButton"
-	_door_edit_done_button.text = "Done"
-	_door_edit_done_button.custom_minimum_size = Vector2(70, 40)
 	UIStyleHelper.apply_button_style(_door_edit_done_button)
 	_door_edit_done_button.pressed.connect(_on_door_edit_done_pressed)
-	edit_menu_layer.add_child(_door_edit_done_button)
 	_door_edit_done_button.hide()  # Hidden until door edit mode
 
-	# Create resize editing CanvasLayer (same layer as room selection)
-	var resize_edit_layer = CanvasLayer.new()
-	resize_edit_layer.name = "ResizeEditLayer"
-	resize_edit_layer.layer = 0  # Same layer as SelectionHighlightLayer
-	add_child(resize_edit_layer)
-
-	# Create RoomResizeController
-	_resize_controller = RoomResizeController.new()
-	_resize_controller.name = "RoomResizeController"
 	_resize_controller.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_resize_controller.set_anchors_preset(Control.PRESET_FULL_RECT)
-	resize_edit_layer.add_child(_resize_controller)
-
-	# Create RoomResizeHighlight
-	_resize_highlight = RoomResizeHighlight.new()
-	_resize_highlight.name = "RoomResizeHighlight"
 	_resize_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_resize_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
-	resize_edit_layer.add_child(_resize_highlight)
 	_resize_highlight.set_controller(_resize_controller)
 
 	# Connect resize controller signals
@@ -201,19 +120,17 @@ func _ready() -> void:
 	_resize_controller.door_placement_needed.connect(_on_resize_door_placement_needed)
 	_resize_controller.mode_exited.connect(_on_resize_mode_exited)
 
-	# Create Cancel button for resize mode (in EditMenuLayer for screen-space UI)
-	_resize_cancel_button = Button.new()
-	_resize_cancel_button.name = "ResizeCancelButton"
-	_resize_cancel_button.text = "Cancel"
-	_resize_cancel_button.custom_minimum_size = Vector2(80, 40)
 	UIStyleHelper.apply_button_style(_resize_cancel_button)
 	_resize_cancel_button.pressed.connect(_on_resize_cancel_pressed)
-	edit_menu_layer.add_child(_resize_cancel_button)
 	_resize_cancel_button.hide()  # Hidden until resize mode
 
-	# Create admin button for mobile users (only if admin is enabled)
+	# Configure admin button visibility/style (only if admin is enabled)
 	if _admin_menu.is_admin_enabled():
-		_create_admin_button()
+		UIStyleHelper.apply_button_style(_admin_button)
+		_admin_button.pressed.connect(_on_admin_button_pressed)
+		_admin_button.show()
+	else:
+		_admin_button.hide()
 
 	# Set up resume notification
 	_setup_resume_notification()
@@ -222,26 +139,6 @@ func _ready() -> void:
 	# Ensure any pre-existing theater rooms (if present) have state labels
 	for room in _room_manager.get_all_rooms():
 		_ensure_theater_state_label(room)
-
-
-func _create_admin_button() -> void:
-	# Get MainUILayer from scene tree (where BuildButton lives)
-	var main_ui_layer = get_node_or_null("MainUILayer")
-	if not main_ui_layer:
-		push_warning("Main: MainUILayer not found, skipping admin button")
-		return
-
-	_admin_button = Button.new()
-	_admin_button.name = "AdminButton"
-	_admin_button.text = "Admin"
-	_admin_button.custom_minimum_size = Vector2(80, 40)
-	UIStyleHelper.apply_button_style(_admin_button)
-
-	# Position in top-left corner (offset from edge)
-	_admin_button.position = Vector2(16, 16)
-
-	_admin_button.pressed.connect(_on_admin_button_pressed)
-	main_ui_layer.add_child(_admin_button)
 
 
 func _on_admin_button_pressed() -> void:
@@ -753,7 +650,7 @@ func _ensure_theater_state_label(room: RoomInstance) -> void:
 				existing.set_state_machine(room.state_machine)
 			return
 
-	var label := StateDebugLabel.new()
+	var label := preload("res://scripts/ui/StateDebugLabel.tscn").instantiate() as StateDebugLabel
 	label.name = "TheaterStateLabel_%s" % room.id
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if room.state_machine:

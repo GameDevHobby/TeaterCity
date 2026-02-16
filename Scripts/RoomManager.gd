@@ -17,6 +17,7 @@ const TAP_TIME_THRESHOLD := 300  # milliseconds
 
 # Auto-save configuration
 const SAVE_DEBOUNCE_SECONDS := 5.0
+const ROOM_SELECTION_AREA_SCENE := preload("res://scripts/room_editing/RoomSelectionArea.tscn")
 
 # Private state
 var _rooms: Array[RoomInstance] = []
@@ -228,13 +229,15 @@ func _is_tile_in_room(tile: Vector2i, room: RoomInstance) -> bool:
 # --- Private Methods ---
 
 func _create_selection_area(room: RoomInstance) -> void:
-	var area := Area2D.new()
+	var area := ROOM_SELECTION_AREA_SCENE.instantiate() as Area2D
 	area.name = "SelectionArea_%s" % room.id
 	area.input_pickable = true  # CRITICAL - default is false
 
-	var collision := CollisionPolygon2D.new()
+	var collision := area.get_node("CollisionPolygon2D") as CollisionPolygon2D
+	if collision == null:
+		push_error("RoomManager: RoomSelectionArea scene missing CollisionPolygon2D child")
+		return
 	collision.polygon = _room_to_polygon(room)
-	area.add_child(collision)
 
 	area.input_event.connect(_on_area_input.bind(room))
 
