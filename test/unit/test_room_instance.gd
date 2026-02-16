@@ -226,3 +226,98 @@ func test_multi_tile_furniture_occupied_tiles() -> void:
 	assert_true(room.is_tile_occupied(Vector2i(3, 2)), "Top-right of 2x2 should be occupied")
 	assert_true(room.is_tile_occupied(Vector2i(2, 3)), "Bottom-left of 2x2 should be occupied")
 	assert_true(room.is_tile_occupied(Vector2i(3, 3)), "Bottom-right of 2x2 should be occupied")
+
+
+func test_set_scheduled_movie_updates_room_payload_fields() -> void:
+	var room = RoomInstance.new("test_id", TheaterStateConfig.THEATER_ROOM_TYPE_ID)
+	var movie = MovieResource.new()
+	movie.id = "movie_1"
+	movie.title = "Action Night"
+	movie.genre = "Action"
+	movie.rating = 88
+	movie.duration = 124
+
+	room.set_scheduled_movie(movie)
+
+	assert_true(room.has_scheduled_movie(), "Room should report scheduled movie")
+	assert_eq(room.scheduled_movie_id, "movie_1", "Movie id should be stored")
+	assert_eq(room.scheduled_movie_title, "Action Night", "Movie title should be stored")
+	assert_eq(room.scheduled_movie_genre, "Action", "Movie genre should be stored")
+	assert_eq(room.scheduled_movie_rating, 88, "Movie rating should be stored")
+	assert_eq(room.scheduled_movie_duration, 124, "Movie duration should be stored")
+
+
+func test_clear_scheduled_movie_resets_payload_fields() -> void:
+	var room = RoomInstance.new("test_id", TheaterStateConfig.THEATER_ROOM_TYPE_ID)
+	var movie = MovieResource.new()
+	movie.id = "movie_2"
+	movie.title = "Late Show"
+	movie.genre = "Drama"
+	movie.rating = 72
+	movie.duration = 95
+
+	room.set_scheduled_movie(movie)
+	room.clear_scheduled_movie()
+
+	assert_false(room.has_scheduled_movie(), "Room should not report scheduled movie after clear")
+	assert_eq(room.scheduled_movie_id, "", "Movie id should be cleared")
+	assert_eq(room.scheduled_movie_title, "", "Movie title should be cleared")
+	assert_eq(room.scheduled_movie_genre, "", "Movie genre should be cleared")
+	assert_eq(room.scheduled_movie_rating, 0, "Movie rating should be reset")
+	assert_eq(room.scheduled_movie_duration, 0, "Movie duration should be reset")
+
+
+func test_scheduled_movie_round_trips_through_to_dict_from_dict() -> void:
+	var room = RoomInstance.new("test_id", TheaterStateConfig.THEATER_ROOM_TYPE_ID)
+	room.bounding_box = Rect2i(1, 2, 6, 7)
+
+	var movie = MovieResource.new()
+	movie.id = "movie_3"
+	movie.title = "Comedy Hour"
+	movie.genre = "Comedy"
+	movie.rating = 67
+	movie.duration = 102
+	room.set_scheduled_movie(movie)
+
+	var payload = room.to_dict()
+	var restored = RoomInstance.from_dict(payload)
+
+	assert_not_null(restored, "Room should deserialize")
+	assert_eq(restored.scheduled_movie_id, "movie_3", "Movie id should round-trip")
+	assert_eq(restored.scheduled_movie_title, "Comedy Hour", "Movie title should round-trip")
+	assert_eq(restored.scheduled_movie_genre, "Comedy", "Movie genre should round-trip")
+	assert_eq(restored.scheduled_movie_rating, 67, "Movie rating should round-trip")
+	assert_eq(restored.scheduled_movie_duration, 102, "Movie duration should round-trip")
+
+
+func test_from_dict_without_scheduled_movie_payload_uses_safe_defaults() -> void:
+	var payload = {
+		"schema_version": 2,
+		"id": "legacy_room",
+		"room_type_id": TheaterStateConfig.THEATER_ROOM_TYPE_ID,
+		"bounding_box": {"x": 0, "y": 0, "width": 5, "height": 5},
+		"walls": [],
+		"doors": [],
+		"furniture": []
+	}
+
+	var room = RoomInstance.from_dict(payload)
+
+	assert_not_null(room, "Legacy payload should deserialize")
+	assert_false(room.has_scheduled_movie(), "Legacy payload should default to no scheduled movie")
+	assert_eq(room.scheduled_movie_id, "", "Legacy payload should default id")
+	assert_eq(room.scheduled_movie_title, "", "Legacy payload should default title")
+	assert_eq(room.scheduled_movie_genre, "", "Legacy payload should default genre")
+	assert_eq(room.scheduled_movie_rating, 0, "Legacy payload should default rating")
+	assert_eq(room.scheduled_movie_duration, 0, "Legacy payload should default duration")
+
+
+func test_scheduled_movie_change_emits_placement_changed() -> void:
+	var room = RoomInstance.new("test_id", TheaterStateConfig.THEATER_ROOM_TYPE_ID)
+	var movie = MovieResource.new()
+	movie.id = "movie_4"
+
+	watch_signals(room)
+	room.set_scheduled_movie(movie)
+
+	assert_signal_emitted(room, "placement_changed", "Setting scheduled movie should emit placement_changed")
