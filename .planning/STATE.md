@@ -1,6 +1,6 @@
 # Project State: TheaterCity
 
-**Last Updated:** 2026-02-16 (Phase 14 executed, pending human verification)
+**Last Updated:** 2026-02-16 (Phase 14 executed; scene-first and export-reference migrations applied)
 
 ---
 
@@ -103,6 +103,14 @@ Core patterns established in v1.0:
 - Use RefCounted state machines (data-driven, not LimboHSM which is scene-based)
 - Handle `NOTIFICATION_APPLICATION_PAUSED` for immediate save on Android
 - Recalculate all timer states on app resume in `_ready()`
+
+### Recent Infrastructure Migrations (2026-02-16)
+
+- Enforced scene-first UI/gameplay policy and merged guidance into `AGENTS.md` (single source; `CLAUDE.md` removed).
+- Migrated fixed UI/edit hierarchies to scenes (`TheaterSchedulePanel`, `RoomEditMenu`, `FurnitureListPanel`, `AdminMenuUI`, and `Main` layer/controller scaffolding).
+- Migrated dynamic repeated controls to scene instancing (`FurnitureListItemButton.tscn`, `RoomSelectionArea.tscn`) and removed fixed helper runtime creation fallback in `furniture_base.gd`.
+- Enforced export-based references: removed `$...`, `get_node(...)`, and `get_node_or_null(...)` usages in `scripts/`; switched `/root/...` autoload lookups to direct singleton access.
+- Added migration trackers: `.planning/SCENE_FIRST_MIGRATION.md` and `.planning/NODE_REFERENCE_EXPORT_MIGRATION.md`.
 
 ### Blockers
 
