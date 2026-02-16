@@ -1,6 +1,6 @@
 # Project State: TheaterCity
 
-**Last Updated:** 2026-02-11 (Phase 13 complete)
+**Last Updated:** 2026-02-16 (Phase 14 executed, pending human verification)
 
 ---
 
@@ -17,13 +17,17 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 ## Current Position
 
 **Milestone:** v1.1 Theater Core Mechanics
-**Phase:** 13 - Theater State Machine (COMPLETE)
+**Phase:** 14 - Movie Scheduling UI (HUMAN VERIFICATION NEEDED)
+**Current Phase:** 14
+**Current Phase Name:** Movie Scheduling UI
 **Plan:** 03 of 3 complete
-**Status:** Phase complete
-**Last activity:** 2026-02-11 -- Completed 13-03-PLAN.md
+**Current Plan:** 3
+**Total Plans in Phase:** 3
+**Status:** Phase complete — ready for verification
+**Last activity:** 2026-02-16
 
 **Progress:**
-```
+[██████████] 98%
 Milestone v1.0: SHIPPED 2026-02-08 (10 phases, 41 plans)
 See: .planning/milestones/v1.0-ROADMAP.md
 
@@ -31,7 +35,7 @@ Milestone v1.1: IN PROGRESS
 [█████] Phase 11: Timer & State Foundation ✓ VERIFIED
 [█████] Phase 12: Movie Data System ✓ COMPLETE
 [█████] Phase 13: Theater State Machine ✓ VERIFIED
-[-----] Phase 14: Movie Scheduling UI (pending)
+[█████] Phase 14: Movie Scheduling UI ◆ HUMAN VERIFY
 [-----] Phase 15: Patron Theater Behavior (pending)
 
 Total: 3/5 phases complete | 6/14 requirements done
@@ -53,6 +57,7 @@ Total: 3/5 phases complete | 6/14 requirements done
 | v1.1 Phases | 5 |
 
 ---
+| Phase 14 P02 | 78s | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -111,12 +116,19 @@ None currently.
 - [x] Execute Phase 12 (COMPLETE)
 - [x] Plan Phase 13 (Theater State Machine)
 - [x] Execute Phase 13 (COMPLETE)
-- [ ] Plan Phase 14 (Movie Scheduling UI)
-- [ ] Execute Phase 14
+- [x] Plan Phase 14 (Movie Scheduling UI)
+- [x] Execute Phase 14 (awaiting human verification approval)
 - [ ] Plan Phase 15 (Patron Theater Behavior)
 - [ ] Execute Phase 15
 
 ---
+
+## Session
+
+**Last session:** 2026-02-16T18:58:09.420Z
+**Last Date:** 2026-02-16T18:58:09.420Z
+**Stopped At:** Completed 14-02-PLAN.md
+**Resume File:** None
 
 ## Session Continuity
 
@@ -139,13 +151,13 @@ None currently.
 
 ### What's Next
 
-1. Plan and execute Phase 14 (Movie Scheduling UI)
+1. Run Phase 14 human verification checklist and approve/fix gaps
 2. Execute Phase 15 (Patron Theater Behavior)
 3. Complete v1.1 milestone
 
 ### Context for Next Session
 
-Phase 13 complete and verified by user runtime checks. Theater rooms now support full timed state flow with visible labels and persistence-safe restoration.
+Phase 14 implementation is complete in code and tests were added, but local Godot execution is unavailable in this environment. Human verification checklist is required before phase closure.
 
 Key files created (Phase 11):
 - `scripts/storage/TimerState.gd` - Timestamp-based offline timer
@@ -176,6 +188,15 @@ Key files updated (Phase 13):
 - `scripts/Main.gd` - Runtime theater ticking and per-room state label lifecycle
 - `scripts/ui/StateDebugLabel.gd` - Improved readable badge-style label theme
 
+Key files created (Phase 14):
+- `scripts/room_editing/TheaterSchedulePanel.gd` - Centered scheduling modal with movie list and explicit confirm/cancel flow
+- `test/integration/test_theater_schedule_flow.gd` - Integration coverage for idle-only scheduling guards and non-theater no-op path
+
+Key files updated (Phase 14):
+- `Scripts/Main.gd` - Runtime movie pool bootstrap, theater scheduling API, and theater modal integration
+- `Scripts/storage/RoomInstance.gd` - Scheduled-movie payload fields and serialization helpers
+- `test/unit/test_room_instance.gd` - Unit coverage for scheduled movie payload persistence/signals
+
 Summaries:
 - `.planning/phases/11-timer-state-foundation/11-01-SUMMARY.md`
 - `.planning/phases/11-timer-state-foundation/11-02-SUMMARY.md`
@@ -189,6 +210,10 @@ Summaries:
 - `.planning/phases/13-theater-state-machine/13-02-SUMMARY.md`
 - `.planning/phases/13-theater-state-machine/13-03-SUMMARY.md`
 - `.planning/phases/13-theater-state-machine/13-VERIFICATION.md`
+- `.planning/phases/14-movie-scheduling-ui/14-01-SUMMARY.md`
+- `.planning/phases/14-movie-scheduling-ui/14-02-SUMMARY.md`
+- `.planning/phases/14-movie-scheduling-ui/14-03-SUMMARY.md`
+- `.planning/phases/14-movie-scheduling-ui/14-VERIFICATION.md`
 
 ---
 
