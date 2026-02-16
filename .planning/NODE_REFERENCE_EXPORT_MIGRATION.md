@@ -38,6 +38,20 @@ Additional string-node access sites:
 
 ## Migration Strategy
 
+## Progress
+
+- [~] Phase A - in progress
+  - [x] `scripts/ui/CircularTimerUI.gd`
+  - [x] `scripts/ui/ResumeNotificationUI.gd`
+  - [x] `scripts/admin/AdminMenuUI.gd`
+  - [ ] `scripts/room_editing/TheaterSchedulePanel.gd`
+  - [ ] `scripts/room_editing/RoomEditMenu.gd`
+  - [ ] `scripts/room_editing/FurnitureListPanel.gd`
+  - [ ] `scripts/Main.gd` (scene-owned refs only)
+- [ ] Phase B
+- [ ] Phase C
+- [ ] Phase D
+
 ### Phase A - Scene-owned references (highest value, lowest risk)
 
 Convert all stable scene node references from `$...` to `@export` in scripts with scene files.

@@ -5,8 +5,8 @@ extends Control
 ## Shows remaining time in MM:SS format with visual circular progress.
 ## Hides automatically when timer is inactive or completes.
 
-@onready var progress_bar: TextureProgressBar = $TextureProgressBar
-@onready var time_label: Label = $TimeLabel
+@export var progress_bar: TextureProgressBar
+@export var time_label: Label
 
 var _timer_state: TimerState = null
 var _is_showing := false

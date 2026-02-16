@@ -1,9 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://b3j5k8l9m2nop"]
+[gd_scene load_steps=2 format=3 uid="uid://b3j5k8mam2nop"]
 
-[ext_resource type="Script" path="res://scripts/ui/ResumeNotificationUI.gd" id="1_resume"]
+[ext_resource type="Script" uid="uid://dah881sryy5wq" path="res://scripts/ui/ResumeNotificationUI.gd" id="1_resume"]
 
-[node name="ResumeNotificationUI" type="CanvasLayer"]
+[node name="ResumeNotificationUI" type="CanvasLayer" node_paths=PackedStringArray("panel_ref", "message_label_ref")]
 script = ExtResource("1_resume")
+panel_ref = NodePath("PanelContainer")
+message_label_ref = NodePath("PanelContainer/MarginContainer/MessageLabel")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 anchors_preset = 5

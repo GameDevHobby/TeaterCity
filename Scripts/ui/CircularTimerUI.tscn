@@ -8,6 +8,8 @@ anchors_preset = 0
 offset_right = 56.0
 offset_bottom = 56.0
 script = ExtResource("1_hx7vy")
+progress_bar = NodePath("TextureProgressBar")
+time_label = NodePath("TimeLabel")
 
 [node name="TextureProgressBar" type="TextureProgressBar" parent="."]
 layout_mode = 1

@@ -5,13 +5,11 @@ extends CanvasLayer
 
 signal reset_requested
 
-@onready var _admin_menu: Node = get_node("/root/AdminMenu")
-
-@onready var _panel: PanelContainer = $CenterContainer/AdminPanel
-@onready var _title_label: Label = $CenterContainer/AdminPanel/MarginContainer/ContentVBox/TitleLabel
-@onready var _reset_button: Button = $CenterContainer/AdminPanel/MarginContainer/ContentVBox/ResetButton
-@onready var _close_button: Button = $CenterContainer/AdminPanel/MarginContainer/ContentVBox/CloseButton
-@onready var _confirm_dialog: ConfirmationDialog = $ResetConfirmDialog
+@export var _panel: PanelContainer
+@export var _title_label: Label
+@export var _reset_button: Button
+@export var _close_button: Button
+@export var _confirm_dialog: ConfirmationDialog
 
 
 func _ready() -> void:
@@ -45,8 +43,8 @@ func _on_reset_pressed() -> void:
 
 
 func _on_reset_confirmed() -> void:
-	if _admin_menu:
-		var success = _admin_menu.reset_all_data()
+	if AdminMenu:
+		var success = AdminMenu.reset_all_data()
 		if success:
 			print("AdminMenuUI: Reset successful")
 		else:

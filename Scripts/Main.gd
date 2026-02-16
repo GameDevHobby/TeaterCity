@@ -128,7 +128,6 @@ func _ready() -> void:
 	# Configure admin button visibility/style (only if admin is enabled)
 	if _admin_menu.is_admin_enabled():
 		UIStyleHelper.apply_button_style(_admin_button)
-		_admin_button.pressed.connect(_on_admin_button_pressed)
 		_admin_button.show()
 	else:
 		_admin_button.hide()

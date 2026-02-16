@@ -5,6 +5,11 @@
 [node name="AdminMenuUI" type="CanvasLayer"]
 layer = 10
 script = ExtResource("1_admin")
+_panel = NodePath("CenterContainer/AdminPanel")
+_title_label = NodePath("CenterContainer/AdminPanel/MarginContainer/ContentVBox/TitleLabel")
+_reset_button = NodePath("CenterContainer/AdminPanel/MarginContainer/ContentVBox/ResetButton")
+_close_button = NodePath("CenterContainer/AdminPanel/MarginContainer/ContentVBox/CloseButton")
+_confirm_dialog = NodePath("ResetConfirmDialog")
 
 [node name="BackgroundOverlay" type="ColorRect" parent="."]
 layout_mode = 1
