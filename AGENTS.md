@@ -119,3 +119,39 @@ Before adding `*.new()`, `instantiate()`, or `add_child()`:
    - If yes: runtime creation allowed.
 
 If any answer indicates scene-authored, do not implement via runtime node construction.
+
+## Prioritized Migration Sequence (Scene-First Compliance)
+
+Use this order to migrate existing violations with lowest risk first and fastest visual-editing wins.
+
+1. `scripts/room_editing/TheaterSchedulePanel.gd` -> `TheaterSchedulePanel.tscn`
+   - **Why first:** High-impact active UI with isolated scope.
+   - **Done when:** Modal tree is scene-authored; script only handles data binding and signals.
+
+2. `scripts/room_editing/RoomEditMenu.gd` -> `RoomEditMenu.tscn`
+   - **Why second:** Core room action UI and still relatively isolated.
+   - **Done when:** Fixed menu buttons/dialog are scene-authored; script only positions and emits actions.
+
+3. `scripts/room_editing/FurnitureListPanel.gd` -> `FurnitureListPanel.tscn` (+ row prefab)
+   - **Why third:** Large UI surface with good payoff for visual iteration.
+   - **Done when:** Static shell is scene-authored and repeated rows/items use scene instancing (`PackedScene.instantiate()`).
+
+4. `scripts/admin/AdminMenuUI.gd` + `scripts/admin/AdminMenu.gd` -> `AdminMenuUI.tscn`
+   - **Why fourth:** Administrative UI has clear boundaries and low gameplay coupling.
+   - **Done when:** Admin overlay/panel is scene-authored and `AdminMenu` instantiates scene, not `new()`.
+
+5. `scripts/Main.gd` fixed hierarchy extraction into `Main.tscn`/child scenes
+   - **Why fifth:** Largest blast radius; safer after child UI components are scene-backed.
+   - **Done when:** `_ready()` no longer builds persistent fixed layers/controllers/buttons in code.
+
+6. `scripts/RoomManager.gd` persistent selection wrapper migration
+   - **Why sixth:** Gameplay-level structure, moderate risk.
+   - **Done when:** Persistent room selection collision structure is scene/component-authored where feasible.
+
+7. `objects/furniture/furniture_base.gd` helper-node migration into furniture scenes
+   - **Why seventh:** Broad asset impact across furniture content.
+   - **Done when:** Stable collision/navigation helper nodes are authored in furniture scenes, not created at runtime.
+
+8. Project-wide cleanup + guardrail pass
+   - **Why last:** Lock policy after major migrations land.
+   - **Done when:** Fixed runtime node creation patterns are removed; dynamic repeated elements prefer scene instancing; exceptions are documented in code comments only when necessary.
