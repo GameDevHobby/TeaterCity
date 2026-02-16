@@ -1,0 +1,60 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/room_editing/RoomEditMenu.gd" id="1_menu"]
+
+[node name="RoomEditMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_menu")
+
+[node name="MenuPanel" type="PanelContainer" parent="."]
+layout_mode = 0
+mouse_filter = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="MenuPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="EditFurnitureButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+text = "Edit Furniture"
+
+[node name="EditRoomButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+text = "Edit Room"
+
+[node name="ResizeRoomButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+text = "Resize Room"
+
+[node name="RoomTypeButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+text = "Room Options"
+
+[node name="Separator" type="HSeparator" parent="MenuPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="DeleteRoomButton" type="Button" parent="MenuPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+text = "Delete Room"
+
+[node name="DeleteDialog" type="ConfirmationDialog" parent="."]
+title = "Confirm Deletion"
+dialog_text = "Delete this room?\n\nAll furniture will be removed.\nThis cannot be undone."

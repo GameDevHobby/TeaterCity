@@ -19,17 +19,17 @@ Tracks migration of runtime-created fixed node hierarchies into scene-authored `
 
 ## 1) Theater Schedule Modal
 
-- [ ] Migrate `scripts/room_editing/TheaterSchedulePanel.gd` to `TheaterSchedulePanel.tscn`
-- [ ] Move modal tree (dimmer/panel/header/list/actions) into scene
-- [ ] Keep script focused on data binding/signals only
+- [x] Migrate `scripts/room_editing/TheaterSchedulePanel.gd` to `TheaterSchedulePanel.tscn`
+- [x] Move modal tree (dimmer/panel/header/list/actions) into scene
+- [x] Keep script focused on data binding/signals only
 
 **Done when:** modal hierarchy is scene-authored and runtime fixed-node construction is removed.
 
 ## 2) Room Edit Menu
 
-- [ ] Migrate `scripts/room_editing/RoomEditMenu.gd` to `RoomEditMenu.tscn`
-- [ ] Scene-author fixed menu buttons and delete confirmation dialog
-- [ ] Keep script focused on room positioning/action emits
+- [x] Migrate `scripts/room_editing/RoomEditMenu.gd` to `RoomEditMenu.tscn`
+- [x] Scene-author fixed menu buttons and delete confirmation dialog
+- [x] Keep script focused on room positioning/action emits
 
 **Done when:** menu/dialog hierarchy is scene-authored and script only controls behavior.
 
@@ -89,3 +89,5 @@ Use this section to append step progress notes.
 
 - YYYY-MM-DD: Step N started - note
 - YYYY-MM-DD: Step N completed - note
+- 2026-02-16: Step 1 completed - TheaterSchedulePanel modal hierarchy moved to `scripts/room_editing/TheaterSchedulePanel.tscn`; `Main.gd` now instantiates the scene.
+- 2026-02-16: Step 2 completed - RoomEditMenu hierarchy moved to `scripts/room_editing/RoomEditMenu.tscn`; `Main.gd` now instantiates the scene.

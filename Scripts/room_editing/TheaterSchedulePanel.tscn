@@ -1,0 +1,102 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/room_editing/TheaterSchedulePanel.gd" id="1_panel"]
+
+[node name="TheaterSchedulePanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_panel")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 0.35)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="SchedulePanel" type="PanelContainer" parent="CenterContainer"]
+layout_mode = 2
+mouse_filter = 1
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/SchedulePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/SchedulePanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="HBoxContainer" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Schedule Theater"
+
+[node name="CloseButton" type="Button" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Header"]
+custom_minimum_size = Vector2(42, 34)
+layout_mode = 2
+text = "X"
+
+[node name="SubtitleLabel" type="Label" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Pick a movie to move this theater into Scheduled"
+autowrap_mode = 2
+
+[node name="StatusLabel" type="Label" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+autowrap_mode = 2
+
+[node name="MovieList" type="ItemList" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+select_mode = 0
+allow_reselect = true
+same_column_width = true
+
+[node name="DetailsLabel" type="Label" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+text = "No movie selected"
+autowrap_mode = 2
+
+[node name="Actions" type="HBoxContainer" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CancelButton" type="Button" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Actions"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cancel"
+
+[node name="ScheduleButton" type="Button" parent="CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Actions"]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Schedule"

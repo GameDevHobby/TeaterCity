@@ -75,12 +75,12 @@ func _ready() -> void:
 	add_child(_theater_state_label_layer)
 
 	# Create RoomEditMenu instance
-	_room_edit_menu = RoomEditMenu.new()
+	_room_edit_menu = preload("res://scripts/room_editing/RoomEditMenu.tscn").instantiate()
 	_room_edit_menu.name = "RoomEditMenu"
 	edit_menu_layer.add_child(_room_edit_menu)
 
 	# Create TheaterSchedulePanel modal
-	_theater_schedule_panel = TheaterSchedulePanel.new()
+	_theater_schedule_panel = preload("res://scripts/room_editing/TheaterSchedulePanel.tscn").instantiate()
 	_theater_schedule_panel.name = "TheaterSchedulePanel"
 	_theater_schedule_panel.schedule_confirmed.connect(_on_theater_schedule_confirmed)
 	_theater_schedule_panel.schedule_cancelled.connect(_on_theater_schedule_cancelled)
