@@ -355,6 +355,13 @@ func _on_room_type_action_requested(room: RoomInstance) -> void:
 		print("Theater %s has no state machine initialized" % room.id)
 		return
 
+	if room.state_machine.current_state == "":
+		room.state_machine.transition_to("idle")
+
+	if room.state_machine.current_state != "idle":
+		print("Theater %s cannot open schedule modal in state '%s'" % [room.id, room.state_machine.current_state])
+		return
+
 	var movies = get_available_movies_for_scheduling()
 	if movies.is_empty():
 		print("Theater %s cannot be scheduled: no movies available" % room.id)

@@ -159,6 +159,28 @@ func _position_near_room(room: RoomInstance) -> void:
 
 
 func _update_room_type_button(room: RoomInstance) -> void:
+	if room.room_type_id == "theater_auditorium":
+		var state_name := ""
+		if room.state_machine and room.state_machine.current_state != "":
+			state_name = room.state_machine.current_state
+
+		if state_name == "" or state_name == "idle":
+			_room_type_btn.text = "Theater Schedule"
+			if room.has_scheduled_movie():
+				_room_type_btn.tooltip_text = "Idle\nLast scheduled: %s" % room.scheduled_movie_title
+			else:
+				_room_type_btn.tooltip_text = "Open movie scheduling"
+			return
+
+		_room_type_btn.text = "Theater Active"
+		if room.has_scheduled_movie():
+			_room_type_btn.tooltip_text = "%s\nMovie: %s" % [state_name.capitalize(), room.scheduled_movie_title]
+		else:
+			_room_type_btn.tooltip_text = state_name.capitalize()
+		return
+
+	_room_type_btn.tooltip_text = ""
+
 	# Try to get room type from registry
 	var registry := RoomTypeRegistry.get_instance()
 	if registry:

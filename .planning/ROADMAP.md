@@ -108,9 +108,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 14-01-PLAN.md — Scheduling data plumbing (RoomInstance payload + movie pool runtime wiring)
-- [ ] 14-02-PLAN.md — Theater schedule modal UI and room-type button integration
-- [ ] 14-03-PLAN.md — Scheduling tests and runtime verification checkpoint
+- [x] 14-01-PLAN.md — Scheduling data plumbing (RoomInstance payload + movie pool runtime wiring)
+- [x] 14-02-PLAN.md — Theater schedule modal UI and room-type button integration
+- [x] 14-03-PLAN.md — Scheduling tests and runtime verification checkpoint
 
 **Requirements:**
 - THTR-05: Scheduling UI accessible from theater room's room-type button
@@ -162,7 +162,7 @@ Plans:
 | 11 | Timer & State Foundation | ✓ Complete | 5/5 |
 | 12 | Movie Data System | Planned | 0/3 |
 | 13 | Theater State Machine | ✓ Complete | 3/3 |
-| 14 | Movie Scheduling UI | Planned | 0/3 |
+| 14 | Movie Scheduling UI | In Review | 3/3 |
 | 15 | Patron Theater Behavior | Pending | TBD |
 
 ---
