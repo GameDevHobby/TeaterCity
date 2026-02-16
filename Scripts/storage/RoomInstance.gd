@@ -1,7 +1,7 @@
 class_name RoomInstance
 extends RefCounted
 
-const SCHEMA_VERSION := 2
+const SCHEMA_VERSION := 3
 
 signal placement_changed
 signal state_changed(old_state: String, new_state: String)
@@ -12,6 +12,11 @@ var bounding_box: Rect2i
 var walls: Array[Vector2i] = []
 var doors: Array[DoorPlacement] = []
 var furniture: Array[FurniturePlacement] = []
+var scheduled_movie_id: String = ""
+var scheduled_movie_title: String = ""
+var scheduled_movie_genre: String = ""
+var scheduled_movie_rating: int = 0
+var scheduled_movie_duration: int = 0
 
 # Optional state machine for rooms with timed states (null if room type doesn't use it)
 var state_machine: RoomStateMachine = null
@@ -176,6 +181,32 @@ func get_monthly_upkeep() -> int:
 	return upkeep
 
 
+func has_scheduled_movie() -> bool:
+	return scheduled_movie_id != ""
+
+
+func set_scheduled_movie(movie: MovieResource) -> void:
+	if movie == null:
+		clear_scheduled_movie()
+		return
+
+	scheduled_movie_id = movie.id
+	scheduled_movie_title = movie.title
+	scheduled_movie_genre = movie.genre
+	scheduled_movie_rating = movie.rating
+	scheduled_movie_duration = movie.duration
+	placement_changed.emit()
+
+
+func clear_scheduled_movie() -> void:
+	scheduled_movie_id = ""
+	scheduled_movie_title = ""
+	scheduled_movie_genre = ""
+	scheduled_movie_rating = 0
+	scheduled_movie_duration = 0
+	placement_changed.emit()
+
+
 ## Initialize state machine with room-type-specific state definitions.
 ## Call this after loading, with the state definitions for this room type.
 ## Returns number of state transitions that occurred during recalculation.
@@ -250,7 +281,14 @@ func to_dict() -> Dictionary:
 		},
 		"walls": walls_arr,
 		"doors": doors_arr,
-		"furniture": furniture_arr
+		"furniture": furniture_arr,
+		"scheduled_movie": {
+			"id": scheduled_movie_id,
+			"title": scheduled_movie_title,
+			"genre": scheduled_movie_genre,
+			"rating": scheduled_movie_rating,
+			"duration": scheduled_movie_duration
+		}
 	}
 
 	# After furniture serialization
@@ -306,6 +344,15 @@ static func from_dict(data: Dictionary) -> RoomInstance:
 	for furn_data in data.get("furniture", []):
 		if furn_data is Dictionary:
 			room.furniture.append(FurniturePlacement.from_dict(furn_data))
+
+	# Restore scheduled movie payload (safe defaults for older saves)
+	var scheduled_data = data.get("scheduled_movie", {})
+	if scheduled_data is Dictionary:
+		room.scheduled_movie_id = str(scheduled_data.get("id", ""))
+		room.scheduled_movie_title = str(scheduled_data.get("title", ""))
+		room.scheduled_movie_genre = str(scheduled_data.get("genre", ""))
+		room.scheduled_movie_rating = _to_int(scheduled_data.get("rating", 0))
+		room.scheduled_movie_duration = _to_int(scheduled_data.get("duration", 0))
 
 	# Store raw state machine data for later configuration by room type
 	var sm_data = data.get("state_machine")

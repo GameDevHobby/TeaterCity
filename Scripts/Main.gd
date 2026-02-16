@@ -28,6 +28,9 @@ var _admin_button: Button = null
 var _resume_notification: ResumeNotificationUI = null
 var _theater_state_label_layer: CanvasLayer = null
 var _theater_state_labels: Dictionary = {}
+var _movie_pool: MoviePool = null
+var _theater_schedule_panel: TheaterSchedulePanel = null
+var _camera_pan_before_schedule_modal := true
 
 func _ready() -> void:
 	# Scan exterior walls FIRST, before any rooms are loaded/restored
@@ -75,6 +78,13 @@ func _ready() -> void:
 	_room_edit_menu = RoomEditMenu.new()
 	_room_edit_menu.name = "RoomEditMenu"
 	edit_menu_layer.add_child(_room_edit_menu)
+
+	# Create TheaterSchedulePanel modal
+	_theater_schedule_panel = TheaterSchedulePanel.new()
+	_theater_schedule_panel.name = "TheaterSchedulePanel"
+	_theater_schedule_panel.schedule_confirmed.connect(_on_theater_schedule_confirmed)
+	_theater_schedule_panel.schedule_cancelled.connect(_on_theater_schedule_cancelled)
+	edit_menu_layer.add_child(_theater_schedule_panel)
 
 	# Create DeletionOperation
 	_deletion_op = DeletionOperation.new()
@@ -207,6 +217,7 @@ func _ready() -> void:
 
 	# Set up resume notification
 	_setup_resume_notification()
+	_bootstrap_movie_pool()
 
 	# Ensure any pre-existing theater rooms (if present) have state labels
 	for room in _room_manager.get_all_rooms():
@@ -344,14 +355,76 @@ func _on_room_type_action_requested(room: RoomInstance) -> void:
 		print("Theater %s has no state machine initialized" % room.id)
 		return
 
+	var movies = get_available_movies_for_scheduling()
+	if movies.is_empty():
+		print("Theater %s cannot be scheduled: no movies available" % room.id)
+		return
+
+	_camera_pan_before_schedule_modal = camera.enable_pinch_pan
+	camera.enable_pinch_pan = false
+	_room_edit_menu.hide()
+	_theater_schedule_panel.show_for_room(room, movies)
+
+
+func get_available_movies_for_scheduling() -> Array[MovieResource]:
+	if _movie_pool == null:
+		return []
+	return _movie_pool.get_all_movies()
+
+
+func schedule_theater_movie(room: RoomInstance, movie_id: String) -> bool:
+	if room == null:
+		return false
+	if not TheaterStateConfig.is_theater_room(room):
+		return false
+	if room.state_machine == null:
+		return false
+	if _movie_pool == null:
+		return false
+
 	if room.state_machine.current_state == "":
 		room.state_machine.transition_to("idle")
+	if room.state_machine.current_state != "idle":
+		return false
 
-	if room.state_machine.current_state == "idle":
-		room.state_machine.transition_to("scheduled")
+	var selected_movie = _movie_pool.get_movie(movie_id)
+	if selected_movie == null:
+		return false
+
+	room.set_scheduled_movie(selected_movie)
+	room.state_machine.transition_to("scheduled")
+	return true
+
+
+func _on_theater_schedule_confirmed(room: RoomInstance, movie_id: String) -> void:
+	var did_schedule = schedule_theater_movie(room, movie_id)
+	if did_schedule:
 		print("Theater %s scheduled" % room.id)
 	else:
-		print("Theater %s already active in state '%s'" % [room.id, room.state_machine.current_state])
+		var current_state = room.state_machine.current_state if room and room.state_machine else "unknown"
+		print("Theater %s cannot be scheduled in state '%s'" % [room.id if room else "unknown", current_state])
+
+	_theater_schedule_panel.hide_panel()
+	camera.enable_pinch_pan = _camera_pan_before_schedule_modal
+
+
+func _on_theater_schedule_cancelled() -> void:
+	_theater_schedule_panel.hide_panel()
+	camera.enable_pinch_pan = _camera_pan_before_schedule_modal
+
+
+func _bootstrap_movie_pool() -> void:
+	_movie_pool = MoviePoolSerializer.load_pool()
+	if _movie_pool != null and _movie_pool.size() > 0:
+		return
+
+	_movie_pool = MoviePool.new()
+	var generator = MovieGenerator.new()
+	for movie in generator.generate_pool():
+		_movie_pool.add_movie(movie)
+
+	if not MoviePoolSerializer.save_pool(_movie_pool):
+		push_warning("Main: Failed to persist generated movie pool")
 
 
 func _on_delete_room_requested(room: RoomInstance) -> void:
