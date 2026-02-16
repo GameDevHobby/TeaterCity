@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/room_editing/FurnitureListPanel.gd" id="1_panel"]
 
-[node name="FurnitureListPanel" type="Control"]
+[node name="FurnitureListPanel" type="Control" node_paths=PackedStringArray("_panel", "_scroll", "_items_container", "_add_button", "_delete_button", "_error_label", "_done_button", "_picker_panel", "_picker_items_container", "_cancel_add_button")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,6 +11,16 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_panel")
+_panel = NodePath("ListPanel")
+_scroll = NodePath("ListPanel/MarginContainer/VBoxContainer/ItemScroll")
+_items_container = NodePath("ListPanel/MarginContainer/VBoxContainer/ItemScroll/ItemsContainer")
+_add_button = NodePath("ListPanel/MarginContainer/VBoxContainer/AddButton")
+_delete_button = NodePath("ListPanel/MarginContainer/VBoxContainer/DeleteButton")
+_error_label = NodePath("ListPanel/MarginContainer/VBoxContainer/ErrorLabel")
+_done_button = NodePath("ListPanel/MarginContainer/VBoxContainer/DoneButton")
+_picker_panel = NodePath("PickerPanel")
+_picker_items_container = NodePath("PickerPanel/MarginContainer/VBoxContainer/PickerItemsContainer")
+_cancel_add_button = NodePath("PickerPanel/MarginContainer/VBoxContainer/CancelAddButton")
 
 [node name="ListPanel" type="PanelContainer" parent="."]
 layout_mode = 0

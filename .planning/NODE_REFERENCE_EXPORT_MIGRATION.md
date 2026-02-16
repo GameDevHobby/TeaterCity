@@ -40,17 +40,40 @@ Additional string-node access sites:
 
 ## Progress
 
-- [~] Phase A - in progress
+- [x] Phase A - complete
   - [x] `scripts/ui/CircularTimerUI.gd`
   - [x] `scripts/ui/ResumeNotificationUI.gd`
   - [x] `scripts/admin/AdminMenuUI.gd`
-  - [ ] `scripts/room_editing/TheaterSchedulePanel.gd`
-  - [ ] `scripts/room_editing/RoomEditMenu.gd`
-  - [ ] `scripts/room_editing/FurnitureListPanel.gd`
-  - [ ] `scripts/Main.gd` (scene-owned refs only)
-- [ ] Phase B
-- [ ] Phase C
-- [ ] Phase D
+  - [x] `scripts/room_editing/TheaterSchedulePanel.gd`
+  - [x] `scripts/room_editing/RoomEditMenu.gd`
+  - [x] `scripts/room_editing/FurnitureListPanel.gd`
+  - [x] `scripts/Main.gd` (scene-owned refs only)
+- [x] Phase B
+- [x] Phase C
+- [~] Phase D
+
+Phase B completion notes:
+
+- `scripts/RoomManager.gd` now uses `RoomSelectionArea` scene API (`set_selection_polygon`) instead of child path lookup.
+- Added `scripts/room_editing/RoomSelectionArea.gd` and wired `scripts/room_editing/RoomSelectionArea.tscn` with exported child reference.
+- `scripts/room_building/RoomBuildUI.gd` now uses typed `FurnitureBase.get_preview_sprite_frames()` API instead of `get_node_or_null("AnimatedSprite2D")`.
+
+Phase C completion notes:
+
+- Replaced `/root/...` autoload path lookups with direct singleton access (`RoomManager`, `AdminMenu`) in:
+  - `scripts/Main.gd`
+  - `scripts/admin/AdminMenu.gd`
+  - `scripts/room_building/RoomBuildController.gd`
+  - `scripts/room_building/RoomSelectionHighlight.gd`
+  - `scripts/room_editing/DoorEditController.gd`
+  - `scripts/room_editing/RoomEditMenu.gd`
+  - `scripts/room_editing/RoomResizeController.gd`
+
+Phase D status notes:
+
+- `grep` check for `$...` in `scripts/`: passed (0 matches)
+- `grep` check for `get_node/get_node_or_null` in `scripts/`: passed (0 matches)
+- Godot headless parse check pending in local environment (`godot` binary unavailable in this runner)
 
 ### Phase A - Scene-owned references (highest value, lowest risk)
 

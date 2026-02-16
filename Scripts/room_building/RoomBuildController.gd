@@ -20,8 +20,8 @@ var _collision_op = CollisionOperation.new()
 var _furniture_op: FurnitureOperation
 var _navigation_op = NavigationOperation.new()
 
-# Autoload reference (avoids static analysis issues in Godot 4.5)
-@onready var _room_manager: Node = get_node("/root/RoomManager")
+# Autoload reference
+@onready var _room_manager: Node = RoomManager
 
 var _room_counter: int = 0
 var _counter_initialized: bool = false

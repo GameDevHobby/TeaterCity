@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/room_editing/TheaterSchedulePanel.gd" id="1_panel"]
 
-[node name="TheaterSchedulePanel" type="Control"]
+[node name="TheaterSchedulePanel" type="Control" node_paths=PackedStringArray("_panel", "_title_label", "_status_label", "_movie_list", "_details_label", "_schedule_button", "_cancel_button", "_close_button")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,6 +11,14 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1_panel")
+_panel = NodePath("CenterContainer/SchedulePanel")
+_title_label = NodePath("CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Header/TitleLabel")
+_status_label = NodePath("CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/StatusLabel")
+_movie_list = NodePath("CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/MovieList")
+_details_label = NodePath("CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/DetailsLabel")
+_schedule_button = NodePath("CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Actions/ScheduleButton")
+_cancel_button = NodePath("CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Actions/CancelButton")
+_close_button = NodePath("CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Header/CloseButton")
 
 [node name="Dimmer" type="ColorRect" parent="."]
 layout_mode = 1

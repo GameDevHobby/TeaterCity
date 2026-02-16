@@ -413,22 +413,23 @@ func _update_preview_sprite() -> void:
 
 	# Try to get texture from furniture scene's AnimatedSprite2D
 	if _selected_furniture.scene:
-		var temp_instance = _selected_furniture.scene.instantiate()
-		var animated_sprite = temp_instance.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
-		if animated_sprite and animated_sprite.sprite_frames:
-			var sprite_frames = animated_sprite.sprite_frames
-			var frame_count = sprite_frames.get_frame_count("default")
-			if frame_count > 0:
-				# Cache all rotation textures from this furniture
-				for rot in range(4):
-					var frame_index: int
-					if frame_count == 2:
-						frame_index = rot % 2
-					else:
-						frame_index = rot % frame_count
-					var key = _selected_furniture.id + "_" + str(rot)
-					_preview_textures[key] = sprite_frames.get_frame_texture("default", frame_index)
-		temp_instance.queue_free()
+		var temp_instance = _selected_furniture.scene.instantiate() as FurnitureBase
+		if temp_instance:
+			var sprite_frames = temp_instance.get_preview_sprite_frames()
+			if sprite_frames:
+				var frame_count = sprite_frames.get_frame_count("default")
+				if frame_count > 0:
+					# Cache all rotation textures from this furniture
+					for rot in range(4):
+						var frame_index: int
+						if frame_count == 2:
+							frame_index = rot % 2
+						else:
+							frame_index = rot % frame_count
+						var key = _selected_furniture.id + "_" + str(rot)
+						_preview_textures[key] = sprite_frames.get_frame_texture("default", frame_index)
+		if temp_instance:
+			temp_instance.queue_free()
 
 	# Use cached texture if available
 	if _preview_textures.has(cache_key):

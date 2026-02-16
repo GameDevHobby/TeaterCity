@@ -27,7 +27,7 @@ var _is_dragging: bool = false
 # Validation state
 var _resize_op: ResizeOperation = ResizeOperation.new()
 var _last_validation: ResizeOperation.ResizeValidationResult = null
-var _room_manager: Node = null
+var _room_manager: Node = RoomManager
 var _exterior_walls: Array[Vector2i] = []
 var _wall_tilemap: TileMapLayer = null
 var _nav_tilemap: TileMapLayer = null
@@ -37,7 +37,6 @@ var _nav_tilemap: TileMapLayer = null
 
 func _ready() -> void:
 	mouse_filter = MOUSE_FILTER_IGNORE  # Don't block input
-	_room_manager = get_node("/root/RoomManager")
 
 
 func _input(event: InputEvent) -> void:

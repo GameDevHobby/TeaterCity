@@ -28,8 +28,8 @@ var _is_enabled: bool = false
 ## Lazy-instantiated UI instance
 var _ui_instance: AdminMenuUI = null
 
-## Reference to RoomManager autoload (deferred to ensure RoomManager loads first)
-@onready var _room_manager: Node = get_node("/root/RoomManager")
+## Reference to RoomManager autoload
+@onready var _room_manager: Node = RoomManager
 
 
 # --- Lifecycle ---

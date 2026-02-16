@@ -7,8 +7,8 @@ extends Control
 
 const SELECTION_COLOR := Color(1.0, 0.9, 0.2, 0.3)  # Semi-transparent yellow
 
-# Autoload reference (avoids static analysis issues in Godot 4.5)
-@onready var _room_manager: Node = get_node("/root/RoomManager")
+# Autoload reference
+@onready var _room_manager: Node = RoomManager
 
 
 func _ready() -> void:

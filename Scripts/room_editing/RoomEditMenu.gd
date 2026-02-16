@@ -10,18 +10,18 @@ signal resize_room_pressed(room: RoomInstance)
 signal room_type_action_pressed(room: RoomInstance)
 signal delete_room_pressed(room: RoomInstance)
 
-@onready var _panel: PanelContainer = $MenuPanel
-@onready var _edit_furniture_btn: Button = $MenuPanel/MarginContainer/VBoxContainer/EditFurnitureButton
-@onready var _edit_room_btn: Button = $MenuPanel/MarginContainer/VBoxContainer/EditRoomButton
-@onready var _resize_room_btn: Button = $MenuPanel/MarginContainer/VBoxContainer/ResizeRoomButton
-@onready var _room_type_btn: Button = $MenuPanel/MarginContainer/VBoxContainer/RoomTypeButton
-@onready var _delete_room_btn: Button = $MenuPanel/MarginContainer/VBoxContainer/DeleteRoomButton
-@onready var _delete_dialog: ConfirmationDialog = $DeleteDialog
+@export var _panel: PanelContainer
+@export var _edit_furniture_btn: Button
+@export var _edit_room_btn: Button
+@export var _resize_room_btn: Button
+@export var _room_type_btn: Button
+@export var _delete_room_btn: Button
+@export var _delete_dialog: ConfirmationDialog
 
 var _current_room: RoomInstance = null
 var _room_to_delete: RoomInstance = null
 
-@onready var _room_manager: Node = get_node("/root/RoomManager")
+@onready var _room_manager: Node = RoomManager
 
 
 func _ready() -> void:

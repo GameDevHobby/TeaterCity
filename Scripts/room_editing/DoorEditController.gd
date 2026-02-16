@@ -24,8 +24,8 @@ var _wall_areas: Dictionary = {}  # position (Vector2i hash) -> Area2D
 var _door_operation: DoorOperation = DoorOperation.new()
 var _exterior_walls: Array[Vector2i] = []  # Exterior walls that cannot have doors
 
-# Autoload reference (avoids static analysis issues in Godot 4.5)
-@onready var _room_manager: Node = get_node("/root/RoomManager")
+# Autoload reference
+@onready var _room_manager: Node = RoomManager
 
 # Tap detection state
 var _touch_start_pos: Vector2 = Vector2.ZERO

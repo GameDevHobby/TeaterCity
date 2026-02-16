@@ -7,14 +7,14 @@ signal schedule_cancelled
 const PANEL_WIDTH := 560.0
 const LIST_HEIGHT := 260.0
 
-@onready var _panel: PanelContainer = $CenterContainer/SchedulePanel
-@onready var _title_label: Label = $CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Header/TitleLabel
-@onready var _status_label: Label = $CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/StatusLabel
-@onready var _movie_list: ItemList = $CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/MovieList
-@onready var _details_label: Label = $CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/DetailsLabel
-@onready var _schedule_button: Button = $CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Actions/ScheduleButton
-@onready var _cancel_button: Button = $CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Actions/CancelButton
-@onready var _close_button: Button = $CenterContainer/SchedulePanel/MarginContainer/VBoxContainer/Header/CloseButton
+@export var _panel: PanelContainer
+@export var _title_label: Label
+@export var _status_label: Label
+@export var _movie_list: ItemList
+@export var _details_label: Label
+@export var _schedule_button: Button
+@export var _cancel_button: Button
+@export var _close_button: Button
 
 var _target_room: RoomInstance = null
 var _movies: Array[MovieResource] = []

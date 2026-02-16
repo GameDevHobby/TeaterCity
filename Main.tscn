@@ -1252,7 +1252,7 @@ sources/1 = SubResource("TileSetAtlasSource_lgr22")
 tile_shape = 1
 tile_size = Vector2i(128, 64)
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("room_build_manager", "camera", "build_button")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("room_build_manager", "camera", "build_button", "_selection_highlight", "_furniture_controller", "_furniture_highlight", "_furniture_list_panel", "_door_edit_controller", "_door_edit_highlight", "_room_edit_menu", "_door_edit_done_button", "_resize_controller", "_resize_highlight", "_resize_cancel_button", "_admin_button", "_resume_notification", "_theater_state_label_layer", "_theater_schedule_panel")]
 y_sort_enabled = true
 texture_filter = 1
 script = ExtResource("1_trn2v")
@@ -1260,6 +1260,21 @@ room_build_manager = NodePath("RoomBuildSystem/RoomBuildController")
 camera = NodePath("PinchPanCamera")
 build_button = NodePath("MainUILayer/BuildButton")
 state_debug_label_scene = ExtResource("19_statelabel")
+_selection_highlight = NodePath("SelectionHighlightLayer/SelectionHighlight")
+_furniture_controller = NodePath("FurnitureEditLayer/FurnitureEditController")
+_furniture_highlight = NodePath("FurnitureEditLayer/FurnitureSelectionHighlight")
+_furniture_list_panel = NodePath("EditMenuLayer/FurnitureListPanel")
+_door_edit_controller = NodePath("DoorEditLayer/DoorEditController")
+_door_edit_highlight = NodePath("DoorEditLayer/DoorEditHighlight")
+_room_edit_menu = NodePath("EditMenuLayer/RoomEditMenu")
+_door_edit_done_button = NodePath("EditMenuLayer/DoorEditDoneButton")
+_resize_controller = NodePath("ResizeEditLayer/RoomResizeController")
+_resize_highlight = NodePath("ResizeEditLayer/RoomResizeHighlight")
+_resize_cancel_button = NodePath("EditMenuLayer/ResizeCancelButton")
+_admin_button = NodePath("MainUILayer/AdminButton")
+_resume_notification = NodePath("ResumeNotificationUI")
+_theater_state_label_layer = NodePath("TheaterStateLabelLayer")
+_theater_schedule_panel = NodePath("EditMenuLayer/TheaterSchedulePanel")
 
 [node name="PinchPanCamera" type="Marker2D" parent="."]
 position = Vector2(554, 347)

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/room_editing/RoomEditMenu.gd" id="1_menu"]
 
-[node name="RoomEditMenu" type="Control"]
+[node name="RoomEditMenu" type="Control" node_paths=PackedStringArray("_panel", "_edit_furniture_btn", "_edit_room_btn", "_resize_room_btn", "_room_type_btn", "_delete_room_btn", "_delete_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,6 +11,13 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_menu")
+_panel = NodePath("MenuPanel")
+_edit_furniture_btn = NodePath("MenuPanel/MarginContainer/VBoxContainer/EditFurnitureButton")
+_edit_room_btn = NodePath("MenuPanel/MarginContainer/VBoxContainer/EditRoomButton")
+_resize_room_btn = NodePath("MenuPanel/MarginContainer/VBoxContainer/ResizeRoomButton")
+_room_type_btn = NodePath("MenuPanel/MarginContainer/VBoxContainer/RoomTypeButton")
+_delete_room_btn = NodePath("MenuPanel/MarginContainer/VBoxContainer/DeleteRoomButton")
+_delete_dialog = NodePath("DeleteDialog")
 
 [node name="MenuPanel" type="PanelContainer" parent="."]
 layout_mode = 0

@@ -1,6 +1,10 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
 
-[node name="RoomSelectionArea" type="Area2D"]
+[ext_resource type="Script" path="res://scripts/room_editing/RoomSelectionArea.gd" id="1_area"]
+
+[node name="RoomSelectionArea" type="Area2D" node_paths=PackedStringArray("collision_polygon")]
 input_pickable = true
+script = ExtResource("1_area")
+collision_polygon = NodePath("CollisionPolygon2D")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]

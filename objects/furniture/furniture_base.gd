@@ -77,7 +77,7 @@ func _setup_collision_shape(size: Vector2i) -> void:
 
 func _setup_sprite() -> void:
 	# Try to find AnimatedSprite2D child for directional sprites
-	var animated_sprite = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	var animated_sprite = _find_animated_sprite_child()
 	if animated_sprite and animated_sprite.sprite_frames:
 		# Set frame based on rotation direction (0=North, 1=East, 2=South, 3=West)
 		var frame_count = animated_sprite.sprite_frames.get_frame_count("default")
@@ -102,10 +102,31 @@ func _setup_sprite() -> void:
 		return
 
 	# Fallback: check for legacy Sprite2D (placeholder - no setup needed)
-	var sprite = get_node_or_null("Sprite2D") as Sprite2D
+	var sprite = _find_sprite_child()
 	if sprite:
 		# Legacy placeholder sprite - will be replaced by scene updates
 		pass
+
+
+func get_preview_sprite_frames() -> SpriteFrames:
+	var animated_sprite = _find_animated_sprite_child()
+	if animated_sprite:
+		return animated_sprite.sprite_frames
+	return null
+
+
+func _find_animated_sprite_child() -> AnimatedSprite2D:
+	for child in get_children():
+		if child is AnimatedSprite2D:
+			return child as AnimatedSprite2D
+	return null
+
+
+func _find_sprite_child() -> Sprite2D:
+	for child in get_children():
+		if child is Sprite2D:
+			return child as Sprite2D
+	return null
 
 func _setup_navigation_obstacle(size: Vector2i) -> void:
 	var obstacle = get_node_or_null("NavigationObstacle2D") as NavigationObstacle2D

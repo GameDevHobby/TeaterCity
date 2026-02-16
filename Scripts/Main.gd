@@ -10,27 +10,29 @@ extends Node2D
 ## These walls exist in the scene and should never be deleted.
 var _exterior_walls: Array[Vector2i] = []
 
-# Autoload references (avoids static analysis issues in Godot 4.5)
-@onready var _room_manager: Node = get_node("/root/RoomManager")
-@onready var _admin_menu: Node = get_node("/root/AdminMenu")
+# Autoload references
+@onready var _room_manager: Node = RoomManager
+@onready var _admin_menu: Node = AdminMenu
 
 var _build_mode_active = false
-@onready var _furniture_controller: FurnitureEditController = $FurnitureEditLayer/FurnitureEditController
-@onready var _furniture_list_panel: FurnitureListPanel = $EditMenuLayer/FurnitureListPanel
-@onready var _door_edit_controller: DoorEditController = $DoorEditLayer/DoorEditController
-@onready var _door_edit_highlight: DoorEditHighlight = $DoorEditLayer/DoorEditHighlight
-@onready var _room_edit_menu: RoomEditMenu = $EditMenuLayer/RoomEditMenu
-@onready var _door_edit_done_button: Button = $EditMenuLayer/DoorEditDoneButton
+@export var _selection_highlight: RoomSelectionHighlight
+@export var _furniture_controller: FurnitureEditController
+@export var _furniture_highlight: FurnitureSelectionHighlight
+@export var _furniture_list_panel: FurnitureListPanel
+@export var _door_edit_controller: DoorEditController
+@export var _door_edit_highlight: DoorEditHighlight
+@export var _room_edit_menu: RoomEditMenu
+@export var _door_edit_done_button: Button
 var _deletion_op: DeletionOperation = null
-@onready var _resize_controller: RoomResizeController = $ResizeEditLayer/RoomResizeController
-@onready var _resize_highlight: RoomResizeHighlight = $ResizeEditLayer/RoomResizeHighlight
-@onready var _resize_cancel_button: Button = $EditMenuLayer/ResizeCancelButton
-@onready var _admin_button: Button = $MainUILayer/AdminButton
-@onready var _resume_notification: ResumeNotificationUI = $ResumeNotificationUI
-@onready var _theater_state_label_layer: CanvasLayer = $TheaterStateLabelLayer
+@export var _resize_controller: RoomResizeController
+@export var _resize_highlight: RoomResizeHighlight
+@export var _resize_cancel_button: Button
+@export var _admin_button: Button
+@export var _resume_notification: ResumeNotificationUI
+@export var _theater_state_label_layer: CanvasLayer
 var _theater_state_labels: Dictionary = {}
 var _movie_pool: MoviePool = null
-@onready var _theater_schedule_panel: TheaterSchedulePanel = $EditMenuLayer/TheaterSchedulePanel
+@export var _theater_schedule_panel: TheaterSchedulePanel
 var _camera_pan_before_schedule_modal := true
 
 func _ready() -> void:
@@ -59,16 +61,14 @@ func _ready() -> void:
 	_furniture_controller.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_furniture_controller.mode_exited.connect(_on_furniture_edit_exited)
 
-	var selection_highlight := get_node("SelectionHighlightLayer/SelectionHighlight") as RoomSelectionHighlight
-	if selection_highlight:
-		selection_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		selection_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
+	if _selection_highlight:
+		_selection_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_selection_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
 
-	var furniture_highlight := get_node("FurnitureEditLayer/FurnitureSelectionHighlight") as FurnitureSelectionHighlight
-	if furniture_highlight:
-		furniture_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		furniture_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
-		furniture_highlight.set_controller(_furniture_controller)
+	if _furniture_highlight:
+		_furniture_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_furniture_highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
+		_furniture_highlight.set_controller(_furniture_controller)
 
 	# Create DeletionOperation
 	_deletion_op = DeletionOperation.new()

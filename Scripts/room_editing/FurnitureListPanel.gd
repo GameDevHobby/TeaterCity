@@ -18,17 +18,17 @@ const ITEM_HEIGHT := 36
 
 const ITEM_BUTTON_SCENE := preload("res://scripts/room_editing/FurnitureListItemButton.tscn")
 
-@onready var _panel: PanelContainer = $ListPanel
-@onready var _scroll: ScrollContainer = $ListPanel/MarginContainer/VBoxContainer/ItemScroll
-@onready var _items_container: VBoxContainer = $ListPanel/MarginContainer/VBoxContainer/ItemScroll/ItemsContainer
-@onready var _add_button: Button = $ListPanel/MarginContainer/VBoxContainer/AddButton
-@onready var _delete_button: Button = $ListPanel/MarginContainer/VBoxContainer/DeleteButton
-@onready var _error_label: Label = $ListPanel/MarginContainer/VBoxContainer/ErrorLabel
-@onready var _done_button: Button = $ListPanel/MarginContainer/VBoxContainer/DoneButton
+@export var _panel: PanelContainer
+@export var _scroll: ScrollContainer
+@export var _items_container: VBoxContainer
+@export var _add_button: Button
+@export var _delete_button: Button
+@export var _error_label: Label
+@export var _done_button: Button
 
-@onready var _picker_panel: PanelContainer = $PickerPanel
-@onready var _picker_items_container: VBoxContainer = $PickerPanel/MarginContainer/VBoxContainer/PickerItemsContainer
-@onready var _cancel_add_button: Button = $PickerPanel/MarginContainer/VBoxContainer/CancelAddButton
+@export var _picker_panel: PanelContainer
+@export var _picker_items_container: VBoxContainer
+@export var _cancel_add_button: Button
 
 var _controller: FurnitureEditController = null
 var _item_buttons: Array[Button] = []
