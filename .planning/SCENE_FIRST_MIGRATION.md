@@ -35,17 +35,17 @@ Tracks migration of runtime-created fixed node hierarchies into scene-authored `
 
 ## 3) Furniture List Panel
 
-- [ ] Migrate fixed shell in `scripts/room_editing/FurnitureListPanel.gd` to `FurnitureListPanel.tscn`
-- [ ] Add reusable item-row scene for repeated entries
-- [ ] Switch repeated entries to `PackedScene.instantiate()`
+- [x] Migrate fixed shell in `scripts/room_editing/FurnitureListPanel.gd` to `FurnitureListPanel.tscn`
+- [x] Add reusable item-row scene for repeated entries
+- [x] Switch repeated entries to `PackedScene.instantiate()`
 
 **Done when:** panel/picker shell is scene-authored and dynamic rows are prefab-instanced.
 
 ## 4) Admin UI
 
-- [ ] Migrate `scripts/admin/AdminMenuUI.gd` to `AdminMenuUI.tscn`
-- [ ] Update `scripts/admin/AdminMenu.gd` to instantiate scene, not `new()`
-- [ ] Keep script behavior-only (toggle/open/close wiring)
+- [x] Migrate `scripts/admin/AdminMenuUI.gd` to `AdminMenuUI.tscn`
+- [x] Update `scripts/admin/AdminMenu.gd` to instantiate scene, not `new()`
+- [x] Keep script behavior-only (toggle/open/close wiring)
 
 **Done when:** admin overlay/panel is scene-authored and loaded via scene instancing.
 
@@ -91,3 +91,5 @@ Use this section to append step progress notes.
 - YYYY-MM-DD: Step N completed - note
 - 2026-02-16: Step 1 completed - TheaterSchedulePanel modal hierarchy moved to `scripts/room_editing/TheaterSchedulePanel.tscn`; `Main.gd` now instantiates the scene.
 - 2026-02-16: Step 2 completed - RoomEditMenu hierarchy moved to `scripts/room_editing/RoomEditMenu.tscn`; `Main.gd` now instantiates the scene.
+- 2026-02-16: Step 3 completed - FurnitureListPanel shell moved to scene, repeated buttons now use `FurnitureListItemButton.tscn` instancing.
+- 2026-02-16: Step 4 completed - AdminMenuUI migrated to scene and AdminMenu now uses `AdminMenuUI.tscn` instancing.

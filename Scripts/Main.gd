@@ -121,7 +121,7 @@ func _ready() -> void:
 	_furniture_controller.mode_exited.connect(_on_furniture_edit_exited)
 
 	# Create furniture list panel (in EditMenuLayer since it's screen-space UI)
-	_furniture_list_panel = FurnitureListPanel.new()
+	_furniture_list_panel = preload("res://scripts/room_editing/FurnitureListPanel.tscn").instantiate()
 	_furniture_list_panel.name = "FurnitureListPanel"
 	edit_menu_layer.add_child(_furniture_list_panel)
 	_furniture_list_panel.set_controller(_furniture_controller)

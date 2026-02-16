@@ -24,7 +24,7 @@ signal rooms_reset
 var _is_enabled: bool = false
 
 ## Lazy-instantiated UI instance
-var _ui_instance: Control = null
+var _ui_instance: AdminMenuUI = null
 
 ## Reference to RoomManager autoload (deferred to ensure RoomManager loads first)
 @onready var _room_manager: Node = get_node("/root/RoomManager")
@@ -67,7 +67,7 @@ func toggle_menu() -> void:
 ## Create the admin menu UI instance.
 ## Adds to scene tree root so it persists across scene changes.
 func _create_ui() -> void:
-	_ui_instance = AdminMenuUI.new()
+	_ui_instance = preload("res://scripts/admin/AdminMenuUI.tscn").instantiate() as AdminMenuUI
 	_ui_instance.name = "AdminMenuUI"
 	# Add to root so it persists across scene changes
 	get_tree().root.add_child(_ui_instance)
